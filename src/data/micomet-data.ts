@@ -7,6 +7,8 @@ export interface Phase {
   desc: string;
 }
 
+import mcFullData from './mc-full-timeline.json';
+
 export interface TimelineItem {
   id: string;
   date: string;
@@ -88,7 +90,7 @@ export const PHASES: Phase[] = [
   },
 ];
 
-export const TIMELINE: TimelineItem[] = [
+const CURATED_TIMELINE: TimelineItem[] = [
   // === 第一階段 ===
   { id: 'a1', date: '2019-06-11', phase: 1, side: 'suisei', emoji: '👁️',
     title: '最早的線索 — 星街在看咪口直播',
@@ -225,6 +227,36 @@ export const TIMELINE: TimelineItem[] = [
     ctx: '2023 年，miComet 相遇滿 4 週年。兩人繼續在對方的直播、推特和日常生活中出現，故事還在繼續書寫。',
     type: 'Text', link: '' },
 ];
+
+// Merge: curated items take priority (by directLink or date+title match), then add remaining from full dataset
+const curatedLinks = new Set(CURATED_TIMELINE.map(e => e.link).filter(Boolean));
+const curatedDateKeys = new Set(CURATED_TIMELINE.map(e => e.date));
+
+const fullItems: TimelineItem[] = (mcFullData as any[]).map(item => ({
+  id: item.id,
+  date: item.date,
+  phase: item.phase,
+  side: item.side as 'miko' | 'suisei' | 'shared',
+  emoji: item.emoji,
+  title: item.title,
+  ctx: item.ctx,
+  type: item.type,
+  link: item.link,
+  platform: item.platform,
+  directLink: item.directLink,
+}));
+
+const extraItems = fullItems.filter(item => {
+  if (item.link && curatedLinks.has(item.link)) return false;
+  // Skip if same date AND very similar title exists in curated
+  if (curatedDateKeys.has(item.date)) {
+    const match = CURATED_TIMELINE.find(c => c.date === item.date);
+    if (match) return false;
+  }
+  return true;
+});
+
+export const TIMELINE: TimelineItem[] = [...CURATED_TIMELINE, ...extraItems];
 
 export const TYPE_ZH: Record<string, string> = {
   'Stream': '直播', 'Clip': '切片', 'Text': '推文', 'Audio': '音頻'
