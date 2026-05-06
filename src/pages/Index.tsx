@@ -248,6 +248,23 @@ export default function Index() {
             miComet 的故事，從來都不只是商業。
           </p>
         </div>
+
+        {/* 參考資料 */}
+        <div className="references-section">
+          <h3>📚 參考資料</h3>
+          <ul>
+            <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noopener noreferrer">櫻巫女 Sakura Miko — YouTube 官方頻道</a></li>
+            <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noopener noreferrer">星街彗星 Hoshimachi Suisei — YouTube 官方頻道</a></li>
+            <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noopener noreferrer">櫻巫女 — Twitter / X</a></li>
+            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X（前）</a></li>
+            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X</a></li>
+            <li><a href="https://hololive.hololivepro.com/" target="_blank" rel="noopener noreferrer">Hololive Production 官方網站</a></li>
+            <li><a href="https://seesaawiki.jp/hololivetv/" target="_blank" rel="noopener noreferrer">Hololive 非公式 Wiki</a></li>
+            <li><a href="https://www.reddit.com/r/miComet/" target="_blank" rel="noopener noreferrer">r/miComet — Reddit 社群</a></li>
+            <li>各切片頻道（hololive 切り抜き）之翻譯與整理</li>
+            <li>miComet 編年史資料由粉絲社群整理，所有內容版權歸原作者與 Cover Corp. 所有</li>
+          </ul>
+        </div>
       </div>
 
       {/* MODAL */}
