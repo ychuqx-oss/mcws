@@ -256,7 +256,7 @@ const extraItems = fullItems.filter(item => {
   return true;
 });
 
-const CURATED_TIMELINE: TimelineItem[] = [...CURATED_TIMELINE, ...extraItems];
+export const TIMELINE: TimelineItem[] = [...CURATED_TIMELINE, ...extraItems];
 
 export const TYPE_ZH: Record<string, string> = {
   'Stream': '直播', 'Clip': '切片', 'Text': '推文', 'Audio': '音頻'
