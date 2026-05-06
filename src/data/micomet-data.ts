@@ -90,7 +90,7 @@ export const PHASES: Phase[] = [
   },
 ];
 
-export const TIMELINE: TimelineItem[] = [
+const CURATED_TIMELINE: TimelineItem[] = [
   // === 第一階段 ===
   { id: 'a1', date: '2019-06-11', phase: 1, side: 'suisei', emoji: '👁️',
     title: '最早的線索 — 星街在看咪口直播',
@@ -256,7 +256,7 @@ const extraItems = fullItems.filter(item => {
   return true;
 });
 
-export const TIMELINE: TimelineItem[] = [...CURATED_TIMELINE, ...extraItems];
+const CURATED_TIMELINE: TimelineItem[] = [...CURATED_TIMELINE, ...extraItems];
 
 export const TYPE_ZH: Record<string, string> = {
   'Stream': '直播', 'Clip': '切片', 'Text': '推文', 'Audio': '音頻'
