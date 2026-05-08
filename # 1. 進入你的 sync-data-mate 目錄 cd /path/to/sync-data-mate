@@ -1,8 +1,0 @@
-# 1. 進入你的 sync-data-mate 目錄
-cd /path/to/sync-data-mate
-
-# 2. 下載並執行腳本
-bash update-github-NOW.sh
-
-# 3. 當提示時，輸入 GitHub 密碼或 Token
-# 4. 完成！網站會自動更新
