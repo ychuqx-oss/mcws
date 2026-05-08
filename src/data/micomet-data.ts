@@ -83,7 +83,7 @@ export const PHASES: Phase[] = [
   },
   {
     id: 9, label: '控糖大方供給',
-    period: '2023 至今',
+    period: '2023 – 2025',
     color: '#C8A8F0',
     bg: 'rgba(200,168,240,0.10)',
     desc: '不再需要藉口，也不需要解釋，miComet 就是 miComet。「彗醬想去哪裡呢？沒有想去的地方，也不知道有什麼地方，只是來看妳的。」'
@@ -230,7 +230,6 @@ const CURATED_TIMELINE: TimelineItem[] = [
 
 // Merge: curated items take priority (by directLink or date+title match), then add remaining from full dataset
 const curatedLinks = new Set(CURATED_TIMELINE.map(e => e.link).filter(Boolean));
-const curatedDateKeys = new Set(CURATED_TIMELINE.map(e => e.date));
 
 const fullItems: TimelineItem[] = (mcFullData as any[]).map(item => ({
   id: item.id,
@@ -249,10 +248,14 @@ const fullItems: TimelineItem[] = (mcFullData as any[]).map(item => ({
 const extraItems = fullItems.filter(item => {
   if (item.link && curatedLinks.has(item.link)) return false;
   // Skip if same date AND very similar title exists in curated
-  if (curatedDateKeys.has(item.date)) {
-    const match = CURATED_TIMELINE.find(c => c.date === item.date);
-    if (match) return false;
-  }
+  // We check if any curated item on the same date has a very similar title
+  const hasMatch = CURATED_TIMELINE.some(c => {
+    if (c.date !== item.date) return false;
+    const t1 = c.title.toLowerCase();
+    const t2 = item.title.toLowerCase();
+    return t1.includes(t2) || t2.includes(t1);
+  });
+  if (hasMatch) return false;
   return true;
 });
 

@@ -118,7 +118,7 @@ export default function Index() {
       <div className="header">
         <div className="header-crown">🌸 ✨ ⭐</div>
         <h1>miComet 編年史</h1>
-        <div className="header-sub">星街彗星 × 櫻巫女 ｜ Business &amp; Beyond ｜ 2019 – 2023</div>
+        <div className="header-sub">星街彗星 × 櫻巫女 ｜ Business &amp; Beyond ｜ 2019 – 2025</div>
         <div className="header-pills">
           <span className="pill pink">🌸 咪口 {mikoCount} 則</span>
           <span className="pill blue">⭐ 星街 {suiseiCount} 則</span>
@@ -148,7 +148,7 @@ export default function Index() {
       <div className="result-line">
         {search || phaseFilter !== 0
           ? `找到 ${filtered.length} 個故事`
-          : `共 ${total} 個故事（2019 – 2023）`}
+          : `共 ${total} 個故事（2019 – 2025）`}
       </div>
 
       {/* MAIN */}
