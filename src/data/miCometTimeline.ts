@@ -1,4 +1,14 @@
-import type { MiCometStory } from './micomet-data';
+export interface MiCometStory {
+  id: string;
+  date: string;
+  phase: number;
+  side: 'miko' | 'suisei' | 'shared' | 'others';
+  emoji: string;
+  title: string;
+  ctx: string;
+  type: string;
+  link?: string;
+}
 
 export const MICOMET_TIMELINE: MiCometStory[] = [
   {
