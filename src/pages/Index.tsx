@@ -6,12 +6,6 @@ import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
 
 type Lang = 'zh' | 'ja' | 'en';
 
-interface InternationalizedString {
-  zh: string;
-  ja: string;
-  en: string;
-}
-
 // Define the shape of the transformed item that the components will use
 interface TimelineItem {
   id: string;
@@ -86,15 +80,24 @@ const UI_STRINGS = {
   }
 };
 
-// --- Data Transformation ---
+// --- Data Transformation (with Bug Fix) ---
 
-// Transform the new data structure to fit the existing component structure
 const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
   const titleParts = story.title.split(' | ');
-  // YY-N | Chinese | Japanese | English
-  const title_zh = titleParts.length > 1 ? titleParts[1] : '(No Title)';
-  const title_ja = titleParts.length > 2 ? titleParts[2] : title_zh;
-  const title_en = titleParts.length > 3 ? titleParts[3] : title_zh;
+  let title_zh, title_ja, title_en;
+
+  // Graceful fallback for titles that don't follow the standard "zh | ja | en" format.
+  if (titleParts.length > 1) {
+    // Standard format detected
+    title_zh = titleParts[1];
+    title_ja = titleParts.length > 2 ? titleParts[2] : title_zh; // Fallback to Chinese if Japanese is missing
+    title_en = titleParts.length > 3 ? titleParts[3] : title_ja; // Fallback to Japanese if English is missing
+  } else {
+    // Non-standard format: Use the entire original title string as the primary title.
+    title_zh = story.title; // titleParts[0] is the full string
+    title_ja = story.title;
+    title_en = story.title;
+  }
 
   return {
     ...story,
@@ -103,12 +106,12 @@ const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiComet
       ja: title_ja,
       en: title_en,
     },
-    // The new ctx is only in Chinese. We'll provide it as 'zh' and let the component fallback.
     ctx: {
-      zh: story.ctx,
+      zh: story.ctx, // Context is always in Chinese from the source data
     },
   };
 });
+
 
 // --- Helper Functions ---
 
@@ -149,7 +152,7 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
   const link = getLink(item);
   const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
-  const displayTitle = item.title?.[lang] || item.title?.zh || '(No Title)';
+  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)'; // Fallback to Chinese, then error
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
   
   let moreText = UI_STRINGS.cardMore.default[lang];
@@ -176,7 +179,7 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
   const link = getLink(item);
   const povLabel = UI_STRINGS.modalPov[side as 'miko'|'suisei'|'shared'|'others'][lang];
   const phase = PHASES.find(p => p.id === item.phase);
-  const displayTitle = item.title?.[lang] || item.title?.zh || '(No Title)';
+  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
 
   return (
