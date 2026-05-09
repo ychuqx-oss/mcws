@@ -1,35 +1,48 @@
-import { useState, useMemo, useEffect } from 'react';
-import { PHASES, fetchTimeline, TIMELINE as staticTimeline, TYPE_NAMES, type TimelineItem, type InternationalizedString } from '@/data/micomet-data';
 
-// Define types for the languages
+import { useState, useMemo } from 'react';
+import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
+
+// Define types and constants directly in the file for clarity
+
 type Lang = 'zh' | 'ja' | 'en';
 
-const monthNames: { [key in Lang]: string[] } = {
-  zh: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-  ja: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+interface InternationalizedString {
+  zh: string;
+  ja: string;
+  en: string;
+}
+
+// Define the shape of the transformed item that the components will use
+interface TimelineItem {
+  id: string;
+  date: string;
+  phase: number;
+  side: 'miko' | 'suisei' | 'shared' | 'others';
+  emoji: string;
+  title: { [key in Lang]?: string };
+  ctx: { [key in Lang]?: string };
+  type: string;
+  link?: string;
+}
+
+// --- Data & UI Configuration ---
+
+const PHASES = [
+  { id: 1, label: { zh: '初識', ja: '出会い', en: 'The Beginning' }, period: '2019', color: '#ff7b7b', desc: { zh: 'Project Winter 中的初次邂逅，奠定了兩人「商業」關係的血腥起點。', ja: 'Project Winterでの初対面、二人の「ビジネス」関係の血塗られた始まり。', en: 'The bloody beginning of their "business" relationship from their first encounter in Project Winter.' } },
+  { id: 2, label: { zh: '萌芽', ja: '芽生え', en: 'Early Days' }, period: '2020', color: '#ffb37b', desc: { zh: 'ARK 伺服器上的互動、逐漸增加的連動，以及私下的支持，讓關係慢慢升溫。', ja: 'ARKサーバーでの交流、増えていくコラボ、そして裏での支えが、二人の関係を少しずつ温めていった。', en: 'Interactions on the ARK server, an increasing number of collaborations, and behind-the-scenes support slowly warmed their relationship.' } },
+  { id: 3, label: { zh: '商業夥伴', ja: 'ビジネスパートナー', en: 'Business Partners' }, period: '2021', color: '#ffdd7b', desc: { zh: '傳說中的「商業」標籤被廣泛使用，兩人以絕佳的默契，在各種企劃中展現出無與倫比的節目效果。', ja: '伝説の「ビジネス」タグが広く使われるようになり、二人は抜群のコンビネーションで、様々な企画で比類なきエンターテイメント性を発揮した。', en: 'The legendary "business" tag became widespread as the two demonstrated unparalleled entertainment chemistry in various projects.' } },
+  { id: 4, label: { zh: '超越商業', ja: 'ビジネスを超えて', en: 'Beyond Business' }, period: '2022 – 2023', color: '#a0e880', desc: { zh: '從夏祭約會到各種生活感的互動，兩人之間流動的空氣感，讓「商業」的界線變得模糊。', ja: '夏祭りのデートから日常感あふれる様々なやり取りまで、二人の間に流れる空気感が、「ビジネス」の境界線を曖昧にしていく。', en: 'From the summer festival date to various slice-of-life interactions, the atmosphere between them began to blur the lines of "business".' } },
+  { id: 5, label: { zh: '新章', ja: '新章', en: 'New Chapter' }, period: '2024 –', color: '#80c8e8', desc: { zh: '邁向新的里程碑，無論是個人活動還是雙人互動，都展現了更成熟、更深厚的羈絆。', ja: '新たなマイルストーンに向かって、個人の活動でも二人の交流でも、より成熟し、より深い絆が示されるようになった。', en: 'Moving towards new milestones, both in their solo activities and their interactions, they show a more mature and deeper bond.' } }
+];
+
+const TYPE_NAMES: { [key: string]: { [key in Lang]: string } } = {
+    Clip: { zh: '剪輯', ja: '切り抜き', en: 'Clip' },
+    Stream: { zh: '直播', ja: '配信', en: 'Stream' },
+    Text: { zh: '文字', ja: 'テキスト', en: 'Text' },
+    Mixed: { zh: '綜合', ja: '混合', en: 'Mixed' },
+    Audio: { zh: '音訊', ja: '音声', en: 'Audio' },
+    '': { zh: '其他', ja: 'その他', en: 'Other' },
 };
-
-function fmt(dateISO: string, lang: Lang) {
-  if (!dateISO) return '';
-  const date = new Date(dateISO);
-  const y = date.getUTCFullYear();
-  const m = date.getUTCMonth();
-  const d = date.getUTCDate();
-  if (lang === 'zh') return `${y}年${m + 1}月${d}日`;
-  if (lang === 'ja') return `${y}年${m + 1}月${d}日`;
-  return `${monthNames[lang][m]} ${d}, ${y}`;
-}
-
-function getLink(ctx: InternationalizedString, title: InternationalizedString, link: string) {
-  if (link && link.startsWith('http')) return { url: link, type: link.includes('twitter') ? 'tw' : 'yt' };
-  const text = (ctx.zh || '') + ' ' + (title.zh || ''); // Search in Chinese context
-  const yt = text.match(/https?:\/\/(www\.)?youtu(be\.com|\.be)\/\S+/);
-  if (yt) return { url: yt[0].replace(/[）)】」』"']+$/, ''), type: 'yt' };
-  const tw = text.match(/https?:\/\/(www\.)?twitter\.com\/\S+/);
-  if (tw) return { url: tw[0].replace(/[）)】」』"']+$/, ''), type: 'tw' };
-  return null;
-}
 
 const UI_STRINGS = {
   title: { zh: 'miComet 編年史', ja: 'miComet クロニクル', en: 'miComet Chronicle' },
@@ -42,7 +55,7 @@ const UI_STRINGS = {
   all: { zh: '全部', ja: 'すべて', en: 'All' },
   phaseButton: { zh: '第{id}階段 · {label}', ja: 'フェーズ{id} · {label}', en: 'Phase {id} · {label}' },
   foundStories: { zh: '找到 {count} 個故事', ja: '{count} 件の物語が見つかりました', en: 'Found {count} stories' },
-  totalStories: { zh: '共 {count} 個故事（2019 – 2023）', ja: '合計 {count} 件の物語 (2019 – 2023)', en: 'Total of {count} stories (2019 – 2023)' },
+  totalStories: { zh: '共 {count} 個故事 (2019 – {year})', ja: '合計 {count} 件の物語 (2019 – {year})', en: 'Total of {count} stories (2019 – {year})' },
   noResults: { zh: '沒有找到符合條件的故事', ja: '該当する物語は見つかりませんでした', en: 'No matching stories found' },
   mikoColumn: { zh: '🌸 咪口 · 櫻巫女', ja: '🌸 みこち · さくらみこ', en: '🌸 Miko · Sakura Miko' },
   suiseiColumn: { zh: '⭐ 彗醬 · 星街彗星', ja: '⭐ すいちゃん · 星街すいせい', en: '⭐ Suichan · Hoshimachi Suisei' },
@@ -63,7 +76,8 @@ const UI_STRINGS = {
   modalPov: {
     miko: { zh: '🌸 櫻巫女視角', ja: '🌸 さくらみこ視点', en: '🌸 Sakura Miko\'s POV' },
     suisei: { zh: '⭐ 星街彗星視角', ja: '⭐ 星街すいせい視点', en: '⭐ Hoshimachi Suisei\'s POV' },
-    shared: { zh: '💕 miComet 共同', ja: '💕 miComet 共有', en: '💕 miComet Shared' }
+    shared: { zh: '💕 miComet 共同', ja: '💕 miComet 共有', en: '💕 miComet Shared' },
+    others: { zh: '📄 其他相關', ja: '📄 その他関連', en: '📄 Others' },
   },
   modalPhase: { zh: '第{id}階段：{label}', ja: 'フェーズ{id}：{label}', en: 'Phase {id}: {label}' },
   modalLink: {
@@ -72,12 +86,71 @@ const UI_STRINGS = {
   }
 };
 
+// --- Data Transformation ---
+
+// Transform the new data structure to fit the existing component structure
+const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
+  const titleParts = story.title.split(' | ');
+  // YY-N | Chinese | Japanese | English
+  const title_zh = titleParts.length > 1 ? titleParts[1] : '(No Title)';
+  const title_ja = titleParts.length > 2 ? titleParts[2] : title_zh;
+  const title_en = titleParts.length > 3 ? titleParts[3] : title_zh;
+
+  return {
+    ...story,
+    title: {
+      zh: title_zh,
+      ja: title_ja,
+      en: title_en,
+    },
+    // The new ctx is only in Chinese. We'll provide it as 'zh' and let the component fallback.
+    ctx: {
+      zh: story.ctx,
+    },
+  };
+});
+
+// --- Helper Functions ---
+
+const monthNames: { [key in Lang]: string[] } = {
+  zh: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+  ja: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+};
+
+function fmt(dateISO: string, lang: Lang) {
+  if (!dateISO) return '';
+  const date = new Date(dateISO);
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth();
+  const d = date.getUTCDate();
+  if (lang === 'zh') return `${y}年${m + 1}月${d}日`;
+  if (lang === 'ja') return `${y}年${m + 1}月${d}日`;
+  return `${monthNames[lang][m]} ${d}, ${y}`;
+}
+
+function getLink(item: TimelineItem) {
+    const link = item.link || '';
+    if (link && link.startsWith('http')) {
+        const type = link.includes('twitter') || link.includes('x.com') ? 'tw' : 'yt';
+        return { url: link, type };
+    }
+    const text = (item.ctx?.zh || '') + ' ' + (item.title?.zh || '');
+    const yt = text.match(/https?:\/\/(www\.)?youtu(be\.com|\.be)\/\S+/);
+    if (yt) return { url: yt[0].replace(/[）)】」』"']+$/, ''), type: 'yt' };
+    const tw = text.match(/https?:\/\/(www\.)?twitter\.com\/\S+/);
+    if (tw) return { url: tw[0].replace(/[）)】」』"']+$/, ''), type: 'tw' };
+    return null;
+}
+
+// --- UI Components ---
+
 function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
-  const link = getLink(item.ctx, item.title, item.directLink || item.link || '');
-  const typeKey = (item.type || 'Clip');
+  const link = getLink(item);
+  const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
-  const displayTitle = item.title[lang] || item.title.zh || '(No Title)';
-  const displayCtx = item.ctx[lang] || item.ctx.zh;
+  const displayTitle = item.title?.[lang] || item.title?.zh || '(No Title)';
+  const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
   
   let moreText = UI_STRINGS.cardMore.default[lang];
   if (link) {
@@ -89,9 +162,6 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
       <div className="card-meta">
         <span className="card-date">{fmt(item.date, lang)}</span>
         <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
-        {item.platform && item.platform !== 'YT' && (
-          <span className="card-type ct-other">{item.platform}</span>
-        )}
       </div>
       <div className="card-emoji">{item.emoji || '💫'}</div>
       <div className="card-title">{displayTitle}</div>
@@ -103,11 +173,11 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
 
 function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string; lang: Lang; onClose: () => void }) {
   if (!item) return null;
-  const link = getLink(item.ctx, item.title, item.directLink || item.link || '');
-  const povLabel = UI_STRINGS.modalPov[side][lang];
+  const link = getLink(item);
+  const povLabel = UI_STRINGS.modalPov[side as 'miko'|'suisei'|'shared'|'others'][lang];
   const phase = PHASES.find(p => p.id === item.phase);
-  const displayTitle = item.title[lang] || item.title.zh || '(No Title)';
-  const displayCtx = item.ctx[lang] || item.ctx.zh;
+  const displayTitle = item.title?.[lang] || item.title?.zh || '(No Title)';
+  const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
 
   return (
     <div className="modal-bg" onClick={onClose}>
@@ -119,7 +189,6 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
           <div className="modal-date">
             {fmt(item.date, lang)}
             {item.type && ` ・ ${TYPE_NAMES[item.type]?.[lang] || item.type}`}
-            {item.platform && item.platform !== 'YT' && ` ・ ${item.platform}`}
             {phase ? ` ・ ${UI_STRINGS.modalPhase[lang].replace('{id}', String(phase.id)).replace('{label}', phase.label[lang])}` : ''}
           </div>
           <div className="modal-title">{displayTitle}</div>
@@ -135,28 +204,26 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
   );
 }
 
+// --- Main Page Component ---
+
 export default function Index() {
   const [search, setSearch] = useState('');
   const [phaseFilter, setPhaseFilter] = useState(0);
   const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
   const [lang, setLang] = useState<Lang>('zh');
-  const [timeline, setTimeline] = useState<TimelineItem[]>(staticTimeline);
-
-  useEffect(() => {
-    fetchTimeline().then(data => setTimeline(data));
-  }, []);
 
   const allItems = useMemo(() => {
-    return [...timeline].sort((a, b) => a.date.localeCompare(b.date));
-  }, [timeline]);
+    return transformedTimeline.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, []);
 
   const filtered = useMemo(() => {
     return allItems.filter(e => {
       if (phaseFilter !== 0 && e.phase !== phaseFilter) return false;
       if (search) {
         const q = search.toLowerCase();
-        return (e.title[lang] || e.title.zh).toLowerCase().includes(q) || 
-               (e.ctx[lang] || e.ctx.zh).toLowerCase().includes(q);
+        const title = (e.title[lang] || e.title.zh || '').toLowerCase();
+        const ctx = (e.ctx[lang] || e.ctx.zh || '').toLowerCase();
+        return title.includes(q) || ctx.includes(q);
       }
       return true;
     });
@@ -174,15 +241,13 @@ export default function Index() {
   const mikoCount = allItems.filter(e => e.side === 'miko').length;
   const suiseiCount = allItems.filter(e => e.side === 'suisei').length;
   const sharedCount = allItems.filter(e => e.side === 'shared').length;
-  const total = mikoCount + suiseiCount + sharedCount;
+  const total = allItems.length;
 
   const activePhases = PHASES.filter(p => byPhase[p.id] && byPhase[p.id].length > 0);
-  
   const currentYear = new Date().getFullYear();
 
   return (
     <>
-      {/* HEADER */}
       <div className="header">
         <div className="header-lang">
           <button onClick={() => setLang('zh')} className={lang === 'zh' ? 'on' : ''}>中文</button>
@@ -191,7 +256,7 @@ export default function Index() {
         </div>
         <div className="header-crown">🌸 ✨ ⭐</div>
         <h1>{UI_STRINGS.title[lang]}</h1>
-        <div className="header-sub">{UI_STRINGS.subtitle[lang]} | 2019 – {currentYear}</div>
+        <div className="header-sub">{UI_STRINGS.subtitle[lang]}</div>
         <div className="header-pills">
           <span className="pill pink">{UI_STRINGS.mikoStories[lang]} {mikoCount}</span>
           <span className="pill blue">{UI_STRINGS.suiseiStories[lang]} {suiseiCount}</span>
@@ -199,7 +264,6 @@ export default function Index() {
         </div>
       </div>
 
-      {/* CONTROLS */}
       <div className="controls-wrap">
         <div className="search-row">
           <span className="si">🔍</span>
@@ -221,10 +285,9 @@ export default function Index() {
       <div className="result-line">
         {search || phaseFilter !== 0
           ? UI_STRINGS.foundStories[lang].replace('{count}', String(filtered.length))
-          : UI_STRINGS.totalStories[lang].replace('{count}', String(total))}
+          : UI_STRINGS.totalStories[lang].replace('{count}', String(total)).replace('{year}', String(currentYear))}
       </div>
 
-      {/* MAIN */}
       <div className="main-wrap">
         {activePhases.length === 0 && (
           <div className="empty-state"><div className="eico">🔍</div><p>{UI_STRINGS.noResults[lang]}</p></div>
@@ -232,13 +295,12 @@ export default function Index() {
 
         {activePhases.map(phase => {
           const items = byPhase[phase.id] || [];
-          const mikoItems = items.filter(e => e.side === 'miko').sort((a, b) => a.date.localeCompare(b.date));
-          const suiseiItems = items.filter(e => e.side === 'suisei').sort((a, b) => a.date.localeCompare(b.date));
-          const sharedItems = items.filter(e => e.side === 'shared').sort((a, b) => a.date.localeCompare(b.date));
+          const mikoItems = items.filter(e => e.side === 'miko');
+          const suiseiItems = items.filter(e => e.side === 'suisei');
+          const sharedItems = items.filter(e => e.side === 'shared');
 
           return (
             <div key={phase.id} className="phase-group" id={`phase-${phase.id}`}>
-              {/* Phase header */}
               <div className="phase-header">
                 <div className="phase-color-bar" style={{ background: phase.color }}></div>
                 <div className="phase-header-body">
@@ -251,9 +313,7 @@ export default function Index() {
               </div>
               <p className="phase-desc" dangerouslySetInnerHTML={{ __html: phase.desc[lang] }}></p>
 
-              {/* 雙時間軸 */}
               <div className="dual">
-                {/* 咪口（左） */}
                 <div>
                   {(mikoItems.length > 0 || suiseiItems.length > 0) && (
                     <div className="col-head miko">{UI_STRINGS.mikoColumn[lang]}</div>
@@ -268,7 +328,6 @@ export default function Index() {
 
                 <div className="axis-col"><div className="ax-line"></div></div>
 
-                {/* 星街（右） */}
                 <div>
                   {(mikoItems.length > 0 || suiseiItems.length > 0) && (
                     <div className="col-head suisei">{UI_STRINGS.suiseiColumn[lang]}</div>
@@ -282,7 +341,6 @@ export default function Index() {
                 </div>
               </div>
 
-              {/* 共同事件 */}
               {sharedItems.length > 0 && (
                 <div className="shared-wrap">
                   <div className="shared-head">
@@ -301,14 +359,12 @@ export default function Index() {
           );
         })}
 
-        {/* 結語 */}
         <div className="convergence">
           <div className="hearts">🌸 💫 ⭐</div>
           <h3>{UI_STRINGS.convergenceTitle[lang]}</h3>
           <p dangerouslySetInnerHTML={{ __html: UI_STRINGS.convergenceBody[lang] }}></p>
         </div>
 
-        {/* 參考資料 */}
         <div className="references-section">
           <h3>{UI_STRINGS.references[lang]}</h3>
           <ul>
@@ -317,17 +373,13 @@ export default function Index() {
             <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noopener noreferrer">櫻巫女 — Twitter / X</a></li>
             <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X</a></li>
             <li><a href="https://docs.google.com/document/d/e/2PACX-1vRcUa0y4lpqboc3v6Q-8qNu5a8v8TX9EkSqbQfjSdUhLcbhANp7XBYfFc2jdZTkzgwMN1P18kNjuP-U/pub" target="_blank" rel="noopener noreferrer">MiComet Compendium II</a></li>
-            <li><a href="https://docs.google.com/spreadsheets/d/1UkroWXcwoU-1v_wAT6virfDYKULWyxd8RthHs0vEoM8/" target="_blank" rel="noopener noreferrer">miComet Moments Compendium Spreadsheet (discontinued)</a></li>
-            <li><a href="https://www.facebook.com/groups/830223165184192/announcements" target="_blank" rel="noopener noreferrer">miComet in Love</a></li>
-            <li><a href="https://seesaawiki.jp/hololivetv/" target="_blank" rel="noopener noreferrer">Hololive Unofficial Wiki</a></li>
+            <li><a href="https://www.facebook.com/groups/830223165184192/announcements" target="_blank" rel="noopener noreferrer">miComet in Love (Facebook Group)</a></li>
             <li><a href="https://www.reddit.com/r/miComet/" target="_blank" rel="noopener noreferrer">r/miComet — Reddit Community</a></li>
-            <li>Clip channels (hololive 切り抜き) for translations and compilations</li>
-            <li>Chronicle data compiled by the fan community. All content rights belong to the original creators and Cover Corp.</li>
+            <li>Chronicle data compiled from the fan community. All content rights belong to the original creators and Cover Corp.</li>
           </ul>
         </div>
       </div>
 
-      {/* MODAL */}
       {modal && <Modal item={modal.item} side={modal.side} lang={lang} onClose={() => setModal(null)} />}
     </>
   );
