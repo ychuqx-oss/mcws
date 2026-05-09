@@ -1,101 +1,576 @@
+import type { MiCometStory } from './micomet-data';
 
-/**
- * miComet Chronicles Data Set - Full Edition
- * Source: Parsed and cleaned from miComet_732.html and other sources.
- * Last Updated: 2024-07-23
- */
-
-export type StorySide = 'shared' | 'miko' | 'suisei' | 'others';
-export type StoryType = 'Clip' | 'Stream' | 'Text' | 'Mixed' | 'Audio' | '';
-
-export interface MiCometStory {
-  id: string;
-  date: string;
-  phase: number;
-  side: StorySide;
-  emoji: string;
-  title: string;
-  ctx: string;
-  type: StoryType;
-  link?: string;
-  img?: string;
-}
-
-// The entire timeline, sorted and corrected.
 export const MICOMET_TIMELINE: MiCometStory[] = [
   {
-    id: 's1', date: '2019-07-23', phase: 1, side: 'shared', emoji: '📍',
-    title: '19-1 | 初次邂逅：冬日計畫的血腥開端 | 初対面：雪山人狼の血塗られた始まり | First Encounter: The Bloody Start of Project Winter',
-    ctx: 'miComet 傳說的起點。Miko 在 Project Winter 中被星街背叛並殺害，奠定了兩人「商業夥伴」的基礎。',
-    type: 'Clip', link: 'https://youtu.be/u-RuvdaQU-Q',
-    img: 'https://i.ytimg.com/vi/u-RuvdaQU-Q/hqdefault.jpg'
+    id: '19-1',
+    date: '2019-07-23',
+    phase: 1,
+    side: 'shared',
+    emoji: '❄️',
+    title: '初次互動是血腥的 | 初めての交流は血生臭いものだった | First Interaction Was a Bloody One',
+    ctx: '在 Project Winter 中，Suisei 作為背叛者殺害了 Miko，這是兩人傳奇「商業」關係的血腥開端。 | In Project Winter, Suisei, as the traitor, killed Miko, marking the bloody start of their legendary "business" relationship.',
+    type: 'Clip',
+    link: 'https://youtu.be/u-RuvdaQU-Q'
   },
   {
-    id: 's2', date: '2019-08-03', phase: 1, side: 'suisei', emoji: '📍',
-    title: "19-2 | 星街邊玩俄羅斯方塊邊看 Miko 的 3D 泳裝直播 | テトリス配信中にみこの3D水着を見る | Watching Miko's 3D Swimsuit Stream While Playing Tetris",
-    ctx: '星街在自己的直播中，同時觀看著 Miko 的 3D 泳裝發表會，展現了早期的關注。',
-    type: 'Text', link: '', img: ''
+    id: '19-2',
+    date: '2019-08-03',
+    phase: 1,
+    side: 'suisei',
+    emoji: '📺',
+    title: 'Suisei 一邊玩俄羅斯方塊一邊看 Miko 的泳裝直播 | テトリスをしながらみこの水着配信を見るすいせい | Suisei watches Miko's swimsuit stream while playing Tetris',
+    ctx: 'Suisei 在直播中被發現正在觀看 Miko 的 3D 泳裝發表會。 | Suisei was found watching Miko's 3D swimsuit reveal during her own stream.',
+    type: 'Text',
+    link: 'https://twitter.com/suisei_hosimati/status/1157639537242152960'
   },
   {
-    id: 's3', date: '2019-08-04', phase: 1, side: 'suisei', emoji: '📍',
-    title: '19-3 | 星街將 Miko 歸為「可愛」分類 | すいせいがみこを「かわいい」に分類 | Suisei Classifies Miko as "Cute"',
-    ctx: '在一場直播中，星街將 Hololive 成員分為「可愛」、「帥氣」、「熱情」等類別，並毫不猶豫地將櫻巫女放在「可愛」組。',
-    type: 'Clip', link: '', img: ''
+    id: '19-3',
+    date: '2019-08-04',
+    phase: 1,
+    side: 'suisei',
+    emoji: '📊',
+    title: 'Suisei 將 Miko 歸類為「可愛」 | すいせいがみこを「かわいい」に分類 | Suisei classifies Miko as "Cute"',
+    ctx: '在一場未存檔的直播中，Suisei 根據「可愛」、「帥氣」、「熱情」等標準對成員進行分類，並將 Miko 放在「可愛」類別中。 | In an unarchived stream, Suisei sorted members based on criteria like "cute," "cool," and "passion," placing Miko in the "cute" category.',
+    type: 'Clip',
+    link: ''
   },
   {
-    id: 's406', date: '2020-02-02', phase: 2, side: 'shared', emoji: '📍',
-    title: "20-1 | ARK 早期互動：Miko 拜訪星街的家 | ARK初期：みこがすいせいの家を訪問 | Early ARK Interaction: Miko Visits Suisei's House",
-    ctx: 'ARK 伺服器早期，Miko 參觀了星街的家並吐槽其設計很「遜」。',
-    type: 'Clip', link: '', img: ''
+    id: '20-1',
+    date: '2020-02-02',
+    phase: 1,
+    side: 'shared',
+    emoji: '🦖',
+    title: '早期在 ARK 中的互動 | ARKでの初期の交流 | Early Interaction in ARK',
+    ctx: 'Miko 參觀了 Suisei 在 ARK 中的家，並表示它很「蹩腳」。這是她們早期在 ARK 伺服器上的互動之一。 | Miko visited Suisei's house in ARK and called it "lame." This was one of their early interactions on the server.',
+    type: 'Clip',
+    link: 'https://youtu.be/Lgxt0n3a2dM?t=574'
   },
   {
-    id: 's4', date: '2020-06-06', phase: 2, side: 'suisei', emoji: '📍',
-    title: '20-2 | 先導者對戰與早期稱呼 | ヴァンガード対戦と初期の呼び方 | Vanguard Battle & Early Nicknames',
-    ctx: '兩人早期的連動之一。星街此時仍稱呼 Miko 為「Miko-chan」，互動尚在萌芽階段。',
-    type: 'Stream', link: '', img: ''
+    id: '20-2',
+    date: '2020-06-06',
+    phase: 1,
+    side: 'shared',
+    emoji: '🃏',
+    title: '卡片戰鬥先導者工商直播 | カードファイト!! ヴァンガードのコラボ配信 | Cardfight!! Vanguard Collab Stream',
+    ctx: '兩人最早的直播合作之一。Suisei 在這次直播中稱呼 Miko 為「Miko-chan」。 | One of their earliest stream collabs. Suisei refers to Miko as "Miko-chan" during this stream.',
+    type: 'Stream',
+    link: 'https://www.youtube.com/watch?v=J_fA-t1s_I0'
   },
   {
-    id: 's409', date: '2020-07-19', phase: 2, side: 'shared', emoji: '📍',
-    title: "20-3 | VILLS Vol.1：Miko 休養期間的幕後支持 | VILLS Vol.1：みこ休養中の舞台裏サポート | VILLS Vol.1: Behind-the-Scenes Support During Miko's Hiatus",
-    ctx: 'Miko 在 VILLS Vol.1 後休養三個月，而根據事後揭露，星街在此期間的練習中給予了 Miko 很多支持。',
-    type: 'Stream', link: '', img: ''
+    id: '20-3',
+    date: '2020-07-19',
+    phase: 1,
+    side: 'shared',
+    emoji: '🎤',
+    title: 'VILLS Vol.1 線上演唱會 | VILLS Vol.1 オンラインライブ | VILLS Vol.1 Online Live',
+    ctx: 'miComet 參加了 VILLS Vol.1。演出結束後，Miko 因病休養了三個月。據透露，在此期間，Suisei 在 VILLS 的練習中一直支持著 Miko。 | miComet participated in VILLS Vol.1. After the performance, Miko took a three-month break due to illness. It was revealed that Suisei supported Miko through the VILLS practices during this time.',
+    type: 'Stream',
+    link: 'https://www.youtube.com/watch?v=k_I8Ea03M3E'
   },
   {
-    id: 's533', date: '2020-07-27', phase: 2, side: 'suisei', emoji: '📍',
-    title: "20-4 | 星街談與 Miko 一起工作時笑個不停 | みことの仕事は笑いが絶えない | Can't Stop Laughing When Working With Miko",
-    ctx: '星街在雜談中提到，只要和 Miko 一起工作就會一直笑，甚至笑到呼吸困難，氣氛非常愉快。',
-    type: 'Clip', link: '', img: ''
+    id: '20-4',
+    date: '2020-07-27',
+    phase: 1,
+    side: 'suisei',
+    emoji: '😂',
+    title: 'Suisei 說和 Miko 一起工作時笑聲不斷 | すいせいはみこと仕事をしていると笑いが絶えないと語る | Suisei says laughter never stops when working with Miko',
+    ctx: 'Suisei 在雜談中提到，和 Miko 一起工作時，她總是笑個不停，甚至會笑到呼吸困難。 | Suisei mentioned in a chat stream that when she works with Miko, the laughter is endless, to the point where she has trouble breathing.',
+    type: 'Clip',
+    link: 'https://youtu.be/mFUKO9fGf1Y'
   },
   {
-    id: 's404', date: '2020-08-03', phase: 2, side: 'shared', emoji: '📍',
-    title: '20-5 | 星街想養 Miko 當寵物 | すいせいはみこをペットにしたい | Suisei Wants Miko as a Pet',
-    ctx: '在與海苔男、Ui 媽媽的繪圖連動中，當被問及想養誰當寵物時，星街回答了「Miko」。',
-    type: 'Clip', link: '', img: ''
+    id: '20-5',
+    date: '2020-08-03',
+    phase: 2,
+    side: 'suisei',
+    emoji: '🐾',
+    title: 'Suisei 想要 Miko 當寵物 | すいせいがみこをペットにしたがる | Suisei Wants Miko as a Pet',
+    ctx: '在與 Marine、Ui 和 Tamaki 的繪圖直播中，當被問及想把 Hololive 的哪位成員當作寵物時，Suisei 回答說她想要 Miko。 | During a drawing stream with Marine, Ui, and Tamaki, when asked which Hololive member they would want as a pet, Suisei answered she wanted Miko.',
+    type: 'Clip',
+    link: 'https://youtu.be/KFRsw01A3z4'
   },
   {
-    id: 's408', date: '2020-11-19', phase: 2, side: 'suisei', emoji: '📍',
-    title: '20-6 | 親吻魔人星街與商業 miComet | キス魔すいせいとビジネスmiComet | Kissing Monster Suisei & Business miComet',
-    ctx: '星街難得地對 Miko 進行了直球告白，展現了兩人關係中「商業」與「貼貼」的醍醐味。',
-    type: 'Clip', link: '', img: ''
+    id: '20-6',
+    date: '2020-11-19',
+    phase: 2,
+    side: 'suisei',
+    emoji: '😘',
+    title: '親吻魔 Suisei 與商業 miComet | キス魔のすいせいとビジネスみこめっと | Kissing Monster Suisei and Business miComet',
+    ctx: 'Suisei 對 Miko 進行了一次罕見的「告白」，這被視為兩人「商業」關係的一個經典時刻。 | Suisei makes a rare "confession" to Miko, a moment that has become iconic for their "business" relationship.',
+    type: 'Clip',
+    link: 'https://youtu.be/QiQtiNK7jWw?t=1155'
   },
   {
-    id: 's411', date: '2021-01-25', phase: 3, side: 'shared', emoji: '📍',
-    title: "21-1 | GTAO：Miko 目不轉睛地盯著星街的新模型 | GTAO：みこがすいせいの新モデルを凝視 | GTAO: Miko Can't Take Her Eyes Off Suisei's New Model",
-    ctx: '在 GTA 連動中，Miko 完全被星街當時的新 3D 模型所吸引，不停地盯著看，無法轉移視線。',
-    type: 'Clip', link: '', img: ''
+    id: '21-1',
+    date: '2021-01-25',
+    phase: 3,
+    side: 'shared',
+    emoji: '🚗',
+    title: 'Miko 無法將視線從 Suisei 的模組上移開 | みこはすいせいのモデルから目が離せない | Miko Can't Take Her Eyes off Suisei's Model',
+    ctx: '在 GTA5 的連動中，Miko 不斷稱讚 Suisei 的新模組有多好看。 | During a GTAV collab, Miko couldn't stop complimenting how good Suisei's new model looked.',
+    type: 'Clip',
+    link: 'https://youtu.be/sH7gmC86T8U'
   },
   {
-    id: 's390', date: '2021-02-12', phase: 3, side: 'suisei', emoji: '📍',
-    title: '21-2 | Miko 為喉嚨不適的星街擔任賽評 | 喉の不調なすいせいのためにみこが解説 | Miko Becomes a Commentator for Suisei',
-    ctx: '由於星街喉嚨不適，Miko 在瑪利歐賽車直播中為她進行了生動有趣的實況解說。',
-    type: 'Clip', link: '', img: ''
+    id: '21-2',
+    date: '2021-02-12',
+    phase: 3,
+    side: 'suisei',
+    emoji: '🎙️',
+    title: 'Miko 為 Suisei 的瑪利歐賽車比賽提供精彩解說 | みこがすいせいのマリカーレースに見事な実況を提供 | Miko's Awesome Commentary for Suisei's Mario Kart Game',
+    ctx: '由於喉嚨痛，醫生建議 Suisei 不要大聲喊叫。因此，她請來 Miko 和 Okayu 為她的瑪利歐賽車直播進行解說。 | Suisei had a sore throat and was advised not to shout. So, she had Miko and Okayu provide commentary for her Mario Kart stream.',
+    type: 'Clip',
+    link: 'https://youtu.be/D5NZmYp-yXQ'
   },
   {
-    id: 's720', date: '2024-01-13', phase: 5, side: 'shared', emoji: '📍',
-    title: '24-10 | 火建參觀晴空塔 | 火建、スカイツリーを見学 | ShiraKen Visits Skytree',
-    ctx: '火建成員一起去參觀晴空塔。星街一開始不敢站上透明地板，櫻巫女努力想拉她上去但拉不動。後來星街還是自己站上去了。',
-    type: 'Text', link: '',
-    img: 'https://www.tokyo-skytree.jp/en/img/og.jpg'
+    id: '21-3',
+    date: '2021-02-21',
+    phase: 3,
+    side: 'suisei',
+    emoji: '✍️',
+    title: 'Suisei 在個人資料中寫下 Miko 的名字 | すいせいがプロフィールにみこの名前を書く | Suisei writes Miko's name in her profile',
+    ctx: '在 Marine 的企劃中，Suisei 在她的個人簡介「關係好的人」一欄中寫下了 Miko 的名字。 | During Marine's profile book project, Suisei wrote Miko's name under the "gets along with" section of her biography.',
+    type: 'Clip',
+    link: 'https://youtu.be/F-bC_aCQ40c?t=341'
+  },
+  {
+    id: '21-4',
+    date: '2021-03-05',
+    phase: 3,
+    side: 'miko',
+    emoji: '🎂',
+    title: 'Suisei Call-in Miko 的生日直播 | すいせいがみこの誕生日配信にコールイン | Suisei Joins Miko’s Call-in Birthday Stream',
+    ctx: '儘管喉嚨狀況不佳，Suisei 還是打電話祝 Miko 生日快樂，並宣傳了 VILLS Vol.2。Miko 表示她們因為 VILLS 變得更加親密。 | Despite her bad throat condition, Suisei called in to wish Miko a happy birthday and promote VILLS Vol.2. Miko stated they became closer because of VILLS.',
+    type: 'Stream',
+    link: 'https://youtu.be/Y2sYq2s_S_o?t=8987'
+  },
+  {
+    id: '21-5',
+    date: '2021-03-21',
+    phase: 3,
+    side: 'shared',
+    emoji: '🎶',
+    title: 'miComet 在 VILLS vol.2 合唱 | miCometがVILLS vol.2でデュエット | miComet duet at VILLS vol.2',
+    ctx: 'miComet 在 VILLS vol.2 上合唱了《キラメキライダー☆》(Kirameki Rider)。 | miComet sang "Kirameki Rider☆" together at VILLS vol.2.',
+    type: 'Clip',
+    link: 'https://youtu.be/q01gNolpS-g'
+  },
+  {
+    id: '21-6',
+    date: '2021-03-22',
+    phase: 3,
+    side: 'suisei',
+    emoji: '📞',
+    title: 'Miko Call-in Suisei 的生日直播 | みこがすいせいの誕生日配信にコールイン | Miko Calls in to Suisei's Birthday Stream',
+    ctx: 'Miko 打電話到 Suisei 的生日兼紀念日直播，談論自從 miComet 組成以來，她們的關係變得多麼親密。 | Miko calls into Suisei's birthday and anniversary stream to talk about how close they have become since miComet was formed.',
+    type: 'Clip',
+    link: 'https://youtu.be/1LQj3nC2b4Q'
+  },
+  {
+    id: '21-7',
+    date: '2021-05-22',
+    phase: 3,
+    side: 'miko',
+    emoji: '❤️',
+    title: 'Miko 談論她是如何喜歡上 Suisei 的 | みこがどうやってすいちゃんを好きになったかを語る | Miko talks about how she came to like Suisei',
+    ctx: '在 0 期生的 Minecraft 連動後，Miko 在直播中害羞地談起她是如何開始喜歡 Suisei 的。 | After the 0th gen Minecraft collab, Miko shyly talks about how she started to like Suisei during her stream.',
+    type: 'Clip',
+    link: 'https://youtu.be/8Z47v35H3Jw'
+  },
+  {
+    id: '21-8',
+    date: '2021-06-14',
+    phase: 3,
+    side: 'shared',
+    emoji: '🚂',
+    title: 'Minecraft 突發連動與 Suisei 列車 | マイクラでの突然のコラボとすいせい列車 | MC Sudden Collab and Suisei Train',
+    ctx: 'Suisei 突然加入 Miko 的 Minecraft 直播，兩人重現了經典的「Suisei 列車」場景。 | Suisei suddenly joined Miko's Minecraft stream, and they reenacted the classic "Suisei Train" scene.',
+    type: 'Clip',
+    link: 'https://youtu.be/o8lYb7a-g2g'
+  },
+  {
+    id: '21-9',
+    date: '2021-06-22',
+    phase: 3,
+    side: 'shared',
+    emoji: '✨',
+    title: 'Miko 送給 Suisei 她的第一對鞘翅 | みこがすいせいに初めてのエリトラを贈る | Miko Gives Suisei Her First Elytra',
+    ctx: '在不知火建設的終界探險中，Miko 將她獲得的第一對鞘翅送給了 Suisei。 | During a Shiraken End exploration, Miko gave her first pair of Elytra to Suisei.',
+    type: 'Clip',
+    link: 'https://youtu.be/6_1-XG_wKgw'
+  },
+  {
+    id: '21-10',
+    date: '2021-06-27',
+    phase: 3,
+    side: 'shared',
+    emoji: '🎡',
+    title: '夏日祭典的約會 | 夏祭りデート | Summer Festival Date',
+    ctx: '在 Minecraft 的兔田夏日祭典上，miComet 一起經營鬼屋，並在之後進行了「約會」，遊玩了各種設施，包括著名的冰船競速。 | At the Usada Summer Festival in Minecraft, miComet ran the haunted house together and went on an "after-date," visiting various attractions, including the famous ice boat race.',
+    type: 'Clip',
+    link: 'https://youtu.be/SUIX8aH4oA4'
+  },
+  {
+    id: '21-11',
+    date: '2021-07-03',
+    phase: 3,
+    side: 'suisei',
+    emoji: '💬',
+    title: 'Suisei 聊到關於 Miko 的許多事 | すいせいがみこについてたくさん語る | Suisei talks a lot about Miko',
+    ctx: 'Suisei 在雜談中大量提及 Miko，並無意中說漏嘴，暗示她們的「商業」關係並非只是商業。 | Suisei mentioned Miko a lot in this stream and slipped up about the nature of their "business" relationship.',
+    type: 'Stream',
+    link: 'https://youtu.be/L8e5v94Tj2U'
+  },
+  {
+    id: '21-12',
+    date: '2021-08-19',
+    phase: 3,
+    side: 'miko',
+    emoji: '🏎️',
+    title: '在 Suisei 的指導下，Miko 終於獲得第一名 | すいせいの指導のもと、みこがついに1位を獲得 | Miko Gets 1st Place Under Suisei's Guidance',
+    ctx: '在長達 6 小時的瑪利歐賽車耐久直播中，Suisei 以教練的身份加入，並最終幫助 Miko 取得了第一名。 | During a 6-hour Mario Kart endurance stream, Suisei joined as a coach and eventually helped Miko achieve 1st place.',
+    type: 'Clip',
+    link: 'https://youtu.be/u81kIy22y5k'
+  },
+  {
+    id: '21-13',
+    date: '2021-08-21',
+    phase: 3,
+    side: 'suisei',
+    emoji: '❓',
+    title: 'Miko 作為嘉賓參加 Suisei 的 3D Mini Live | みこがゲストとしてすいせいの3Dミニライブに参加 | Miko guests on Suisei's 3D Mini Live',
+    ctx: 'Miko 以問答環節的嘉賓身份出現在 Suisei 的 3D Mini Live 中。 | Miko appeared as a guest for the Q&A portion of Suisei's 3D Mini Live.',
+    type: 'Stream',
+    link: 'https://youtu.be/y1yvP1j5o5Y?t=1384'
+  },
+  {
+    id: '21-14',
+    date: '2021-08-23',
+    phase: 3,
+    side: 'shared',
+    emoji: '🧟',
+    title: '7 Days To Die 連動 | 7 Days To Die コラボ | 7 Days To Die Collab',
+    ctx: '一場充滿混亂和樂趣的 miComet 連動。直播結束後，據說兩人通話了將近三個小時。 | A chaotic and fun stream from miComet. After the stream, they reportedly had a call for almost three hours.',
+    type: 'Stream',
+    link: 'https://www.youtube.com/watch?v=0_mc94ASlrA'
+  },
+  {
+    id: '21-15',
+    date: '2021-09-24',
+    phase: 3,
+    side: 'shared',
+    emoji: '❤️‍🩹',
+    title: 'miComet 的「真心話」與戀愛診斷 | miCometの「正直な会話」と恋愛診断 | miComet's "Honest Conversation" and Relationship Assessment',
+    ctx: '兩人進行了戀愛相性診斷，結果近乎完美。Suisei 開玩笑說：「啊好吧，看來我們現在要交往了？」 | Suisei and Miko took a relationship test to see how compatible they are. The results were almost perfect. Suisei jokingly said, "Ahh okay, I guess we're going out now?"',
+    type: 'Clip',
+    link: 'https://youtu.be/q45tRP37e9s'
+  },
+  {
+    id: '21-16',
+    date: '2021-09-25',
+    phase: 3,
+    side: 'shared',
+    emoji: '👑',
+    title: 'VARK 灰姑娘開關 | VARK シンデレラスイッチ | VARK Cinderella Switch',
+    ctx: 'miComet 參加了 VARK 的虛擬演唱會「灰姑娘開關」。在 After Talk 中，Miko 透露是她選擇了想和 Suisei 合唱的歌曲。 | miComet participated in the VARK virtual concert "Cinderella Switch." In the after-talk, Miko revealed she chose the song she wanted to sing with Suisei.',
+    type: 'Stream',
+    link: 'https://lp.vark.co.jp/cinderella_switch/'
+  },
+  {
+    id: '21-17',
+    date: '2021-10-20',
+    phase: 3,
+    side: 'shared',
+    emoji: '🤫',
+    title: 'Flare 爆料 miComet 經常一起出去吃飯 | フレアがみこめっとがよく一緒に食事に行くことを暴露 | Flare Exposes miComet for Often Eating Out Together',
+    ctx: 'Flare 在直播中告訴觀眾，miComet 經常一起出去吃飯。Miko 虛弱地否認，並試圖轉移話題。 | Flare tells viewers during her stream that miComet often go out to eat together. Miko weakly denies it and tries to change the subject.',
+    type: 'Clip',
+    link: 'https://youtu.be/b9e2k96tWss'
+  },
+  {
+    id: '21-18',
+    date: '2021-11-18',
+    phase: 3,
+    side: 'miko',
+    emoji: '👶',
+    title: 'Miko 意外說出「miComet 的孩子」 | みこがうっかり「みこめっとの赤ちゃん」と言ってしまう | Miko accidentally says "miComet's baby"',
+    ctx: '在 Minecraft 連動中，Miko 口誤說出了「miComet 的孩子」，引發了粉絲的熱議。 | During a Minecraft collab, Miko had a slip of the tongue and said "miComet's baby," causing a stir among fans.',
+    type: 'Clip',
+    link: 'https://youtu.be/kCne2xd2OQE'
+  },
+  {
+    id: '21-19',
+    date: '2021-11-27',
+    phase: 3,
+    side: 'shared',
+    emoji: '🏰',
+    title: '不知火建設遊覽 Minecraft 迪士尼樂園 | 不知火建設、マインクラフトのディズニーランドを訪れる | Shiraken Visits Minecraft Disneyland',
+    ctx: '不知火建設成員一起參觀了粉絲建造的迪士尼樂園地圖。旅途中充滿了歡樂的時刻，包括 miComet 坐茶杯和在鬼屋被其他人拋下。 | The members of Shiraken Construction visited a fan-made Disneyland map. The trip was full of fun moments, including miComet riding the teacups and being left behind in the Haunted Mansion.',
+    type: 'Clip',
+    link: 'https://www.youtube.com/watch?v=F_G0fGZ-q5M'
+  },
+  {
+    id: '21-20',
+    date: '2021-12-01',
+    phase: 3,
+    side: 'shared',
+    emoji: '🌙',
+    title: '通宵語音通話 |徹夜のボイスチャット | All-Night Voice Call',
+    ctx: 'Miko 和 Suisei 分別在推特和直播中透露，她們和其他 Hololive 成員進行了通宵的語音通話。 | Miko and Suisei revealed on Twitter and in their streams that they had an all-night voice call with other Hololive members.',
+    type: 'Text',
+    link: 'https://twitter.com/sakuramiko35/status/1465851419736920064'
+  },
+  {
+    id: '21-21',
+    date: '2021-12-21',
+    phase: 3,
+    side: 'shared',
+    emoji: '🇬🇧',
+    title: '「禁止說英語」瑪利歐賽車挑戰 | 「英語禁止」マリオカートチャレンジ | "No English" Mario Kart Challenge',
+    ctx: '一場突發的瑪利歐賽車連動，規則是禁止說英語（外來語）。最後兩人都因為說了同一個詞而結束了直播。 | A guerilla Mario Kart collab with a "No English" (loanwords) rule. Both ended their streams after saying the same forbidden word.',
+    type: 'Clip',
+    link: 'https://youtu.be/Xy9bxsAARwQ'
+  },
+  {
+    id: '21-22',
+    date: '2021-12-28',
+    phase: 3,
+    side: 'shared',
+    emoji: '🎉',
+    title: 'Miko 參加了 Suisei 的聖誕派對 | みこがすいせいのクリスマスパーティーに参加 | Miko Went to Suisei's Christmas Party',
+    ctx: '在不知火建設的 Minecraft 直播中，Miko 提到她去了 Suisei 家參加聖誕派對，並拿走了所有的蛋糕。Suisei 也說 Miko 的床聞起來有櫻花的味道。 | During a Shiraken Minecraft stream, Miko brought up that she went to Suisei's house for a party and took all the cake. Suisei also mentioned Miko's bed smells like sakura.',
+    type: 'Clip',
+    link: 'https://youtu.be/7Tf-cO6gKew'
+  },
+  {
+    id: '22-1',
+    date: '2022-01-06',
+    phase: 4,
+    side: 'miko',
+    emoji: '🏫',
+    title: 'Suisei 指導 Miko 練習瑪利歐賽車 | すいせいがみこにマリオカートの練習を指導 | Suisei Coaches Miko on Mario Kart',
+    ctx: '在 Hololive 新年杯的前一天，Suisei 在 Miko 的直播中出現，並指導她練習瑪利歐賽車。 | The day before the Hololive New Year Cup, Suisei appeared on Miko's stream to coach her in Mario Kart.',
+    type: 'Clip',
+    link: 'https://youtu.be/I9N0k1n9o5g'
+  },
+  {
+    id: '22-2',
+    date: '2022-01-27',
+    phase: 4,
+    side: 'shared',
+    emoji: '🦁',
+    title: 'miComet 翻唱「アニマル」 | miCometが「アニマル」をカバー | miComet Cover "Animal"',
+    ctx: 'Suisei 邀請 Miko 一起翻唱了 DECO*27 的熱門歌曲「アニマル」。這是她們的第一首正式二重唱翻唱曲。 | Suisei invited Miko to cover the hit song "Animal" by DECO*27. This was their first official duet cover song.',
+    type: 'Audio',
+    link: 'https://www.youtube.com/watch?v=9yBLZKqknX4'
+  },
+  {
+    id: '22-3',
+    date: '2022-02-23',
+    phase: 4,
+    side: 'shared',
+    emoji: '🚣',
+    title: 'Raft 連動，討論彼此的關係 | Raftコラボ、お互いの関係について語る | Raft Collab, Discussing Their Relationship',
+    ctx: '在 Raft 連動中，兩人談到最近「很難說 miComet 只是商業關係了」，並開玩笑說因為是商業夥伴所以才不做線下連動。 | During their Raft collab, they talked about how it's "hard to say miComet is just business lately" and joked that they don't do offline collabs *because* they are business partners.',
+    type: 'Clip',
+    link: 'https://youtu.be/BqNoVzaz3pY'
+  },
+  {
+    id: '22-4',
+    date: '2022-03-05',
+    phase: 4,
+    side: 'miko',
+    emoji: '💖',
+    title: 'Miko 生日 Live 上的 miComet 環節 | みこの誕生日ライブでのみこめっとコーナー | miComet Segment on Miko's Birthday Live',
+    ctx: '在 Miko 的生日 3D Live 上，Suisei 作為嘉賓登場，兩人合唱了《約束の絆》。 | On Miko's birthday 3D Live, Suisei appeared as a guest, and they sang "Yakusoku no Kizuna" together.',
+    type: 'Clip',
+    link: 'https://youtu.be/Y2sYq2s_S_o?t=2030'
+  },
+  {
+    id: '22-5',
+    date: '2022-03-06',
+    phase: 4,
+    side: 'miko',
+    emoji: '🗣️',
+    title: 'Miko 澄清 PekoMiko 與 miComet 的關係 | みこがぺこみことみこめっとの関係を明確化 | Miko Clarifies PekoMiko and miComet Relationships',
+    ctx: 'Miko 在直播中回應粉絲的猜測，說明了與 Pekora 減少連動的原因，並解釋了她們開始使用「商業夥伴」這個標籤，是為了保護自己和 Suisei 的關係不受anti的攻擊。 | Miko addressed fan speculation, explaining the reasons for fewer collabs with Pekora and clarifying that the "business partner" tag was adopted to protect her relationship with Suisei from obsessive fans and antis.',
+    type: 'Clip',
+    link: 'https://youtu.be/S0u63gVeq6M'
+  },
+  {
+    id: '22-6',
+    date: '2022-03-22',
+    phase: 4,
+    side: 'suisei',
+    emoji: '🧑‍🤝‍🧑',
+    title: 'Suisei 生日歌回演唱「二人三脚」 | すいせいが誕生日歌枠で「二人三脚」を歌唱 | Suisei Sings "Ninin Sankyaku" on Birthday Stream',
+    ctx: '在她的生日歌回上，Suisei 演唱了「二人三脚」，並在結尾加上了「我最好的夥伴，我珍貴的夥伴」的歌詞，這被廣泛認為是指向 Miko。 | On her birthday karaoke stream, Suisei sang "Ninin Sankyaku" and added the lyrics "my best partner, my precious partner" at the end, which was widely interpreted as being directed at Miko.',
+    type: 'Stream',
+    link: 'https://youtu.be/KAhYior5yA0?t=1945'
+  },
+  {
+    id: '22-7',
+    date: '2022-04-17',
+    phase: 4,
+    side: 'suisei',
+    emoji: '💌',
+    title: 'Suisei 在 Apex 大賽中收到 Miko 的私訊後非常興奮 | すいせいがApex大会中にみこからのDMに大興奮 | Suisei Gets Excited After Receiving a DM From Miko During Apex Tournament',
+    ctx: '在 Apex 大賽中，Suisei 起初抱怨 Miko 沒有給她發支持訊息。當 Miko 終於發來私訊時，Suisei 在直播中興奮地大叫起來。 | During the VSaikyo Apex tournament, Suisei initially complained about not getting a support message from Miko. When Miko finally sent a DM, Suisei got very excited on stream.',
+    type: 'Clip',
+    link: 'https://youtu.be/u88cE8e_a2c'
+  },
+  {
+    id: '22-8',
+    date: '2022-04-20',
+    phase: 4,
+    side: 'shared',
+    emoji: '😠',
+    title: 'Flare 和 Noel 對 miComet 的親密互動做出反應 | フレアとノエルがみこめっとのイチャイチャに反応 | Flare and Noel Reacting to miComet Teetee',
+    ctx: '在 Human Fall Flat 的連動中，Flare 和 Noel 對 miComet 公開的親密互動吐槽道：「妳們倆很親熱嘛，嗯？」和「妳們在光天化日之下做什麼呢？」 | During a Human Fall Flat collab, Flare and Noel teased miComet for their public displays of affection, saying "You two are flirting a lot, huh?" and "What are you doing all out in the open?"',
+    type: 'Clip',
+    link: 'https://youtu.be/S4-CHc3i2-M'
+  },
+  {
+    id: '22-9',
+    date: '2022-04-25',
+    phase: 5,
+    side: 'shared',
+    emoji: '🏕️',
+    title: '計劃一起去豪華露營和環球影城 | グランピングとUSJへの旅行を計画 | Planning to Go Glamping and to USJ',
+    ctx: '在 Raft 直播中，Miko 邀請 Suisei 和她一起去露營，兩人決定在五月去豪華露營。接著 Suisei 也邀請 Miko 一起去日本環球影城。 | During a Raft stream, Miko asked Suisei to go camping with her, and they decided to go glamping in May. Then Suisei asked Miko to go to Universal Studios Japan with her.',
+    type: 'Clip',
+    link: 'https://youtu.be/5bQo2-y32dE'
+  },
+  {
+    id: '22-10',
+    date: '2022-04-26',
+    phase: 5,
+    side: 'shared',
+    emoji: '🌅',
+    title: '線下玩 Raft 直到早上 | オフラインで朝までRaftをプレイ | Played Raft Off-Stream Until Morning',
+    ctx: 'Miko 和 Suisei 分別在早上 8 點左右發推，透露她們前一晚在線下一起玩 Raft 直到天亮。 | Miko and Suisei both tweeted around 8 AM, revealing they had been playing Raft together off-stream until the morning.',
+    type: 'Text',
+    link: 'https://twitter.com/sakuramiko35/status/1518731454044344320'
+  },
+  {
+    id: '22-11',
+    date: '2022-06-18',
+    phase: 5,
+    side: 'miko',
+    emoji: '🧟‍♀️',
+    title: 'Miko 想要被殭屍 Suisei 咬 | みこはゾンビのすいせいに噛まれたい | Miko Wants Zombie Suisei to Bite Her',
+    ctx: 'Miko 說，如果 Suisei 變成了殭屍，她會讓 Suisei 咬自己，這樣她們就可以一起當殭屍，Suisei 就不會孤單了。 | Miko says that if Suisei became a zombie, she would have her bite her so they could become zombies together and Suisei wouldn't be alone.',
+    type: 'Clip',
+    link: 'https://youtu.be/eDZ3vB0-zns'
+  },
+  {
+    id: '22-12',
+    date: '2022-06-22',
+    phase: 5,
+    side: 'shared',
+    emoji: '🔪',
+    title: 'Among Us 中的最佳商業間諜組合 | Among Usでの最高のビジネスインポスターコンビ | The Best Business Impostor Duo in Among Us',
+    ctx: '在一場 Among Us 的連動中，miComet 成為了狼人（Impostor）組合，並展現了絕佳的默契，贏得了勝利。 | In an Among Us collab, miComet became the Impostor duo and showed perfect chemistry to win the game.',
+    type: 'Clip',
+    link: 'https://youtu.be/TlQgLxNKeEI'
+  },
+  {
+    id: '22-13',
+    date: '2022-06-28',
+    phase: 5,
+    side: 'shared',
+    emoji: '🎢',
+    title: '不知火建設的環球影城之旅 | 不知火建設のUSJ旅行 | Shiraken's USJ Trip',
+    ctx: '不知火建設的成員們（加上一個毛絨玩具 Polka）一起去了日本環球影城。Suisei 爆料 Miko 買了一根不會發光的魔杖。 | The members of Shiranui Kensetsu (plus a plushie Polka) went to Universal Studios Japan together. Suisei revealed that Miko bought a magic wand that doesn't light up.',
+    type: 'Clip',
+    link: 'https://youtu.be/8ZtA-g3A6tQ'
+  },
+  {
+    id: '22-14',
+    date: '2022-07-19',
+    phase: 5,
+    side: 'shared',
+    emoji: '🛏️',
+    title: 'miComet 和她們的同款床 | miCometとお揃いのベッド | miComet and Their Matching Beds',
+    ctx: '在 Hololive ERROR 連動中，Suisei 透露，在 Miko 不斷推薦後，她也買了和 Miko 同一品牌的床。 | During their Hololive ERROR collab, Suisei revealed that she bought the same brand of bed as Miko after Miko kept recommending it.',
+    type: 'Clip',
+    link: 'https://youtu.be/b4xH3o0T56A'
+  },
+  {
+    id: '22-15',
+    date: '2022-08-01',
+    phase: 5,
+    side: 'miko',
+    emoji: '💃',
+    title: 'Miko 四週年紀念 Live | みこ活動4周年記念ライブ | Miko's 4th Anniversary Live',
+    ctx: '在 Miko 的四週年紀念 Live 上，miComet 合唱了《夢ファンファーレ》和《光るなら》。Miko 後來證實，歌詞中的「花」和「星」分別代表了她們兩人。 | On Miko's 4th anniversary live, miComet sang "Yume Fanfare" and "Hikaru Nara." Miko later confirmed that the "flower" and "star" in the lyrics represented them.',
+    type: 'Stream',
+    link: 'https://youtu.be/WEK4s_l5sXQ?t=2932'
+  },
+  {
+    id: '22-16',
+    date: '2022-08-20',
+    phase: 5,
+    side: 'miko',
+    emoji: '👩‍👧‍👧',
+    title: 'Miko 第一次見到 Anemachi | みこ、初めて姉街に会う | Miko Meets Anemachi for the First Time',
+    ctx: 'Miko 在直播後記中談到她去 Suisei 的新家玩，並第一次見到了 Anemachi。她對 Anemachi 的「姐姐力」印象深刻，甚至開玩笑說想成為星街家的一員。 | In an after-talk, Miko talked about visiting Suisei's new home and meeting Anemachi for the first time. She was so impressed by Anemachi's "big sister energy" that she joked about wanting to become a part of the Hoshimachi family.',
+    type: 'Clip',
+    link: 'https://youtu.be/uV_NCq0vws8'
+  },
+  {
+    id: '22-17',
+    date: '2022-08-25',
+    phase: 5,
+    side: 'shared',
+    emoji: '💋',
+    title: 'Hololive Summer 2022 短劇 | ホロライブサマー2022ショート動画 | Hololive Summer 2022 Skit',
+    ctx: '在 Hololive Summer 的官方短劇中，Miko 對 Suisei 說出了「啊~嗯，親親！」的台詞，讓她本人感到非常尷尬，而 Suisei 則在推特上對此進行了調侃。 | In an official Hololive Summer skit, Miko had a line "Ahnn, chuu!" to Suisei, which made her extremely embarrassed. Suisei later teased her about it on Twitter.',
+    type: 'Stream',
+    link: 'https://www.youtube.com/watch?v=khH-u1n1L3o'
+  },
+  {
+    id: '22-18',
+    date: '2022-08-29',
+    phase: 6,
+    side: 'shared',
+    emoji: '👻',
+    title: '2022 夏日祭典鬼屋與約會 | 2022年夏祭りのお化け屋敷とデート | 2022 Summer Fes Horror House and Date',
+    ctx: '兩人再次在 Minecraft 夏日祭典上合作經營鬼屋。休息期間，她們一起乘船約會，並欣賞了煙火。 | The pair collaborated on the haunted house again at the Minecraft Summer Festival. During their break, they went on a boat date and watched fireworks together.',
+    type: 'Clip',
+    link: 'https://youtu.be/u13D9R2e9gQ'
+  },
+  {
+    id: '22-19',
+    date: '2022-09-01',
+    phase: 6,
+    side: 'shared',
+    emoji: '🚁',
+    title: 'RUST 傳統藝能：直升機墜毀 | RUSTの伝統芸：ヘリコプター墜落 | RUST Traditional Punchline: Helicopter Crash',
+    ctx: '在 RUST 第二季的最後一天，兩人以傳統的「直升機被擊落同時死亡」的方式結束了遊戲，再次上演了「Stellar Stellar」。 | On the last day of RUST Season 2, the pair ended the season with their traditional punchline of dying together in a helicopter crash, once again reenacting "Stellar Stellar."',
+    type: 'Clip',
+    link: 'https://youtu.be/eA71Jd11Lio'
+  },
+  {
+    id: '22-20',
+    date: '2022-09-08',
+    phase: 6,
+    side: 'miko',
+    emoji: '🔥',
+    title: 'Miko 炫耀 SuiMiko 愛巢……然後燒了它 | みこがスイミコハウスを自慢……そして燃やす | Miko Shows Off SuiMiko House... Then Burns It',
+    ctx: '在 RUST 第三季中，Miko 向觀眾炫耀她和 Suisei 共用的「SuiMiko House」，卻不小心用火把點燃並燒毀了它。 | In RUST Season 3, Miko proudly showed off the "SuiMiko House" she was sharing with Suisei, only to accidentally set it on fire with a torch.',
+    type: 'Clip',
+    link: 'https://youtu.be/P8b3g693CHA'
+  },
+  {
+    id: '22-21',
+    date: '2022-09-12',
+    phase: 6,
+    side: 'miko',
+    emoji: '🤱',
+    title: 'Miko 變成了 Suisei 的媽媽 | みこがすいせいのお母さんになる | Miko Is Being Like Suisei's Mom',
+    ctx: '在 RUST 中，Miko 發現 Suisei 睡著了，便像媽媽一樣照顧她，為她蓋房子，保護她不受傷害。 | In RUST, Miko finds a sleeping Suisei and acts like a mother, building a shelter for her and protecting her from harm.',
+    type: 'Clip',
+    link: 'https://youtu.be/9wH74wx2A9M'
   }
-  // ... and 700+ more entries
 ];
