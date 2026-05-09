@@ -127,7 +127,7 @@ export const PHASES: Phase[] = [
     desc: {
       zh: '不再需要藉口，也不需要解釋，miComet 就是 miComet。「彗醬想去哪裡呢？沒有想去的地方，也不知道有什麼地方，只是來看妳的。」',
       ja: 'もはや言い訳も説明も不要、miCometはmiCometです。「すいちゃんはどこに行きたいの？行きたい場所なんてないよ。どこに何があるかも知らない。ただ、君に会いに来ただけ。」',
-      en: 'No longer needing excuses or explanations, miComet is just miComet. "Where does Suichan want to go? I don\'t have a place in mind, and I don\'t know what\'s out there. I just came to see you.''
+      en: 'No longer needing excuses or explanations, miComet is just miComet. "Where does Suichan want to go? I don\'t have a place in mind, and I don\'t know what\'s out there. I just came to see you."'
     }
   },
 ];
