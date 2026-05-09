@@ -201,7 +201,7 @@ export default function Index() {
                   <div className="ax-line"></div>
                 </div>
 
-                {/* 星街（右） */}
+                {/* 星街（右） */}}
                 <div>
                   {(mikoItems.length > 0 || suiseiItems.length > 0) && (
                     <div className="col-head suisei">⭐ 彗醬 · 星街彗星</div>
@@ -268,7 +268,7 @@ export default function Index() {
       </div>
 
       {/* MODAL */}
-      {modal && <Modal item={modal.item} side={modal.side} onClose={() => setModal(null)} />}
+      {modal && <Modal item={modal.item} side={modal.side} onClose={() => setModal(null)} />} 
     </>
   );
 }
