@@ -1,4 +1,3 @@
-
 export interface InternationalizedString {
   zh: string;
   ja: string;
@@ -131,24 +130,17 @@ export const PHASES: Phase[] = [
   },
 ];
 
-export const TIMELINE: TimelineItem[] = [
-  {
-    id: "19-1",
-    date: "2019-06-11",
-    phase: 1,
-    side: "suisei",
-    emoji: "👁️",
-    title: { zh: '最早的線索 — 星街在看咪口直播', ja: '最初のヒント — 星街がみこの配信を視聴', en: 'The Earliest Clue — Suisei Watching Miko\'s Stream' },
-    ctx: { 
-      zh: '目前考古找到最早的記錄。星街在自己的直播中，悄悄打開了咪口的泳裝揭露直播來看，原本的直播早已私人，但老星詠們留下了歷史本文。',
-      ja: '現在発掘されている最も古い記録。星街は自身の配信中に、みこの水着お披露目配信をこっそり視聴していました。元の配信は既に非公開ですが、古参の星詠みたちが歴史的な文脈を残しています。',
-      en: 'The earliest record found through archival research. During her own stream, Suisei secretly opened Miko\'s swimsuit reveal stream to watch. The original stream has long been privated, but veteran Hoshiyomis have preserved the historical context.'
-    },
-    type: 'Stream', 
-    link: ''
-  },
-  // ... (The rest of the massive timeline array will be here)
-];
+let TIMELINE: TimelineItem[] = [];
+
+export const fetchTimeline = async () => {
+  if (TIMELINE.length > 0) return TIMELINE;
+  const response = await fetch('/mc-full-timeline.json');
+  const data = await response.json();
+  TIMELINE = data;
+  return data;
+}
+
+export { TIMELINE };
 
 export const TYPE_NAMES: { [key: string]: InternationalizedString } = {
   'Stream': { zh: '直播', ja: '配信', en: 'Stream' },

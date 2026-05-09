@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { PHASES, TIMELINE, TYPE_NAMES, type TimelineItem, type InternationalizedString } from '@/data/micomet-data';
+import { useState, useMemo, useEffect } from 'react';
+import { PHASES, fetchTimeline, TIMELINE as staticTimeline, TYPE_NAMES, type TimelineItem, type InternationalizedString } from '@/data/micomet-data';
 
 // Define types for the languages
 type Lang = 'zh' | 'ja' | 'en';
@@ -140,10 +140,15 @@ export default function Index() {
   const [phaseFilter, setPhaseFilter] = useState(0);
   const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
   const [lang, setLang] = useState<Lang>('zh');
+  const [timeline, setTimeline] = useState<TimelineItem[]>(staticTimeline);
+
+  useEffect(() => {
+    fetchTimeline().then(data => setTimeline(data));
+  }, []);
 
   const allItems = useMemo(() => {
-    return [...TIMELINE].sort((a, b) => a.date.localeCompare(b.date));
-  }, []);
+    return [...timeline].sort((a, b) => a.date.localeCompare(b.date));
+  }, [timeline]);
 
   const filtered = useMemo(() => {
     return allItems.filter(e => {
@@ -313,6 +318,7 @@ export default function Index() {
             <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X</a></li>
             <li><a href="https://docs.google.com/document/d/e/2PACX-1vRcUa0y4lpqboc3v6Q-8qNu5a8v8TX9EkSqbQfjSdUhLcbhANp7XBYfFc2jdZTkzgwMN1P18kNjuP-U/pub" target="_blank" rel="noopener noreferrer">MiComet Compendium II</a></li>
             <li><a href="https://docs.google.com/spreadsheets/d/1UkroWXcwoU-1v_wAT6virfDYKULWyxd8RthHs0vEoM8/" target="_blank" rel="noopener noreferrer">miComet Moments Compendium Spreadsheet (discontinued)</a></li>
+            <li><a href="https://www.facebook.com/groups/830223165184192/announcements" target="_blank" rel="noopener noreferrer">miComet in Love</a></li>
             <li><a href="https://seesaawiki.jp/hololivetv/" target="_blank" rel="noopener noreferrer">Hololive Unofficial Wiki</a></li>
             <li><a href="https://www.reddit.com/r/miComet/" target="_blank" rel="noopener noreferrer">r/miComet — Reddit Community</a></li>
             <li>Clip channels (hololive 切り抜き) for translations and compilations</li>
