@@ -1,4 +1,14 @@
-import type { MiCometStory } from './micomet-data';
+export interface MiCometStory {
+  id: string;
+  date: string;
+  phase: number;
+  side: 'miko' | 'suisei' | 'shared' | 'others';
+  emoji: string;
+  title: string;
+  ctx: string;
+  type: string;
+  link?: string;
+}
 
 export const MICOMET_TIMELINE: MiCometStory[] = [
   {
@@ -18,8 +28,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 1,
     side: 'suisei',
     emoji: '📺',
-    title: 'Suisei 一邊玩俄羅斯方塊一邊看 Miko 的泳裝直播 | テトリスをしながらみこの水着配信を見るすいせい | Suisei watches Miko's swimsuit stream while playing Tetris',
-    ctx: 'Suisei 在直播中被發現正在觀看 Miko 的 3D 泳裝發表會。 | Suisei was found watching Miko's 3D swimsuit reveal during her own stream.',
+    title: 'Suisei 一邊玩俄羅斯方塊一邊看 Miko 的泳裝直播 | テトリスをしながらみこの水着配信を見るすいせい | Suisei watches Miko\'s swimsuit stream while playing Tetris',
+    ctx: 'Suisei 在直播中被發現正在觀看 Miko 的 3D 泳裝發表會。 | Suisei was found watching Miko\'s 3D swimsuit reveal during her own stream.',
     type: 'Text',
     link: 'https://twitter.com/suisei_hosimati/status/1157639537242152960'
   },
@@ -41,7 +51,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'shared',
     emoji: '🦖',
     title: '早期在 ARK 中的互動 | ARKでの初期の交流 | Early Interaction in ARK',
-    ctx: 'Miko 參觀了 Suisei 在 ARK 中的家，並表示它很「蹩腳」。這是她們早期在 ARK 伺服器上的互動之一。 | Miko visited Suisei's house in ARK and called it "lame." This was one of their early interactions on the server.',
+    ctx: 'Miko 參觀了 Suisei 在 ARK 中的家，並表示它很「蹩腳」。這是她們早期在 ARK 伺服器上的互動之一。 | Miko visited Suisei\'s house in ARK and called it "lame." This was one of their early interactions on the server.',
     type: 'Clip',
     link: 'https://youtu.be/Lgxt0n3a2dM?t=574'
   },
@@ -106,8 +116,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'shared',
     emoji: '🚗',
-    title: 'Miko 無法將視線從 Suisei 的模組上移開 | みこはすいせいのモデルから目が離せない | Miko Can't Take Her Eyes off Suisei's Model',
-    ctx: '在 GTA5 的連動中，Miko 不斷稱讚 Suisei 的新模組有多好看。 | During a GTAV collab, Miko couldn't stop complimenting how good Suisei's new model looked.',
+    title: 'Miko 無法將視線從 Suisei 的模組上移開 | みこはすいせいのモデルから目が離せない | Miko Can\'t Take Her Eyes off Suisei\'s Model',
+    ctx: '在 GTA5 的連動中，Miko 不斷稱讚 Suisei 的新模組有多好看。 | During a GTAV collab, Miko couldn\'t stop complimenting how good Suisei\'s new model looked.',
     type: 'Clip',
     link: 'https://youtu.be/sH7gmC86T8U'
   },
@@ -117,7 +127,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'suisei',
     emoji: '🎙️',
-    title: 'Miko 為 Suisei 的瑪利歐賽車比賽提供精彩解說 | みこがすいせいのマリカーレースに見事な実況を提供 | Miko's Awesome Commentary for Suisei's Mario Kart Game',
+    title: 'Miko 為 Suisei 的瑪利歐賽車比賽提供精彩解說 | みこがすいせいのマリカーレースに見事な実況を提供 | Miko\'s Awesome Commentary for Suisei\'s Mario Kart Game',
     ctx: '由於喉嚨痛，醫生建議 Suisei 不要大聲喊叫。因此，她請來 Miko 和 Okayu 為她的瑪利歐賽車直播進行解說。 | Suisei had a sore throat and was advised not to shout. So, she had Miko and Okayu provide commentary for her Mario Kart stream.',
     type: 'Clip',
     link: 'https://youtu.be/D5NZmYp-yXQ'
@@ -128,8 +138,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'suisei',
     emoji: '✍️',
-    title: 'Suisei 在個人資料中寫下 Miko 的名字 | すいせいがプロフィールにみこの名前を書く | Suisei writes Miko's name in her profile',
-    ctx: '在 Marine 的企劃中，Suisei 在她的個人簡介「關係好的人」一欄中寫下了 Miko 的名字。 | During Marine's profile book project, Suisei wrote Miko's name under the "gets along with" section of her biography.',
+    title: 'Suisei 在個人資料中寫下 Miko 的名字 | すいせいがプロフィールにみこの名前を書く | Suisei writes Miko\'s name in her profile',
+    ctx: '在 Marine 的企劃中，Suisei 在她的個人簡介「關係好的人」一欄中寫下了 Miko 的名字。 | During Marine\'s profile book project, Suisei wrote Miko\'s name under the "gets along with" section of her biography.',
     type: 'Clip',
     link: 'https://youtu.be/F-bC_aCQ40c?t=341'
   },
@@ -161,8 +171,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'suisei',
     emoji: '📞',
-    title: 'Miko Call-in Suisei 的生日直播 | みこがすいせいの誕生日配信にコールイン | Miko Calls in to Suisei's Birthday Stream',
-    ctx: 'Miko 打電話到 Suisei 的生日兼紀念日直播，談論自從 miComet 組成以來，她們的關係變得多麼親密。 | Miko calls into Suisei's birthday and anniversary stream to talk about how close they have become since miComet was formed.',
+    title: 'Miko Call-in Suisei 的生日直播 | みこがすいせいの誕生日配信にコールイン | Miko Calls in to Suisei\'s Birthday Stream',
+    ctx: 'Miko 打電話到 Suisei 的生日兼紀念日直播，談論自從 miComet 組成以來，她們的關係變得多麼親密。 | Miko calls into Suisei\'s birthday and anniversary stream to talk about how close they have become since miComet was formed.',
     type: 'Clip',
     link: 'https://youtu.be/1LQj3nC2b4Q'
   },
@@ -184,7 +194,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'shared',
     emoji: '🚂',
     title: 'Minecraft 突發連動與 Suisei 列車 | マイクラでの突然のコラボとすいせい列車 | MC Sudden Collab and Suisei Train',
-    ctx: 'Suisei 突然加入 Miko 的 Minecraft 直播，兩人重現了經典的「Suisei 列車」場景。 | Suisei suddenly joined Miko's Minecraft stream, and they reenacted the classic "Suisei Train" scene.',
+    ctx: 'Suisei 突然加入 Miko 的 Minecraft 直播，兩人重現了經典的「Suisei 列車」場景。 | Suisei suddenly joined Miko\'s Minecraft stream, and they reenacted the classic "Suisei Train" scene.',
     type: 'Clip',
     link: 'https://youtu.be/o8lYb7a-g2g'
   },
@@ -227,7 +237,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'miko',
     emoji: '🏎️',
-    title: '在 Suisei 的指導下，Miko 終於獲得第一名 | すいせいの指導のもと、みこがついに1位を獲得 | Miko Gets 1st Place Under Suisei's Guidance',
+    title: '在 Suisei 的指導下，Miko 終於獲得第一名 | すいせいの指導のもと、みこがついに1位を獲得 | Miko Gets 1st Place Under Suisei\'s Guidance',
     ctx: '在長達 6 小時的瑪利歐賽車耐久直播中，Suisei 以教練的身份加入，並最終幫助 Miko 取得了第一名。 | During a 6-hour Mario Kart endurance stream, Suisei joined as a coach and eventually helped Miko achieve 1st place.',
     type: 'Clip',
     link: 'https://youtu.be/u81kIy22y5k'
@@ -238,8 +248,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'suisei',
     emoji: '❓',
-    title: 'Miko 作為嘉賓參加 Suisei 的 3D Mini Live | みこがゲストとしてすいせいの3Dミニライブに参加 | Miko guests on Suisei's 3D Mini Live',
-    ctx: 'Miko 以問答環節的嘉賓身份出現在 Suisei 的 3D Mini Live 中。 | Miko appeared as a guest for the Q&A portion of Suisei's 3D Mini Live.',
+    title: 'Miko 作為嘉賓參加 Suisei 的 3D Mini Live | みこがゲストとしてすいせいの3Dミニライブに参加 | Miko guests on Suisei\'s 3D Mini Live',
+    ctx: 'Miko 以問答環節的嘉賓身份出現在 Suisei 的 3D Mini Live 中。 | Miko appeared as a guest for the Q&A portion of Suisei\'s 3D Mini Live.',
     type: 'Stream',
     link: 'https://youtu.be/y1yvP1j5o5Y?t=1384'
   },
@@ -260,8 +270,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'shared',
     emoji: '❤️‍🩹',
-    title: 'miComet 的「真心話」與戀愛診斷 | miCometの「正直な会話」と恋愛診断 | miComet's "Honest Conversation" and Relationship Assessment',
-    ctx: '兩人進行了戀愛相性診斷，結果近乎完美。Suisei 開玩笑說：「啊好吧，看來我們現在要交往了？」 | Suisei and Miko took a relationship test to see how compatible they are. The results were almost perfect. Suisei jokingly said, "Ahh okay, I guess we're going out now?"',
+    title: 'miComet 的「真心話」與戀愛診斷 | miCometの「正直な会話」と恋愛診断 | miComet\'s "Honest Conversation" and Relationship Assessment',
+    ctx: '兩人進行了戀愛相性診斷，結果近乎完美。Suisei 開玩笑說：「啊好吧，看來我們現在要交往了？」 | Suisei and Miko took a relationship test to see how compatible they are. The results were almost perfect. Suisei jokingly said, "Ahh okay, I guess we\'re going out now?"',
     type: 'Clip',
     link: 'https://youtu.be/q45tRP37e9s'
   },
@@ -293,8 +303,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'miko',
     emoji: '👶',
-    title: 'Miko 意外說出「miComet 的孩子」 | みこがうっかり「みこめっとの赤ちゃん」と言ってしまう | Miko accidentally says "miComet's baby"',
-    ctx: '在 Minecraft 連動中，Miko 口誤說出了「miComet 的孩子」，引發了粉絲的熱議。 | During a Minecraft collab, Miko had a slip of the tongue and said "miComet's baby," causing a stir among fans.',
+    title: 'Miko 意外說出「miComet 的孩子」 | みこがうっかり「みこめっとの赤ちゃん」と言ってしまう | Miko accidentally says "miComet\'s baby"',
+    ctx: '在 Minecraft 連動中，Miko 口誤說出了「miComet 的孩子」，引發了粉絲的熱議。 | During a Minecraft collab, Miko had a slip of the tongue and said "miComet\'s baby," causing a stir among fans.',
     type: 'Clip',
     link: 'https://youtu.be/kCne2xd2OQE'
   },
@@ -337,8 +347,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 3,
     side: 'shared',
     emoji: '🎉',
-    title: 'Miko 參加了 Suisei 的聖誕派對 | みこがすいせいのクリスマスパーティーに参加 | Miko Went to Suisei's Christmas Party',
-    ctx: '在不知火建設的 Minecraft 直播中，Miko 提到她去了 Suisei 家參加聖誕派對，並拿走了所有的蛋糕。Suisei 也說 Miko 的床聞起來有櫻花的味道。 | During a Shiraken Minecraft stream, Miko brought up that she went to Suisei's house for a party and took all the cake. Suisei also mentioned Miko's bed smells like sakura.',
+    title: 'Miko 參加了 Suisei 的聖誕派對 | みこがすいせいのクリスマスパーティーに参加 | Miko Went to Suisei\'s Christmas Party',
+    ctx: '在不知火建設的 Minecraft 直播中，Miko 提到她去了 Suisei 家參加聖誕派對，並拿走了所有的蛋糕。Suisei 也說 Miko 的床聞起來有櫻花的味道。 | During a Shiraken Minecraft stream, Miko brought up that she went to Suisei\'s house for a party and took all the cake. Suisei also mentioned Miko\'s bed smells like sakura.',
     type: 'Clip',
     link: 'https://youtu.be/7Tf-cO6gKew'
   },
@@ -349,7 +359,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'miko',
     emoji: '🏫',
     title: 'Suisei 指導 Miko 練習瑪利歐賽車 | すいせいがみこにマリオカートの練習を指導 | Suisei Coaches Miko on Mario Kart',
-    ctx: '在 Hololive 新年杯的前一天，Suisei 在 Miko 的直播中出現，並指導她練習瑪利歐賽車。 | The day before the Hololive New Year Cup, Suisei appeared on Miko's stream to coach her in Mario Kart.',
+    ctx: '在 Hololive 新年杯的前一天，Suisei 在 Miko 的直播中出現，並指導她練習瑪利歐賽車。 | The day before the Hololive New Year Cup, Suisei appeared on Miko\'s stream to coach her in Mario Kart.',
     type: 'Clip',
     link: 'https://youtu.be/I9N0k1n9o5g'
   },
@@ -371,7 +381,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'shared',
     emoji: '🚣',
     title: 'Raft 連動，討論彼此的關係 | Raftコラボ、お互いの関係について語る | Raft Collab, Discussing Their Relationship',
-    ctx: '在 Raft 連動中，兩人談到最近「很難說 miComet 只是商業關係了」，並開玩笑說因為是商業夥伴所以才不做線下連動。 | During their Raft collab, they talked about how it's "hard to say miComet is just business lately" and joked that they don't do offline collabs *because* they are business partners.',
+    ctx: '在 Raft 連動中，兩人談到最近「很難說 miComet 只是商業關係了」，並開玩笑說因為是商業夥伴所以才不做線下連動。 | During their Raft collab, they talked about how it\'s "hard to say miComet is just business lately" and joked that they don\'t do offline collabs *because* they are business partners.',
     type: 'Clip',
     link: 'https://youtu.be/BqNoVzaz3pY'
   },
@@ -381,8 +391,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 4,
     side: 'miko',
     emoji: '💖',
-    title: 'Miko 生日 Live 上的 miComet 環節 | みこの誕生日ライブでのみこめっとコーナー | miComet Segment on Miko's Birthday Live',
-    ctx: '在 Miko 的生日 3D Live 上，Suisei 作為嘉賓登場，兩人合唱了《約束の絆》。 | On Miko's birthday 3D Live, Suisei appeared as a guest, and they sang "Yakusoku no Kizuna" together.',
+    title: 'Miko 生日 Live 上的 miComet 環節 | みこの誕生日ライブでのみこめっとコーナー | miComet Segment on Miko\'s Birthday Live',
+    ctx: '在 Miko 的生日 3D Live 上，Suisei 作為嘉賓登場，兩人合唱了《約束の絆》。 | On Miko\'s birthday 3D Live, Suisei appeared as a guest, and they sang "Yakusoku no Kizuna" together.',
     type: 'Clip',
     link: 'https://youtu.be/Y2sYq2s_S_o?t=2030'
   },
@@ -459,7 +469,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'miko',
     emoji: '🧟‍♀️',
     title: 'Miko 想要被殭屍 Suisei 咬 | みこはゾンビのすいせいに噛まれたい | Miko Wants Zombie Suisei to Bite Her',
-    ctx: 'Miko 說，如果 Suisei 變成了殭屍，她會讓 Suisei 咬自己，這樣她們就可以一起當殭屍，Suisei 就不會孤單了。 | Miko says that if Suisei became a zombie, she would have her bite her so they could become zombies together and Suisei wouldn't be alone.',
+    ctx: 'Miko 說，如果 Suisei 變成了殭屍，她會讓 Suisei 咬自己，這樣她們就可以一起當殭屍，Suisei 就不會孤單了。 | Miko says that if Suisei became a zombie, she would have her bite her so they could become zombies together and Suisei wouldn\'t be alone.',
     type: 'Clip',
     link: 'https://youtu.be/eDZ3vB0-zns'
   },
@@ -480,8 +490,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 5,
     side: 'shared',
     emoji: '🎢',
-    title: '不知火建設的環球影城之旅 | 不知火建設のUSJ旅行 | Shiraken's USJ Trip',
-    ctx: '不知火建設的成員們（加上一個毛絨玩具 Polka）一起去了日本環球影城。Suisei 爆料 Miko 買了一根不會發光的魔杖。 | The members of Shiranui Kensetsu (plus a plushie Polka) went to Universal Studios Japan together. Suisei revealed that Miko bought a magic wand that doesn't light up.',
+    title: '不知火建設的環球影城之旅 | 不知火建設のUSJ旅行 | Shiraken\'s USJ Trip',
+    ctx: '不知火建設的成員們（加上一個毛絨玩具 Polka）一起去了日本環球影城。Suisei 爆料 Miko 買了一根不會發光的魔杖。 | The members of Shiranui Kensetsu (plus a plushie Polka) went to Universal Studios Japan together. Suisei revealed that Miko bought a magic wand that doesn\'t light up.',
     type: 'Clip',
     link: 'https://youtu.be/8ZtA-g3A6tQ'
   },
@@ -502,8 +512,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 5,
     side: 'miko',
     emoji: '💃',
-    title: 'Miko 四週年紀念 Live | みこ活動4周年記念ライブ | Miko's 4th Anniversary Live',
-    ctx: '在 Miko 的四週年紀念 Live 上，miComet 合唱了《夢ファンファーレ》和《光るなら》。Miko 後來證實，歌詞中的「花」和「星」分別代表了她們兩人。 | On Miko's 4th anniversary live, miComet sang "Yume Fanfare" and "Hikaru Nara." Miko later confirmed that the "flower" and "star" in the lyrics represented them.',
+    title: 'Miko 四週年紀念 Live | みこ活動4周年記念ライブ | Miko\'s 4th Anniversary Live',
+    ctx: '在 Miko 的四週年紀念 Live 上，miComet 合唱了《夢ファンファーレ》和《光るなら》。Miko 後來證實，歌詞中的「花」和「星」分別代表了她們兩人。 | On Miko\'s 4th anniversary live, miComet sang "Yume Fanfare" and "Hikaru Nara." Miko later confirmed that the "flower" and "star" in the lyrics represented them.',
     type: 'Stream',
     link: 'https://youtu.be/WEK4s_l5sXQ?t=2932'
   },
@@ -514,7 +524,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     side: 'miko',
     emoji: '👩‍👧‍👧',
     title: 'Miko 第一次見到 Anemachi | みこ、初めて姉街に会う | Miko Meets Anemachi for the First Time',
-    ctx: 'Miko 在直播後記中談到她去 Suisei 的新家玩，並第一次見到了 Anemachi。她對 Anemachi 的「姐姐力」印象深刻，甚至開玩笑說想成為星街家的一員。 | In an after-talk, Miko talked about visiting Suisei's new home and meeting Anemachi for the first time. She was so impressed by Anemachi's "big sister energy" that she joked about wanting to become a part of the Hoshimachi family.',
+    ctx: 'Miko 在直播後記中談到她去 Suisei 的新家玩，並第一次見到了 Anemachi。她對 Anemachi 的「姐姐力」印象深刻，甚至開玩笑說想成為星街家的一員。 | In an after-talk, Miko talked about visiting Suisei\'s new home and meeting Anemachi for the first time. She was so impressed by Anemachi\'s "big sister energy" that she joked about wanting to become a part of the Hoshimachi family.',
     type: 'Clip',
     link: 'https://youtu.be/uV_NCq0vws8'
   },
@@ -568,7 +578,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     phase: 6,
     side: 'miko',
     emoji: '🤱',
-    title: 'Miko 變成了 Suisei 的媽媽 | みこがすいせいのお母さんになる | Miko Is Being Like Suisei's Mom',
+    title: 'Miko 變成了 Suisei 的媽媽 | みこがすいせいのお母さんになる | Miko Is Being Like Suisei\'s Mom',
     ctx: '在 RUST 中，Miko 發現 Suisei 睡著了，便像媽媽一樣照顧她，為她蓋房子，保護她不受傷害。 | In RUST, Miko finds a sleeping Suisei and acts like a mother, building a shelter for her and protecting her from harm.',
     type: 'Clip',
     link: 'https://youtu.be/9wH74wx2A9M'
