@@ -1,3 +1,5 @@
+import { TIMELINE_DATA } from './miCometTimeline';
+
 export interface InternationalizedString {
   zh: string;
   ja: string;
@@ -5,7 +7,7 @@ export interface InternationalizedString {
 }
 
 export interface Phase {
-  id: number;
+  id: number | string;
   label: InternationalizedString;
   period: string;
   color: string;
@@ -16,7 +18,7 @@ export interface Phase {
 export interface TimelineItem {
   id: string;
   date: string;
-  phase: number;
+  phase: number | string;
   side: 'miko' | 'suisei' | 'shared';
   emoji: string;
   title: InternationalizedString;
@@ -37,7 +39,7 @@ export const PHASES: Phase[] = [
     desc: { 
       zh: '從卡片戰士工商開始，組合名「miComet」正式確立。兩人從工作關係出發，私下的超市購物、通宵聊天，悄悄累積著不只是商業的溫度。',
       ja: 'カードファイト!! ヴァンガードのコラボから、ユニット名「miComet」が正式に確立。二人は仕事関係から始まり、プライベートでのスーパーマーケットの買い物や徹夜のおしゃべりを通じて、ビジネスだけではない温かさを静かに育んでいきました。',
-      en: 'Starting with the Cardfight!! Vanguard collaboration, the unit name \"miComet\" was officially established. The two started from a professional relationship, but through private supermarket shopping trips and all-night chats, they quietly built a warmth that went beyond just business.'
+      en: 'Starting with the Cardfight!! Vanguard collaboration, the unit name "miComet" was officially established. The two started from a professional relationship, but through private supermarket shopping trips and all-night chats, they quietly built a warmth that went beyond just business.'
     }
   },
   {
@@ -48,18 +50,18 @@ export const PHASES: Phase[] = [
     desc: {
       zh: '星街開始積極展現對咪口的溫柔，頂著沙啞的喉嚨來凸待，用棉花糖企劃在問卷裡寫下咪口的名字。咪口則受寵若驚、有點畏縮。',
       ja: '星街はみこへの優しさを積極的に示し始め、嗄れた喉で凸待ちに参加したり、マシュマロ企画のアンケートにみこの名前を書いたりしました。一方、みこは甘やかされて戸惑い、少し縮こまっていました。',
-      en: 'Suisei began to actively show her affection for Miko, joining her \"totsumachi\" (call-in stream) with a hoarse voice and writing Miko\'s name in a questionnaire for a Marshmallow (Q&A) project. Miko, in turn, was overwhelmed by the affection and somewhat timid.'
+      en: 'Suisei began to actively show her affection for Miko, joining her "totsumachi" (call-in stream) with a hoarse voice and writing Miko\'s name in a questionnaire for a Marshmallow (Q&A) project. Miko, in turn, was overwhelmed by the affection and somewhat timid.'
     }
   },
   {
-    id: 3, label: { zh: '商業梗街段', ja: 'ビジネスネタの時代', en: 'The \"Business\" Joke Era' },
+    id: 3, label: { zh: '商業梗街段', ja: 'ビジネスネタの時代', en: 'The "Business" Joke Era' },
     period: '2021 夏',
     color: '#C08030',
     bg: 'rgba(192,128,48,0.08)',
     desc: {
       zh: '夏祭鬼屋約定、後夜祭 OX 問答、冰船約會 ——「商業朋友」這個詞，開始成為兩人之間甜蜜的默契暗號。',
       ja: '夏祭りのホーンテッドハウスの約束、後夜祭のOXクイズ、氷のボートデート——「ビジネスフレンド」という言葉が、二人の間の甘い合言葉になり始めました。',
-      en: 'The Summer Festival haunted house promise, the post-festival OX quiz, the ice boat date—the term \"business friends\" started to become a sweet, secret code between them.'
+      en: 'The Summer Festival haunted house promise, the post-festival OX quiz, the ice boat date—the term "business friends" started to become a sweet, secret code between them.'
     }
   },
   {
@@ -81,7 +83,7 @@ export const PHASES: Phase[] = [
     desc: {
       zh: 'Animal 封面 MV、Raft 馬拉松、公寓鄰居計畫 ——「Business Teetee」的外殼下，是兩人都開始主動靠近的心。',
       ja: '「Animal」のカバーMV、Raftのマラソン配信、アパートの隣人計画——「ビジネてぇてぇ」の仮面の下で、二人とも積極的に近づき始めていました。',
-      en: 'The \"Animal\" cover MV, the Raft marathon stream, the apartment neighbor plan—under the guise of \"Business Teetee,\" both were starting to proactively get closer.'
+      en: 'The "Animal" cover MV, the Raft marathon stream, the apartment neighbor plan—under the guise of "Business Teetee," both were starting to proactively get closer.'
     }
   },
   {
@@ -92,7 +94,7 @@ export const PHASES: Phase[] = [
     desc: {
       zh: '幾乎每天出現在彼此的直播、推特和聊天室。「偶然」的同時上線越來越難說是巧合。',
       ja: 'ほぼ毎日お互いの配信、ツイッター、チャットルームに登場。「偶然」の同時ログインが、もはや偶然とは言えないほどになってきました。',
-      en: 'Appearing in each other\'s streams, Twitter feeds, and chat rooms almost daily. The \"coincidental\" simultaneous logins became too frequent to be called a coincidence.'
+      en: 'Appearing in each other\'s streams, Twitter feeds, and chat rooms almost daily. The "coincidental" simultaneous logins became too frequent to be called a coincidence.'
     }
   },
   {
@@ -114,7 +116,7 @@ export const PHASES: Phase[] = [
     desc: {
       zh: '周圍的人終於可以公開戳了——兩人照樣掛著「商業」的名牌，卻毫不掩飾地秀恩愛。',
       ja: '周りの人々もついに公然と指摘できるようになりました——二人は相変わらず「ビジネス」の名札を掲げながらも、隠すことなく愛情を振りまいていました。',
-      en: 'People around them could finally openly point it out—the two continued to wear the \"business\" label while shamelessly displaying their affection.'
+      en: 'People around them could finally openly point it out—the two continued to wear the "business" label while shamelessly displaying their affection.'
     }
   },
   {
@@ -125,22 +127,16 @@ export const PHASES: Phase[] = [
     desc: {
       zh: '不再需要藉口，也不需要解釋，miComet 就是 miComet。「彗醬想去哪裡呢？沒有想去的地方，也不知道有什麼地方，只是來看妳的。」',
       ja: 'もはや言い訳も説明も不要、miCometはmiCometです。「すいちゃんはどこに行きたいの？行きたい場所なんてないよ。どこに何があるかも知らない。ただ、君に会いに来ただけ。」',
-      en: 'No longer needing excuses or explanations, miComet is just miComet. \"Where does Suichan want to go? I don\'t have a place in mind, and I don\'t know what\'s out there. I just came to see you.\"'
+      en: 'No longer needing excuses or explanations, miComet is just miComet. "Where does Suichan want to go? I don\'t have a place in mind, and I don\'t know what\'s out there. I just came to see you.''
     }
   },
 ];
 
-let TIMELINE: TimelineItem[] = [];
+export const TIMELINE: TimelineItem[] = TIMELINE_DATA;
 
 export const fetchTimeline = async () => {
-  if (TIMELINE.length > 0) return TIMELINE;
-  const response = await fetch('/mc-full-timeline.json');
-  const data = await response.json();
-  TIMELINE = data;
-  return data;
+  return TIMELINE;
 }
-
-export { TIMELINE };
 
 export const TYPE_NAMES: { [key: string]: InternationalizedString } = {
   'Stream': { zh: '直播', ja: '配信', en: 'Stream' },
