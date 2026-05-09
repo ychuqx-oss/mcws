@@ -80,35 +80,26 @@ const UI_STRINGS = {
   }
 };
 
-// --- Data Transformation (with Bug Fix) ---
+// --- Data Transformation (with Title Bug Fix) ---
 
 const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
   const titleParts = story.title.split(' | ');
   let title_zh, title_ja, title_en;
 
-  // Graceful fallback for titles that don't follow the standard "zh | ja | en" format.
   if (titleParts.length > 1) {
-    // Standard format detected
     title_zh = titleParts[1];
-    title_ja = titleParts.length > 2 ? titleParts[2] : title_zh; // Fallback to Chinese if Japanese is missing
-    title_en = titleParts.length > 3 ? titleParts[3] : title_ja; // Fallback to Japanese if English is missing
+    title_ja = titleParts.length > 2 ? titleParts[2] : title_zh;
+    title_en = titleParts.length > 3 ? titleParts[3] : title_ja;
   } else {
-    // Non-standard format: Use the entire original title string as the primary title.
-    title_zh = story.title; // titleParts[0] is the full string
+    title_zh = story.title;
     title_ja = story.title;
     title_en = story.title;
   }
 
   return {
     ...story,
-    title: {
-      zh: title_zh,
-      ja: title_ja,
-      en: title_en,
-    },
-    ctx: {
-      zh: story.ctx, // Context is always in Chinese from the source data
-    },
+    title: { zh: title_zh, ja: title_ja, en: title_en },
+    ctx: { zh: story.ctx },
   };
 });
 
@@ -152,7 +143,7 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
   const link = getLink(item);
   const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
-  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)'; // Fallback to Chinese, then error
+  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
   
   let moreText = UI_STRINGS.cardMore.default[lang];
@@ -216,7 +207,9 @@ export default function Index() {
   const [lang, setLang] = useState<Lang>('zh');
 
   const allItems = useMemo(() => {
-    return transformedTimeline.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // Create a new sorted array instead of sorting in-place to avoid side effects.
+    // Use localeCompare for robust string comparison for YYYY-MM-DD format.
+    return [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
   }, []);
 
   const filtered = useMemo(() => {
@@ -298,9 +291,10 @@ export default function Index() {
 
         {activePhases.map(phase => {
           const items = byPhase[phase.id] || [];
-          const mikoItems = items.filter(e => e.side === 'miko');
-          const suiseiItems = items.filter(e => e.side === 'suisei');
-          const sharedItems = items.filter(e => e.side === 'shared');
+          // BUG FIX: Explicitly sort each column's items by date before rendering.
+          const mikoItems = items.filter(e => e.side === 'miko').sort((a, b) => a.date.localeCompare(b.date));
+          const suiseiItems = items.filter(e => e.side === 'suisei').sort((a, b) => a.date.localeCompare(b.date));
+          const sharedItems = items.filter(e => e.side === 'shared').sort((a, b) => a.date.localeCompare(b.date));
 
           return (
             <div key={phase.id} className="phase-group" id={`phase-${phase.id}`}>
