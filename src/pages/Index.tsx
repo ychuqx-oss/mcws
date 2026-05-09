@@ -261,13 +261,13 @@ export default function Index() {
             <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noopener noreferrer">櫻巫女 Sakura Miko — YouTube 官方頻道</a></li>
             <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noopener noreferrer">星街彗星 Hoshimachi Suisei — YouTube 官方頻道</a></li>
             <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noopener noreferrer">櫻巫女 — Twitter / X</a></li>
-            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X（前）</a></li>
             <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X</a></li>
-            <li><a href="https://hololive.hololivepro.com/" target="_blank" rel="noopener noreferrer">Hololive Production 官方網站</a></li>
+            <li><a href="https://docs.google.com/document/d/e/2PACX-1vRcUa0y4lpqboc3v6Q-8qNu5a8v8TX9EkSqbQfjSdUhLcbhANp7XBYfFc2jdZTkzgwMN1P18kNjuP-U/pub" target="_blank" rel="noopener noreferrer">MiComet Compendium II</a></li>
+            <li><a href="https://docs.google.com/spreadsheets/d/1UkroWXcwoU-1v_wAT6virfDYKULWyxd8RthHs0vEoM8/" target="_blank" rel="noopener noreferrer">miComet Moments Compendium Spreadsheet (discontinued)</a></li>
             <li><a href="https://seesaawiki.jp/hololivetv/" target="_blank" rel="noopener noreferrer">Hololive 非公式 Wiki</a></li>
             <li><a href="https://www.reddit.com/r/miComet/" target="_blank" rel="noopener noreferrer">r/miComet — Reddit 社群</a></li>
             <li>各切片頻道（hololive 切り抜き）之翻譯與整理</li>
-            <li>miComet 編年史資料由粉絲社群整理，所有內容版權歸原作者與 Cover Corp. 所有</li>
+            <li>資料由粉絲社群整理，所有內容版權歸原作者與 Cover Corp. 所有</li>
           </ul>
         </div>
       </div>
