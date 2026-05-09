@@ -17,6 +17,7 @@ interface TimelineItem {
   ctx: { [key in Lang]?: string };
   type: string;
   link?: string;
+  img?: string;
 }
 
 // --- Data & UI Configuration ---
@@ -156,9 +157,7 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
   const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
   
-  // Get the best available title, which might be a long paragraph.
   const rawTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
-  // Truncate the title for the card view to keep the UI clean.
   const displayTitle = truncate(rawTitle, 50);
 
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
@@ -170,14 +169,17 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
 
   return (
     <div className={`ev-card ${side}`} onClick={() => onClick(item, side)}>
-      <div className="card-meta">
-        <span className="card-date">{fmt(item.date, lang)}</span>
-        <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
+      {item.img && <img src={item.img} alt={rawTitle} className="card-img" />}
+      <div className="card-body">
+        <div className="card-meta">
+          <span className="card-date">{fmt(item.date, lang)}</span>
+          <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
+        </div>
+        <div className="card-emoji">{item.emoji || '💫'}</div>
+        <div className="card-title">{displayTitle}</div>
+        {displayCtx && <div className="card-ctx">{displayCtx}</div>}
+        <div className="card-more">{moreText}</div>
       </div>
-      <div className="card-emoji">{item.emoji || '💫'}</div>
-      <div className="card-title">{displayTitle}</div>
-      {displayCtx && <div className="card-ctx">{displayCtx}</div>}
-      <div className="card-more">{moreText}</div>
     </div>
   );
 }
@@ -187,7 +189,6 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
   const link = getLink(item);
   const povLabel = UI_STRINGS.modalPov[side as 'miko'|'suisei'|'shared'|'others'][lang];
   const phase = PHASES.find(p => p.id === item.phase);
-  // In the modal, we show the full, untruncated title.
   const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
 
@@ -197,6 +198,7 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
         <div className={`modal-hero ${side}`}></div>
         <div className="modal-body">
           <button className="modal-x" onClick={onClose}>✕</button>
+          {item.img && <img src={item.img} alt={displayTitle} className="modal-img" />}
           <div className={`modal-pov ${side}`}>{povLabel}</div>
           <div className="modal-date">
             {fmt(item.date, lang)}
@@ -222,26 +224,22 @@ export default function Index() {
   const [search, setSearch] = useState('');
   const [phaseFilter, setPhaseFilter] = useState(0);
   const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
-  const [lang, setLang] = useState<Lang>('zh');
+  const [lang, setLang] = useState<Lang>('zh'); // Default language set to Chinese
 
   // FEATURE: MERGE SAME-DAY ITEMS
   const allItems = useMemo(() => {
-    // First, sort all items by date to ensure chronological order.
     const sortedItems = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
 
-    // Group items by their date string.
     const groupedByDate = sortedItems.reduce((acc, item) => {
       (acc[item.date] = acc[item.date] || []).push(item);
       return acc;
     }, {} as Record<string, TimelineItem[]>);
 
-    // Process each group. If a day has multiple events, merge them.
     const mergedItems = Object.values(groupedByDate).flatMap(items => {
       if (items.length <= 1) {
-        return items; // No merging needed for single-item days.
+        return items;
       }
 
-      // --- MERGING LOGIC for multi-event days ---
       const firstItem = items[0];
       const sides = new Set(items.map(i => i.side));
       const types = new Set(items.map(i => i.type));
@@ -250,7 +248,7 @@ export default function Index() {
       if (sides.has('shared') || (sides.has('miko') && sides.has('suisei'))) {
         mergedSide = 'shared';
       } else if (sides.size > 1) {
-         mergedSide = 'shared'; // Default to shared for mixed sides like miko/other
+         mergedSide = 'shared';
       }
 
       const mergedType = types.size > 1 ? 'Mixed' : firstItem.type;
@@ -266,20 +264,22 @@ export default function Index() {
         mergedCtx[lang] = items.map(i => {
           const itemTitle = i.title[lang] || i.title['zh'] || '';
           const itemCtx = i.ctx[lang] || i.ctx['zh'] || '';
-          return `[${itemTitle}]` + (itemCtx ? `\n${itemCtx}`: '');
+          const itemImg = i.img ? `[img=${i.img}]` : '';
+          return `[${itemTitle}]${itemImg}` + (itemCtx ? `\n${itemCtx}`: '');
         }).join('\n\n---\n\n');
       }
 
       const mergedItem: TimelineItem = {
-        id: items.map(i => i.id).join('+'), // Create a new unique ID for the merged item.
+        id: items.map(i => i.id).join('+'),
         date: firstItem.date,
         phase: firstItem.phase,
         side: mergedSide,
-        emoji: '🔄', // Special emoji indicating a merged day.
+        emoji: '🔄',
         title: mergedTitle,
         ctx: mergedCtx,
         type: mergedType,
-        link: items.find(i => i.link)?.link, // Take the first available link.
+        link: items.find(i => i.link)?.link,
+        img: items.find(i => i.img)?.img, // Use the first available image for the merged card
       };
 
       return [mergedItem];
@@ -367,7 +367,6 @@ export default function Index() {
 
         {activePhases.map(phase => {
           const items = byPhase[phase.id] || [];
-          // BUG FIX: Explicitly sort each column's items by date before rendering.
           const mikoItems = items.filter(e => e.side === 'miko').sort((a, b) => a.date.localeCompare(b.date));
           const suiseiItems = items.filter(e => e.side === 'suisei').sort((a, b) => a.date.localeCompare(b.date));
           const sharedItems = items.filter(e => e.side === 'shared').sort((a, b) => a.date.localeCompare(b.date));

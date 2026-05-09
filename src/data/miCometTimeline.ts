@@ -18,6 +18,7 @@ export interface MiCometStory {
   ctx: string;       // Context / Description
   type: StoryType;   // Media Type
   link?: string;     // Optional URL
+  img?: string;      // Optional image URL for the event
 }
 
 // The entire timeline, sorted and corrected.
@@ -26,7 +27,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
     id: 's1', date: '2019-07-23', phase: 1, side: 'shared', emoji: '📍',
     title: '19-1 | 初次邂逅：冬日計畫的血腥開端 | 初対面：雪山人狼の血塗られた始まり | First Encounter: The Bloody Start of Project Winter',
     ctx: 'miComet 傳說的起點。Miko 在 Project Winter 中被星街背叛並殺害，奠定了兩人「商業夥伴」的基礎。',
-    type: 'Clip', link: 'https://youtu.be/u-RuvdaQU-Q'
+    type: 'Clip', link: 'https://youtu.be/u-RuvdaQU-Q',
+    img: 'https://i.ytimg.com/vi/u-RuvdaQU-Q/hqdefault.jpg' // Example image
   },
   {
     id: 's2', date: '2019-08-03', phase: 1, side: 'suisei', emoji: '📍',
@@ -104,7 +106,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   {
     id: 's699', date: '2024-09-18', phase: 5, side: 'shared', emoji: '📞',
     title: '24-53 | 放送事故？星街極罕見的撒嬌軟音 | 放送事故？すいちゃんの甘え声 | Broadcast Accident? Suisei's Rare Sweet Voice Call',
-    ctx: '在 Miko 直播關台前，星街突然打來語音，聲音軟到不可思議，被聽眾形容為「只對情人才會有的撒嬌音」，Miko 緊急提醒後星街才恢復平時聲線。',
+    ctx: '在 Miko 直播關台前，星街突然打來語音，聲音軟到不可思議，被形容為「只對情人才會有的撒嬌音」，Miko 緊急提醒後星街才恢復平時聲線。',
     type: 'Mixed', link: ''
   },
   {
