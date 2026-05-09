@@ -18,6 +18,7 @@ interface TimelineItem {
   type: string;
   link?: string;
   img?: string;
+  num?: string; // Story number, e.g., "19-1"
 }
 
 // --- Data & UI Configuration ---
@@ -81,10 +82,11 @@ const UI_STRINGS = {
   }
 };
 
-// --- Data Transformation (with Title Bug Fix) ---
+// --- Data Transformation (with Story Number) ---
 
 const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
   const titleParts = story.title.split(' | ');
+  const storyNum = titleParts.length > 1 ? titleParts[0].trim() : '';
   let title_zh, title_ja, title_en;
 
   if (titleParts.length > 1) {
@@ -99,6 +101,7 @@ const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiComet
 
   return {
     ...story,
+    num: storyNum,
     title: { zh: title_zh, ja: title_ja, en: title_en },
     ctx: { zh: story.ctx },
   };
@@ -138,11 +141,6 @@ function getLink(item: TimelineItem) {
     return null;
 }
 
-/**
- * UI FIX: Truncate long titles for a cleaner card view.
- * The full title is still available in the modal.
- * This handles messy data where titles are actually long paragraphs.
- */
 function truncate(text: string, length: number): string {
     if (text.length <= length) {
         return text;
@@ -158,7 +156,7 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
   
   const rawTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
-  const displayTitle = truncate(rawTitle, 50);
+  const displayTitle = truncate(rawTitle, 45);
 
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
   
@@ -176,7 +174,10 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
           <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
         </div>
         <div className="card-emoji">{item.emoji || '💫'}</div>
-        <div className="card-title">{displayTitle}</div>
+        <div className="card-title">
+          {item.num && <span className="story-num">{item.num}</span>}
+          {displayTitle}
+        </div>
         {displayCtx && <div className="card-ctx">{displayCtx}</div>}
         <div className="card-more">{moreText}</div>
       </div>
@@ -205,7 +206,10 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
             {item.type && ` ・ ${TYPE_NAMES[item.type]?.[lang] || item.type}`}
             {phase ? ` ・ ${UI_STRINGS.modalPhase[lang].replace('{id}', String(phase.id)).replace('{label}', phase.label[lang])}` : ''}
           </div>
-          <div className="modal-title">{displayTitle}</div>
+          <div className="modal-title">
+            {item.num && <span className="story-num">{item.num}</span>}
+            {displayTitle}
+          </div>
           {displayCtx && <div className="modal-ctx" dangerouslySetInnerHTML={{ __html: displayCtx.replace(/\n/g, '<br />') }}></div>}
           {link && (
             <a href={link.url} target="_blank" rel="noopener noreferrer" className={`modal-link ${link.type}`}>
@@ -226,7 +230,6 @@ export default function Index() {
   const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
   const [lang, setLang] = useState<Lang>('zh'); // Default language set to Chinese
 
-  // FEATURE: MERGE SAME-DAY ITEMS
   const allItems = useMemo(() => {
     const sortedItems = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -258,14 +261,17 @@ export default function Index() {
       const langs: Lang[] = ['zh', 'ja', 'en'];
 
       for (const lang of langs) {
-        const titlesForLang = items.map(i => i.title[lang] || i.title['zh']).filter(Boolean);
+        const titlesForLang = items.map(i => {
+            const num = i.num ? `[${i.num}] ` : '';
+            return num + (i.title[lang] || i.title['zh']);
+        }).filter(Boolean);
         mergedTitle[lang] = titlesForLang.join(' & ');
 
         mergedCtx[lang] = items.map(i => {
-          const itemTitle = i.title[lang] || i.title['zh'] || '';
+          const itemTitle = `[${i.num}] ${i.title[lang] || i.title['zh'] || ''}`;
           const itemCtx = i.ctx[lang] || i.ctx['zh'] || '';
           const itemImg = i.img ? `[img=${i.img}]` : '';
-          return `[${itemTitle}]${itemImg}` + (itemCtx ? `\n${itemCtx}`: '');
+          return `${itemTitle}${itemImg}` + (itemCtx ? `\n${itemCtx}`: '');
         }).join('\n\n---\n\n');
       }
 
@@ -279,7 +285,7 @@ export default function Index() {
         ctx: mergedCtx,
         type: mergedType,
         link: items.find(i => i.link)?.link,
-        img: items.find(i => i.img)?.img, // Use the first available image for the merged card
+        img: items.find(i => i.img)?.img, 
       };
 
       return [mergedItem];
@@ -295,7 +301,7 @@ export default function Index() {
         const q = search.toLowerCase();
         const title = (e.title[lang] || e.title.zh || '').toLowerCase();
         const ctx = (e.ctx[lang] || e.ctx.zh || '').toLowerCase();
-        return title.includes(q) || ctx.includes(q);
+        return e.num?.toLowerCase().includes(q) || title.includes(q) || ctx.includes(q);
       }
       return true;
     });
