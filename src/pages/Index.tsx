@@ -24,11 +24,76 @@ interface TimelineItem {
 // --- Data & UI Configuration ---
 
 const PHASES = [
-  { id: 1, label: { zh: '初識', ja: '出会い', en: 'The Beginning' }, period: '2019', color: '#ff7b7b', desc: { zh: 'Project Winter 中的初次邂逅，奠定了兩人「商業」關係的血腥起點。', ja: 'Project Winterでの初対面、二人の「ビジネス」関係の血塗られた始まり。', en: 'The bloody beginning of their "business" relationship from their first encounter in Project Winter.' } },
-  { id: 2, label: { zh: '萌芽', ja: '芽生え', en: 'Early Days' }, period: '2020', color: '#ffb37b', desc: { zh: 'ARK 伺服器上的互動、逐漸增加的連動，以及私下的支持，讓關係慢慢升溫。', ja: 'ARKサーバーでの交流、増えていくコラボ、そして裏での支えが、二人の関係を少しずつ温めていった。', en: 'Interactions on the ARK server, an increasing number of collaborations, and behind-the-scenes support slowly warmed their relationship.' } },
-  { id: 3, label: { zh: '商業夥伴', ja: 'ビジネスパートナー', en: 'Business Partners' }, period: '2021', color: '#ffdd7b', desc: { zh: '傳說中的「商業」標籤被廣泛使用，兩人以絕佳的默契，在各種企劃中展現出無與倫比的節目效果。', ja: '伝説の「ビジネス」タグが広く使われるようになり、二人は抜群のコンビネーションで、様々な企画で比類なきエンターテイメント性を発揮した。', en: 'The legendary "business" tag became widespread as the two demonstrated unparalleled entertainment chemistry in various projects.' } },
-  { id: 4, label: { zh: '超越商業', ja: 'ビジネスを超えて', en: 'Beyond Business' }, period: '2022 – 2023', color: '#a0e880', desc: { zh: '從夏祭約會到各種生活感的互動，兩人之間流動的空氣感，讓「商業」的界線變得模糊。', ja: '夏祭りのデートから日常感あふれる様々なやり取りまで、二人の間に流れる空気感が、「ビジネス」の境界線を曖昧にしていく。', en: 'From the summer festival date to various slice-of-life interactions, the atmosphere between them began to blur the lines of "business".' } },
-  { id: 5, label: { zh: '新章', ja: '新章', en: 'New Chapter' }, period: '2024 –', color: '#80c8e8', desc: { zh: '邁向新的里程碑，無論是個人活動還是雙人互動，都展現了更成熟、更深厚的羈絆。', ja: '新たなマイルストーンに向かって、個人の活動でも二人の交流でも、より成熟し、より深い絆が示されるようになった。', en: 'Moving towards new milestones, both in their solo activities and their interactions, they show a more mature and deeper bond.' } }
+  { 
+    id: 1, 
+    label: { zh: '真・商業夥伴階段', ja: '真・ビジネスパートナー段階', en: 'True Business Partners' }, 
+    period: '2019 – 2020', 
+    color: '#ff7b7b', 
+    desc: { zh: '從 Project Winter 的血腥初見，到方舟伺服器的互動，兩人奠定了充滿節目效果的「商業」關係基礎。', ja: 'Project Winterでの血塗られた初対面から、ARKサーバーでの交流まで、二人はエンターテイメント性に富んだ「ビジネス」関係の基礎を築いた。', en: 'From the bloody first encounter in Project Winter to interactions on the ARK server, the two laid the foundation for a "business" relationship full of entertainment value.' } 
+  },
+  { 
+    id: 2, 
+    label: { zh: '星街寵溺，咪口畏縮階段', ja: '星街の寵愛、みこの萎縮段階', en: 'Suisei\'s Doting, Miko\'s Cowering' }, 
+    period: 'Early 2021', 
+    color: '#ff9a7b', 
+    desc: { zh: '星街開始展現出對咪口的明顯偏愛和照顧，而咪口在這份直球攻勢下，反而顯得有些害羞和退縮。', ja: '星街がみこへの明確な偏愛と世話焼きを見せ始め、みこはそのストレートなアプローチにむしろ恥ずかしがり、及び腰になっていた時期。', en: 'Suisei began to show clear favoritism and care for Miko, while Miko, in response to this directness, became somewhat shy and withdrawn.' } 
+  },
+  { 
+    id: 3, 
+    label: { zh: '咪口刻意演出想貼貼，星街假裝冷淡的商業梗階段', ja: 'みこアピール、星街ツンデレのビジネスネタ段階', en: 'The "Business" Gag: Miko\'s Advances, Suisei\'s Tsundere' }, 
+    period: 'Mid - Late 2021', 
+    color: '#ffb37b', 
+    desc: { zh: '「商業夥伴」的互動模式成熟。咪口開始主動製造貼貼機會，星街則以假裝冷淡或吐槽來回應，形成絕佳的綜藝效果。', ja: '「ビジネスパートナー」のやり取りが成熟。みこが積極的にてぇてぇな機会を作り出し、星街がツンとした態度やツッコミで応じることで、絶妙なバラエティ効果を生み出した。', en: 'The "business partner" dynamic matured. Miko actively created intimate moments, while Suisei responded with a tsundere-like coolness or retorts, creating a perfect comedic effect.' } 
+  },
+  { 
+    id: 4, 
+    label: { zh: '星街表態＆轉折點', ja: '星街の表明＆転換点', en: 'Suisei\'s Declaration & The Turning Point' }, 
+    period: 'Early 2022', 
+    color: '#ffdd7b', 
+    desc: { zh: '面對咪口的過度謹慎，星街在多人連動中明確表達想跟咪口變得更親近的意圖，並澄清兩人並非營業。此舉成為兩人關係的重大轉折點。', ja: '過度に慎重なみこに対し、星街がコラボ配信中にはっきりと「もっと仲良くなりたい」という意図を表明し、二人がビジネスでないことを明確にした。これが二人の関係における大きな転換点となった。', en: 'Facing Miko\'s over-cautiousness, Suisei clearly stated her desire to get closer during a collab, clarifying they were not just putting on an act. This became a major turning point in their relationship.' } 
+  },
+  { 
+    id: 5, 
+    label: { zh: '咪口開始敢表達親近階段', ja: 'みこが親近感を示し始めた段階', en: 'Miko Dares to Be Close' }, 
+    period: 'Mid 2022', 
+    color: '#d4e880', 
+    desc: { zh: '在星街直球表態後，咪口的心防逐漸融化，開始更自然、更大方地對星街表達自己的親近感與依賴。', ja: '星街のストレートな表明を受け、みこの心の壁が徐々に溶け始め、より自然に、そして大胆に星街への親近感や依存を示すようになった。', en: 'After Suisei\'s direct declaration, Miko\'s guard gradually melted, and she began to more naturally and openly express her closeness and reliance on Suisei.' } 
+  },
+  { 
+    id: 6, 
+    label: { zh: '雙方開始每日任務階段', ja: '双方のデイリーミッション段階', en: 'The Daily Missions Phase' }, 
+    period: 'Late 2022 – Early 2023', 
+    color: '#a0e880', 
+    desc: { zh: 'RUST、夏祭等長期連動成為常態，私下通話、互傳訊息的「每日任務」變得頻繁，生活感的互動大量增加。', ja: 'RUSTや夏祭りなどの長期コラボが常態化し、プライベートな通話やメッセージのやり取りといった「デイリーミッション」が頻繁になり、日常感のある交流が大幅に増えた。', en: 'Long-term collabs like RUST and the summer festival became the norm. "Daily missions" of private calls and messages became frequent, greatly increasing their slice-of-life interactions.' } 
+  },
+  { 
+    id: 7, 
+    label: { zh: '小秘密謎語人階段', ja: '秘密の匂わせ段階', en: 'The Riddler & Secrets Phase' }, 
+    period: 'Mid 2023', 
+    color: '#80e8c8', 
+    desc: { zh: '兩人開始在直播中有意無意地透露一些只有她們彼此才懂的「小秘密」和暗號，享受著粉絲當偵探的樂趣。', ja: '二人が配信で意図的に、あるいは無意識に、お互いだけが理解できる「秘密」や合図を匂わせ始め、ファンが探偵になるのを楽しんでいた時期。', en: 'The two started intentionally or unintentionally dropping hints and secrets in their streams that only they understood, enjoying watching their fans play detective.' } 
+  },
+  { 
+    id: 8, 
+    label: { zh: '假借商業之名大曬特曬階段', ja: 'ビジネス名目の大放出段階', en: 'Flexing in the Name of Business' }, 
+    period: 'Late 2023', 
+    color: '#80c8e8', 
+    desc: { zh: '「商業」的藉口變得越來越薄弱，兩人開始毫無顧忌地分享線下約會、過夜等故事，周圍的成員也開始大方地吐槽和戳破。', ja: '「ビジネス」という口実がますます薄弱になり、二人はオフラインでのデートや泊まりのエピソードを臆面もなく共有し始め、周りのメンバーも遠慮なくツッコミを入れるようになった。', en: 'The excuse of "business" wore increasingly thin as they shamelessly shared stories of offline dates and sleepovers, and other members began to openly tease them about it.' } 
+  },
+  { 
+    id: 9, 
+    label: { zh: '控糖大方供給階段', ja: '供給コントロールと大盤振る舞い段階', en: 'Controlled & Generous Supply' }, 
+    period: '2024', 
+    color: '#a9a3f9', 
+    desc: { zh: '雖然咪口偶爾還是會「控糖」，但兩人整體的互動變得極度自然與大方，高甜度的供給已成常態，粉絲們彷彿每天都在過年。', ja: 'みこは時折「糖分コントロール」をするものの、二人の全体的なやり取りは極めて自然でオープンになり、高糖度の供給が常態化。ファンはまるでお祭りのような毎日を送っている。', en: 'Although Miko occasionally tries to "control the sugar," their overall interaction has become extremely natural and generous. High-sweetness content is now the norm, and fans feel like they are celebrating every day.' } 
+  },
+  { 
+    id: 10, 
+    label: { zh: '放火燒村階段', ja: '村焼き段階', en: 'Burning Down the Village' }, 
+    period: 'Future', 
+    color: '#d7a3f9', 
+    desc: { zh: '傳說中的最終階段。所有的鋪陳都已完成，只待那點燃一切的最終火花，將整個村莊（粉絲社群）捲入幸福的火焰中。', ja: '伝説の最終段階。すべての準備は整い、あとは全てを燃え上がらせる最後の火花を待つのみ。村全体（ファンコミュニティ）を幸福の炎に巻き込む。', en: 'The legendary final phase. All the groundwork has been laid, waiting only for the final spark to ignite everything and engulf the entire village (the fan community) in a happy blaze.' } 
+  }
 ];
 
 const TYPE_NAMES: { [key: string]: { [key in Lang]: string } } = {
@@ -54,7 +119,7 @@ const UI_STRINGS = {
   totalStories: { zh: '共 {count} 個故事 (2019 – {year})', ja: '合計 {count} 件の物語 (2019 – {year})', en: 'Total of {count} stories (2019 – {year})' },
   noResults: { zh: '沒有找到符合條件的故事', ja: '該当する物語は見つかりませんでした', en: 'No matching stories found' },
   mikoColumn: { zh: '🌸 咪口 · 櫻巫女', ja: '🌸 みこち · さくらみこ', en: '🌸 Miko · Sakura Miko' },
-  suiseiColumn: { zh: '⭐ 彗醬 · 星街彗星', ja: '⭐ すいちゃん · 星街すいせい', en: '⭐ Suichan · Hoshimachi Suisei' },
+  suiseiColumn: { zh: '⭐ 彗醬 · 星街彗星', ja: '⭐ すいちゃん · 星街彗星', en: '⭐ Suichan · Hoshimachi Suisei' },
   sharedMoments: { zh: '💕 miComet 共同時刻', ja: '💕 miComet 共有の瞬間', en: '💕 miComet Shared Moments' },
   sharedSub: { zh: '這個階段兩人一起出現的 {count} 個故事', ja: 'このフェーズで二人が一緒に登場した物語 {count} 件', en: '{count} stories where they appeared together in this phase' },
   convergenceTitle: { zh: '兩條線，最終交匯', ja: '二つの線が、ついに交わる', en: 'Two Lines, Finally Converging' },
