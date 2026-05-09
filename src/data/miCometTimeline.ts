@@ -62,7 +62,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   },
   {
     id: 's533', date: '2020-07-27', phase: 2, side: 'suisei', emoji: '📍',
-    title: '20-4 | 星街談與 Miko 一起工作時笑個不停 | みことの仕事は笑いが絶えない | Can't Stop Laughing When Working With Miko',
+    title: '20-4 | 星街談與 Miko 一起工作時笑個不停 | みことの仕事は笑いが絶えない | Can\'t Stop Laughing When Working With Miko',
     ctx: '星街在雜談中提到，只要和 Miko 一起工作就會一直笑，甚至笑到呼吸困難，氣氛非常愉快。',
     type: 'Clip', link: ''
   },
@@ -80,7 +80,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   },
   {
     id: 's411', date: '2021-01-25', phase: 3, side: 'shared', emoji: '📍',
-    title: '21-1 | GTAO：Miko 目不轉睛地盯著星街的新模型 | GTAO：みこがすいせいの新モデルを凝視 | GTAO: Miko Can't Take Her Eyes Off Suisei's New Model',
+    title: '21-1 | GTAO：Miko 目不轉睛地盯著星街的新模型 | GTAO：みこがすいせいの新モデルを凝視 | GTAO: Miko Can\'t Take Her Eyes Off Suisei\'s New Model',
     ctx: '在 GTA 連動中，Miko 完全被星街當時的新 3D 模型所吸引，不停地盯著看，無法轉移視線。',
     type: 'Clip', link: ''
   },
@@ -105,7 +105,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   },
   {
     id: 's699', date: '2024-09-18', phase: 5, side: 'shared', emoji: '📞',
-    title: '24-53 | 放送事故？星街極罕見的撒嬌軟音 | 放送事故？すいちゃんの甘え声 | Broadcast Accident? Suisei's Rare Sweet Voice Call',
+    title: '24-53 | 放送事故？星街極罕見的撒嬌軟音 | 放送事故？すいちゃんの甘え声 | Broadcast Accident? Suisei\'s Rare Sweet Voice Call',
     ctx: '在 Miko 直播關台前，星街突然打來語音，聲音軟到不可思議，被形容為「只對情人才會有的撒嬌音」，Miko 緊急提醒後星街才恢復平時聲線。',
     type: 'Mixed', link: ''
   },
