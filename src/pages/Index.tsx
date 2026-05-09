@@ -137,13 +137,30 @@ function getLink(item: TimelineItem) {
     return null;
 }
 
+/**
+ * UI FIX: Truncate long titles for a cleaner card view.
+ * The full title is still available in the modal.
+ * This handles messy data where titles are actually long paragraphs.
+ */
+function truncate(text: string, length: number): string {
+    if (text.length <= length) {
+        return text;
+    }
+    return text.substring(0, length) + '...';
+}
+
 // --- UI Components ---
 
 function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
   const link = getLink(item);
   const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
-  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
+  
+  // Get the best available title, which might be a long paragraph.
+  const rawTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
+  // Truncate the title for the card view to keep the UI clean.
+  const displayTitle = truncate(rawTitle, 50);
+
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
   
   let moreText = UI_STRINGS.cardMore.default[lang];
@@ -170,6 +187,7 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
   const link = getLink(item);
   const povLabel = UI_STRINGS.modalPov[side as 'miko'|'suisei'|'shared'|'others'][lang];
   const phase = PHASES.find(p => p.id === item.phase);
+  // In the modal, we show the full, untruncated title.
   const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
   const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
 
