@@ -224,10 +224,68 @@ export default function Index() {
   const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
   const [lang, setLang] = useState<Lang>('zh');
 
+  // FEATURE: MERGE SAME-DAY ITEMS
   const allItems = useMemo(() => {
-    // Create a new sorted array instead of sorting in-place to avoid side effects.
-    // Use localeCompare for robust string comparison for YYYY-MM-DD format.
-    return [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
+    // First, sort all items by date to ensure chronological order.
+    const sortedItems = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
+
+    // Group items by their date string.
+    const groupedByDate = sortedItems.reduce((acc, item) => {
+      (acc[item.date] = acc[item.date] || []).push(item);
+      return acc;
+    }, {} as Record<string, TimelineItem[]>);
+
+    // Process each group. If a day has multiple events, merge them.
+    const mergedItems = Object.values(groupedByDate).flatMap(items => {
+      if (items.length <= 1) {
+        return items; // No merging needed for single-item days.
+      }
+
+      // --- MERGING LOGIC for multi-event days ---
+      const firstItem = items[0];
+      const sides = new Set(items.map(i => i.side));
+      const types = new Set(items.map(i => i.type));
+
+      let mergedSide: TimelineItem['side'] = firstItem.side;
+      if (sides.has('shared') || (sides.has('miko') && sides.has('suisei'))) {
+        mergedSide = 'shared';
+      } else if (sides.size > 1) {
+         mergedSide = 'shared'; // Default to shared for mixed sides like miko/other
+      }
+
+      const mergedType = types.size > 1 ? 'Mixed' : firstItem.type;
+
+      const mergedTitle: TimelineItem['title'] = {};
+      const mergedCtx: TimelineItem['ctx'] = {};
+      const langs: Lang[] = ['zh', 'ja', 'en'];
+
+      for (const lang of langs) {
+        const titlesForLang = items.map(i => i.title[lang] || i.title['zh']).filter(Boolean);
+        mergedTitle[lang] = titlesForLang.join(' & ');
+
+        mergedCtx[lang] = items.map(i => {
+          const itemTitle = i.title[lang] || i.title['zh'] || '';
+          const itemCtx = i.ctx[lang] || i.ctx['zh'] || '';
+          return `[${itemTitle}]` + (itemCtx ? `\n${itemCtx}`: '');
+        }).join('\n\n---\n\n');
+      }
+
+      const mergedItem: TimelineItem = {
+        id: items.map(i => i.id).join('+'), // Create a new unique ID for the merged item.
+        date: firstItem.date,
+        phase: firstItem.phase,
+        side: mergedSide,
+        emoji: '🔄', // Special emoji indicating a merged day.
+        title: mergedTitle,
+        ctx: mergedCtx,
+        type: mergedType,
+        link: items.find(i => i.link)?.link, // Take the first available link.
+      };
+
+      return [mergedItem];
+    });
+    
+    return mergedItems;
   }, []);
 
   const filtered = useMemo(() => {
