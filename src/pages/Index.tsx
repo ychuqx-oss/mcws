@@ -52,7 +52,7 @@ const UI_STRINGS = {
   convergenceBody: {
     zh: `從 2019 年星街悄悄打開咪口直播的那一天，<br />到卡片戰士的工商、VILLS 的擁抱、夏祭的冰船約會，<br />從「商業朋友」到「只是來看妳的」，<br /><br />miComet 的故事，從來都不只是商業。`,
     ja: `2019年、星街がこっそりみこの配信を開いたあの日から、<br />カードファイトのコラボ、VILLSでの抱擁、夏祭りの氷上ボートデートまで、<br />「ビジネスフレンド」から「ただ、君に会いに来ただけ」へ、<br /><br />miCometの物語は、決してビジネスだけではなかった。`,
-    en: `From that day in 2019 when Suisei secretly opened Miko's stream,<br />to the Cardfight collab, the hug at VILLS, the ice boat date at the summer festival,<br />from "business friends" to "I just came to see you,"<br /><br />the story of miComet was never just about business.`
+    en: `From that day in 2019 when Suisei secretly opened Miko\'s stream,<br />to the Cardfight collab, the hug at VILLS, the ice boat date at the summer festival,<br />from "business friends" to "I just came to see you,"<br /><br />the story of miComet was never just about business.`
   },
   references: { zh: '📚 參考資料', ja: '📚 参考資料', en: '📚 References' },
   cardMore: {
@@ -61,8 +61,8 @@ const UI_STRINGS = {
     default: { zh: '閱讀詳情 →', ja: '詳細を見る →', en: 'Read More →' }
   },
   modalPov: {
-    miko: { zh: '🌸 櫻巫女視角', ja: '🌸 さくらみこ視点', en: '🌸 Sakura Miko's POV' },
-    suisei: { zh: '⭐ 星街彗星視角', ja: '⭐ 星街すいせい視点', en: '⭐ Hoshimachi Suisei's POV' },
+    miko: { zh: '🌸 櫻巫女視角', ja: '🌸 さくらみこ視点', en: '🌸 Sakura Miko\'s POV' },
+    suisei: { zh: '⭐ 星街彗星視角', ja: '⭐ 星街すいせい視点', en: '⭐ Hoshimachi Suisei\'s POV' },
     shared: { zh: '💕 miComet 共同', ja: '💕 miComet 共有', en: '💕 miComet Shared' }
   },
   modalPhase: { zh: '第{id}階段：{label}', ja: 'フェーズ{id}：{label}', en: 'Phase {id}: {label}' },
