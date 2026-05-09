@@ -1,10 +1,15 @@
 import { useState, useMemo } from 'react';
 import { PHASES, TIMELINE, TYPE_ZH, type TimelineItem } from '@/data/micomet-data';
 
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 function fmt(dateISO: string) {
   if (!dateISO) return '';
-  const [y, m, d] = dateISO.split('-');
-  return `${y}/${parseInt(m)}/${parseInt(d)}`;
+  const date = new Date(dateISO);
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth();
+  const d = date.getUTCDate();
+  return `${y}年${m + 1}月${d}日 / ${monthNames[m]} ${d}`;
 }
 
 function getLink(ctx: string, title: string, link: string) {
@@ -201,7 +206,7 @@ export default function Index() {
                   <div className="ax-line"></div>
                 </div>
 
-                {/* 星街（右） */}}
+                {/* 星街（右） */}
                 <div>
                   {(mikoItems.length > 0 || suiseiItems.length > 0) && (
                     <div className="col-head suisei">⭐ 彗醬 · 星街彗星</div>
@@ -268,7 +273,7 @@ export default function Index() {
       </div>
 
       {/* MODAL */}
-      {modal && <Modal item={modal.item} side={modal.side} onClose={() => setModal(null)} />} 
+      {modal && <Modal item={modal.item} side={modal.side} onClose={() => setModal(null)} />}
     </>
   );
 }
