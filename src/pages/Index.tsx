@@ -296,67 +296,7 @@ export default function Index() {
   const [lang, setLang] = useState<Lang>('zh'); // Default language set to Chinese
 
   const allItems = useMemo(() => {
-    const sortedItems = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
-
-    const groupedByDate = sortedItems.reduce((acc, item) => {
-      (acc[item.date] = acc[item.date] || []).push(item);
-      return acc;
-    }, {} as Record<string, TimelineItem[]>);
-
-    const mergedItems = Object.values(groupedByDate).flatMap(items => {
-      if (items.length <= 1) {
-        return items;
-      }
-
-      const firstItem = items[0];
-      const sides = new Set(items.map(i => i.side));
-      const types = new Set(items.map(i => i.type));
-
-      let mergedSide: TimelineItem['side'] = firstItem.side;
-      if (sides.has('shared') || (sides.has('miko') && sides.has('suisei'))) {
-        mergedSide = 'shared';
-      } else if (sides.size > 1) {
-         mergedSide = 'shared';
-      }
-
-      const mergedType = types.size > 1 ? 'Mixed' : firstItem.type;
-
-      const mergedTitle: TimelineItem['title'] = {};
-      const mergedCtx: TimelineItem['ctx'] = {};
-      const langs: Lang[] = ['zh', 'ja', 'en'];
-
-      for (const lang of langs) {
-        const titlesForLang = items.map(i => {
-            const num = i.num ? `[${i.num}] ` : '';
-            return num + (i.title[lang] || i.title['zh']);
-        }).filter(Boolean);
-        mergedTitle[lang] = titlesForLang.join(' & ');
-
-        mergedCtx[lang] = items.map(i => {
-          const itemTitle = `[${i.num}] ${i.title[lang] || i.title['zh'] || ''}`;
-          const itemCtx = i.ctx[lang] || i.ctx['zh'] || '';
-          const itemImg = i.img ? `[img=${i.img}]` : '';
-          return `${itemTitle}${itemImg}` + (itemCtx ? `\n${itemCtx}`: '');
-        }).join('\n\n---\n\n');
-      }
-
-      const mergedItem: TimelineItem = {
-        id: items.map(i => i.id).join('+'),
-        date: firstItem.date,
-        phase: firstItem.phase,
-        side: mergedSide,
-        emoji: '🔄',
-        title: mergedTitle,
-        ctx: mergedCtx,
-        type: mergedType,
-        link: items.find(i => i.link)?.link,
-        img: items.find(i => i.img)?.img, 
-      };
-
-      return [mergedItem];
-    });
-    
-    return mergedItems;
+    return [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
   }, []);
 
   const filtered = useMemo(() => {
