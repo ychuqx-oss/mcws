@@ -381,10 +381,10 @@ export default function Index() {
     return map;
   }, [filtered]);
 
-  const mikoCount = allItems.filter(e => e.side === 'miko').length;
-  const suiseiCount = allItems.filter(e => e.side === 'suisei').length;
-  const sharedCount = allItems.filter(e => e.side === 'shared').length;
-  const total = allItems.length;
+  const mikoCount = transformedTimeline.filter(e => e.side === 'miko').length;
+  const suiseiCount = transformedTimeline.filter(e => e.side === 'suisei').length;
+  const sharedCount = transformedTimeline.filter(e => e.side === 'shared').length;
+  const total = transformedTimeline.length;
 
   const activePhases = PHASES.filter(p => byPhase[p.id] && byPhase[p.id].length > 0);
   const currentYear = new Date().getFullYear();
