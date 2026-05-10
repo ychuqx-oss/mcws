@@ -172,6 +172,19 @@ const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiComet
   };
 });
 
+// --- Evenly distribute stories across phases by date order ---
+(() => {
+  const phaseIds = PHASES.map(p => p.id);
+  const sorted = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
+  const total = sorted.length;
+  const buckets = phaseIds.length;
+  const per = total / buckets;
+  sorted.forEach((item, i) => {
+    const idx = Math.min(buckets - 1, Math.floor(i / per));
+    item.phase = phaseIds[idx];
+  });
+})();
+
 
 // --- Helper Functions ---
 
