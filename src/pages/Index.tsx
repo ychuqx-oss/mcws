@@ -32,9 +32,9 @@ const PHASES = [
   { 
     id: 1, 
     label: { zh: '真・商業夥伴階段', ja: '真・ビジネスパートナー段階', en: 'True Business Partners' }, 
-    period: '2019 – 2020', 
+    period: 'Dec 2019 – Jan 2021', 
     color: '#ff7b7b', 
-    desc: { zh: '從 Project Winter 的血腥初見，到方舟伺服器的互動，兩人奠定了充滿節目效果的「商業」關係基礎。', ja: 'Project Winterでの血塗られた初対面から、ARKサーバーでの交流まで、二人はエンターテイメント性に富んだ「ビジネス」関係の基礎を築いた。', en: 'From the bloody first encounter in Project Winter to interactions on the ARK server, the two laid the foundation for a "business" relationship full of entertainment value.' } 
+    desc: { zh: '從 Vanguard ZERO 工商到 2021 年 1 月 GTA 聯動前後，兩人能直白玩百合營業與商業夥伴梗，但還不像後來那樣具有獨特 CP 感。', ja: 'Vanguard ZERO案件から2021年1月のGTAコラボ前後まで。二人は百合営業やビジネスパートナーネタを率直に扱う一方、後年ほど独特なCP感はまだ薄かった時期。', en: 'From the Vanguard ZERO promotion through the January 2021 GTA collab, they openly played with yuri-business and business-partner bits, but the pairing had not yet developed its later distinct CP feel.' } 
   },
   { 
     id: 2, 
