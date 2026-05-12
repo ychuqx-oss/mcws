@@ -149,18 +149,26 @@ const UI_STRINGS = {
 
 // --- Data Transformation (with Story Number) ---
 
-function getStoryNumber(story: MiCometStory, titlePrefix: string) {
-  if (titlePrefix.trim()) {
-    return titlePrefix.trim();
-  }
+function createStoryNumberMap(stories: MiCometStory[]) {
+  const yearCounters: Record<string, number> = {};
+  const storyNumbers = new Map<MiCometStory, string>();
 
-  const digits = story.id.match(/\d+/g)?.join('');
-  return digits ? `#${digits}` : story.id;
+  [...stories]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach(story => {
+      const year = story.date.slice(0, 4);
+      yearCounters[year] = (yearCounters[year] || 0) + 1;
+      storyNumbers.set(story, `${year.slice(2)}-${yearCounters[year]}`);
+    });
+
+  return storyNumbers;
 }
+
+const storyNumbersByStory = createStoryNumberMap(MICOMET_TIMELINE);
 
 const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
   const titleParts = story.title.split(' | ');
-  const storyNum = getStoryNumber(story, titleParts.length > 1 ? titleParts[0] : '');
+  const storyNum = storyNumbersByStory.get(story) || story.id;
   let title_zh, title_ja, title_en;
 
   if (titleParts.length > 1) {
