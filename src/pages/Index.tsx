@@ -149,9 +149,18 @@ const UI_STRINGS = {
 
 // --- Data Transformation (with Story Number) ---
 
+function getStoryNumber(story: MiCometStory, titlePrefix: string) {
+  if (titlePrefix.trim()) {
+    return titlePrefix.trim();
+  }
+
+  const digits = story.id.match(/\d+/g)?.join('');
+  return digits ? `#${digits}` : story.id;
+}
+
 const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
   const titleParts = story.title.split(' | ');
-  const storyNum = titleParts.length > 1 ? titleParts[0].trim() : '';
+  const storyNum = getStoryNumber(story, titleParts.length > 1 ? titleParts[0] : '');
   let title_zh, title_ja, title_en;
 
   if (titleParts.length > 1) {
