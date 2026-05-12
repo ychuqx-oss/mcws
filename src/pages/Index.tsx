@@ -393,9 +393,9 @@ export default function Index() {
     <>
       <div className="header">
         <div className="header-lang">
-          <button onClick={() => setLang('zh')} className={lang === 'zh' ? 'on' : ''}>中文</button>
-          <button onClick={() => setLang('ja')} className={lang === 'ja' ? 'on' : ''}>日本語</button>
-          <button onClick={() => setLang('en')} className={lang === 'en' ? 'on' : ''}>English</button>
+          <button onClick={() => setLang('zh')} className={lang === 'zh' ? 'on' : ''}><span>ZH</span>中文</button>
+          <button onClick={() => setLang('ja')} className={lang === 'ja' ? 'on' : ''}><span>JP</span>日本語</button>
+          <button onClick={() => setLang('en')} className={lang === 'en' ? 'on' : ''}><span>EN</span>English</button>
         </div>
         <div className="header-crown">🌸 ✨ ⭐</div>
         <h1>{UI_STRINGS.title[lang]}</h1>
