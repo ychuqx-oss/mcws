@@ -169,7 +169,7 @@ const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiComet
     title_en = titleParts.length > 3 ? titleParts[3] : title_ja;
   } else {
     title_zh = story.titleZh || story.title;
-    title_ja = story.titleZh || story.title;
+    title_ja = story.titleJa || story.title;
     title_en = story.title;
   }
 
@@ -177,7 +177,7 @@ const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiComet
     ...story,
     num: storyNum,
     title: { zh: title_zh, ja: title_ja, en: title_en },
-    ctx: { zh: story.ctxZh || story.ctx, ja: story.ctxZh || story.ctx, en: story.ctx },
+    ctx: { zh: story.ctxZh || story.ctx, ja: story.ctxJa || story.ctx, en: story.ctx },
   };
 });
 
