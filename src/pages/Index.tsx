@@ -21,6 +21,11 @@ interface TimelineItem {
   num?: string; // Story number, e.g., "19-1"
 }
 
+interface DateGroup {
+  date: string;
+  items: TimelineItem[];
+}
+
 // --- Data & UI Configuration ---
 
 const PHASES = [
@@ -243,9 +248,21 @@ function truncate(text: string, length: number): string {
     return text.substring(0, length) + '...';
 }
 
+function groupItemsByDate(items: TimelineItem[]): DateGroup[] {
+  return items.reduce<DateGroup[]>((groups, item) => {
+    const currentGroup = groups[groups.length - 1];
+    if (currentGroup?.date === item.date) {
+      currentGroup.items.push(item);
+    } else {
+      groups.push({ date: item.date, items: [item] });
+    }
+    return groups;
+  }, []);
+}
+
 // --- UI Components ---
 
-function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
+function Card({ item, side, lang, showDate = true, onClick }: { item: TimelineItem; side: string; lang: Lang; showDate?: boolean; onClick: (item: TimelineItem, side: string) => void }) {
   const link = getLink(item);
   const typeKey = (item.type || '');
   const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
@@ -265,7 +282,7 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
       {item.img && <img src={item.img} alt={rawTitle} className="card-img" />}
       <div className="card-body">
         <div className="card-meta">
-          <span className="card-date">{fmt(item.date, lang)}</span>
+          {showDate && <span className="card-date">{fmt(item.date, lang)}</span>}
           <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
         </div>
         <div className="card-emoji">{item.emoji || '💫'}</div>
@@ -275,6 +292,19 @@ function Card({ item, side, lang, onClick }: { item: TimelineItem; side: string;
         </div>
         {displayCtx && <div className="card-ctx">{displayCtx}</div>}
         <div className="card-more">{moreText}</div>
+      </div>
+    </div>
+  );
+}
+
+function DateStack({ group, lang, onClick }: { group: DateGroup; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
+  return (
+    <div className="date-stack">
+      <div className="date-stack-label">{fmt(group.date, lang)}</div>
+      <div className="date-stack-cards">
+        {group.items.map(item => (
+          <Card key={item.id} item={item} side={item.side} lang={lang} showDate={false} onClick={onClick} />
+        ))}
       </div>
     </div>
   );
@@ -407,10 +437,8 @@ export default function Index() {
         )}
 
         {activePhases.map(phase => {
-          const items = byPhase[phase.id] || [];
-          const mikoItems = items.filter(e => e.side === 'miko').sort((a, b) => a.date.localeCompare(b.date));
-          const suiseiItems = items.filter(e => e.side === 'suisei').sort((a, b) => a.date.localeCompare(b.date));
-          const sharedItems = items.filter(e => e.side === 'shared').sort((a, b) => a.date.localeCompare(b.date));
+          const items = (byPhase[phase.id] || []).sort((a, b) => a.date.localeCompare(b.date));
+          const dateGroups = groupItemsByDate(items);
 
           return (
             <div key={phase.id} className="phase-group" id={`phase-${phase.id}`}>
@@ -426,48 +454,12 @@ export default function Index() {
               </div>
               <p className="phase-desc" dangerouslySetInnerHTML={{ __html: phase.desc[lang] }}></p>
 
-              <div className="dual">
-                <div>
-                  {(mikoItems.length > 0 || suiseiItems.length > 0) && (
-                    <div className="col-head miko">{UI_STRINGS.mikoColumn[lang]}</div>
-                  )}
-                  <div className="col-cards">
-                    {mikoItems.map(item => (
-                      <Card key={item.id} item={item} side="miko" lang={lang}
-                        onClick={(it, s) => setModal({ item: it, side: s })} />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="axis-col"><div className="ax-line"></div></div>
-
-                <div>
-                  {(mikoItems.length > 0 || suiseiItems.length > 0) && (
-                    <div className="col-head suisei">{UI_STRINGS.suiseiColumn[lang]}</div>
-                  )}
-                  <div className="col-cards">
-                    {suiseiItems.map(item => (
-                      <Card key={item.id} item={item} side="suisei" lang={lang}
-                        onClick={(it, s) => setModal({ item: it, side: s })} />
-                    ))}
-                  </div>
-                </div>
+              <div className="phase-day-list">
+                {dateGroups.map(group => (
+                  <DateStack key={group.date} group={group} lang={lang}
+                    onClick={(it, s) => setModal({ item: it, side: s })} />
+                ))}
               </div>
-
-              {sharedItems.length > 0 && (
-                <div className="shared-wrap">
-                  <div className="shared-head">
-                    <h2>{UI_STRINGS.sharedMoments[lang]}</h2>
-                    <p>{UI_STRINGS.sharedSub[lang].replace('{count}', String(sharedItems.length))}</p>
-                  </div>
-                  <div className="shared-grid">
-                    {sharedItems.map(item => (
-                      <Card key={item.id} item={item} side="shared" lang={lang}
-                        onClick={(it, s) => setModal({ item: it, side: s })} />
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
