@@ -149,6 +149,16 @@ const UI_STRINGS = {
   modalLink: {
     yt: { zh: '▶ 在 YouTube 觀看', ja: '▶ YouTubeで見る', en: '▶ Watch on YouTube' },
     tw: { zh: '🐦 在 Twitter 查看', ja: '🐦 Twitterで見る', en: '🐦 View on Twitter' }
+  },
+  mergedStoryTitle: {
+    zh: '{count} 則故事合併',
+    ja: '{count} 件の物語を統合',
+    en: '{count} stories merged'
+  },
+  mergedStoryIntro: {
+    zh: '同一天的故事已合併顯示：',
+    ja: '同じ日の物語を統合表示：',
+    en: 'Stories from the same day are merged:'
   }
 };
 
@@ -260,6 +270,40 @@ function groupItemsByDate(items: TimelineItem[]): DateGroup[] {
   }, []);
 }
 
+function mergeDateGroup(group: DateGroup): TimelineItem {
+  if (group.items.length === 1) return group.items[0];
+
+  const first = group.items[0];
+  const sideSet = new Set(group.items.map(item => item.side));
+  const mergedSide = sideSet.size === 1 ? first.side : 'shared';
+  const formatTitle = (lang: Lang) => UI_STRINGS.mergedStoryTitle[lang].replace('{count}', String(group.items.length));
+  const formatCtx = (lang: Lang) => [
+    UI_STRINGS.mergedStoryIntro[lang],
+    '',
+    ...group.items.map((item, index) => {
+      const title = item.title[lang] || item.title.zh || item.title.en || '';
+      const ctx = item.ctx[lang] || item.ctx.zh || item.ctx.en || '';
+      const num = item.num ? `${item.num} ` : '';
+      return `${index + 1}. ${num}${title}\n${ctx}`;
+    })
+  ].join('\n');
+
+  return {
+    ...first,
+    id: group.items.map(item => item.id).join('+'),
+    side: mergedSide,
+    emoji: '📚',
+    title: { zh: formatTitle('zh'), ja: formatTitle('ja'), en: formatTitle('en') },
+    ctx: { zh: formatCtx('zh'), ja: formatCtx('ja'), en: formatCtx('en') },
+    type: 'Mixed',
+    link: undefined,
+    img: undefined,
+    num: first.num && group.items[group.items.length - 1].num
+      ? `${first.num}–${group.items[group.items.length - 1].num}`
+      : first.num,
+  };
+}
+
 // --- UI Components ---
 
 function Card({ item, side, lang, showDate = true, onClick }: { item: TimelineItem; side: string; lang: Lang; showDate?: boolean; onClick: (item: TimelineItem, side: string) => void }) {
@@ -298,13 +342,13 @@ function Card({ item, side, lang, showDate = true, onClick }: { item: TimelineIt
 }
 
 function DateStack({ group, lang, onClick }: { group: DateGroup; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
+  const mergedItem = mergeDateGroup(group);
+
   return (
     <div className="date-stack">
       <div className="date-stack-label">{fmt(group.date, lang)}</div>
       <div className="date-stack-cards">
-        {group.items.map(item => (
-          <Card key={item.id} item={item} side={item.side} lang={lang} showDate={false} onClick={onClick} />
-        ))}
+        <Card key={mergedItem.id} item={mergedItem} side={mergedItem.side} lang={lang} showDate={false} onClick={onClick} />
       </div>
     </div>
   );
@@ -384,10 +428,11 @@ export default function Index() {
   const mikoCount = transformedTimeline.filter(e => e.side === 'miko').length;
   const suiseiCount = transformedTimeline.filter(e => e.side === 'suisei').length;
   const sharedCount = transformedTimeline.filter(e => e.side === 'shared').length;
-  const total = transformedTimeline.length;
 
   const activePhases = PHASES.filter(p => byPhase[p.id] && byPhase[p.id].length > 0);
   const currentYear = new Date().getFullYear();
+  const displayedCount = activePhases.reduce((count, phase) => count + groupItemsByDate(byPhase[phase.id] || []).length, 0);
+  const totalDisplayCount = groupItemsByDate(allItems).length;
 
   return (
     <>
@@ -427,8 +472,8 @@ export default function Index() {
 
       <div className="result-line">
         {search || phaseFilter !== 0
-          ? UI_STRINGS.foundStories[lang].replace('{count}', String(filtered.length))
-          : UI_STRINGS.totalStories[lang].replace('{count}', String(total)).replace('{year}', String(currentYear))}
+          ? UI_STRINGS.foundStories[lang].replace('{count}', String(displayedCount))
+          : UI_STRINGS.totalStories[lang].replace('{count}', String(totalDisplayCount)).replace('{year}', String(currentYear))}
       </div>
 
       <div className="main-wrap">
