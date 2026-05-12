@@ -52,10 +52,10 @@ const PHASES = [
   },
   { 
     id: 4, 
-    label: { zh: '星街表態＆轉折點', ja: '星街の表明＆転換点', en: 'Suisei\'s Declaration & The Turning Point' }, 
+    label: { zh: '咪口想太多，星街表態想親近階段', ja: 'みこの考えすぎ、星街の親近宣言段階', en: 'Miko Overthinks, Suisei Reaches Out' },
     period: 'Early 2022', 
     color: '#ffdd7b', 
-    desc: { zh: '面對咪口的過度謹慎，星街在多人連動中明確表達想跟咪口變得更親近的意圖，並澄清兩人並非營業。此舉成為兩人關係的重大轉折點。', ja: '過度に慎重なみこに対し、星街がコラボ配信中にはっきりと「もっと仲良くなりたい」という意図を表明し、二人がビジネスでないことを明確にした。これが二人の関係における大きな転換点となった。', en: 'Facing Miko\'s over-cautiousness, Suisei clearly stated her desire to get closer during a collab, clarifying they were not just putting on an act. This became a major turning point in their relationship.' } 
+    desc: { zh: '咪口開始想東想西、變得過度謹慎；星街則逐漸表態想跟咪口更親近。後續「澄清兩人不百合營業」成為關係轉折點。', ja: 'みこが考えすぎて慎重になり、星街はみこともっと親しくなりたい意思を示し始める。その後の「百合営業ではない」という明確化が関係の転換点となった。', en: 'Miko began overthinking and becoming overly cautious, while Suisei increasingly showed that she wanted to be closer. The later clarification that they were not yuri-bait became a turning point.' }
   },
   { 
     id: 5, 
@@ -156,9 +156,9 @@ const UI_STRINGS = {
     en: '{count} stories merged'
   },
   mergedStoryIntro: {
-    zh: '同一天的故事已合併顯示：',
-    ja: '同じ日の物語を統合表示：',
-    en: 'Stories from the same day are merged:'
+    zh: '同一天的故事已合併顯示，📚 參考資料列於頁面下方：',
+    ja: '同じ日の物語を統合表示。📚 参考資料はページ下部に掲載：',
+    en: 'Stories from the same day are merged. 📚 References are listed below:'
   }
 };
 
@@ -518,6 +518,9 @@ export default function Index() {
         <div className="references-section">
           <h3>{UI_STRINGS.references[lang]}</h3>
           <ul>
+            <li><a href="https://disp.cc/b/ACG/gu7D" target="_blank" rel="noopener noreferrer">miComet歷史本文 — disp.cc ACG</a></li>
+            <li><a href="https://www.ptt.cc/bbs/SakuraMiko/M.1709694215.A.D46.html" target="_blank" rel="noopener noreferrer">miComet編年史 1 - 真.商業階段 — PTT SakuraMiko</a></li>
+            <li>2019–2020 早期考古補充：各合併故事內保留原始圖片、推文、影片與備份連結。</li>
             <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noopener noreferrer">櫻巫女 Sakura Miko — YouTube Official Channel</a></li>
             <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noopener noreferrer">星街彗星 Hoshimachi Suisei — YouTube Official Channel</a></li>
             <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noopener noreferrer">櫻巫女 — Twitter / X</a></li>
