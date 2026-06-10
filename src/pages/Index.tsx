@@ -258,7 +258,7 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
 
 export default function Index() {
   const [search, setSearch] = useState('');
-  const [phaseFilter, setPhaseFilter] = useState(0);
+  const [yearFilter, setYearFilter] = useState<string>('0');
   const [modalItem, setModalItem] = useState<TimelineItem | null>(null);
   const [chartMode, setChartMode] = useState<ChartMode>('year');
 
@@ -275,14 +275,14 @@ export default function Index() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return items.filter((item) => {
-      if (phaseFilter !== 0 && item.phase !== phaseFilter) return false;
+      if (yearFilter !== '0' && item.date.slice(0, 4) !== yearFilter) return false;
       if (!q) return true;
       return [item.num, item.date, item.title, item.ctx].join(' ').toLowerCase().includes(q);
     });
-  }, [phaseFilter, search]);
+  }, [yearFilter, search]);
 
-  const filteredPhaseCount = useMemo(() => groupByDate(filtered).length, [filtered]);
-  const activePhases = PHASES.filter((phase) => filtered.some((item) => item.phase === phase.id));
+  const filteredGroupCount = useMemo(() => groupByDate(filtered).length, [filtered]);
+  const activeYears = YEARS.filter((year) => filtered.some((item) => item.date.startsWith(String(year))));
   const typeStats = [...stats.typeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
 
   return (
