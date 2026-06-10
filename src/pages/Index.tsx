@@ -55,6 +55,10 @@ const UI = {
   title: 'miComet Compendium',
   subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
   heroTag: '2025 Archive / Black Edition',
+  heroStatus: 'Live timeline • synced from GitHub',
+  heroEdit: 'Edit with GitHub',
+  heroMiniTitle: 'Lovable-style dashboard',
+  heroMiniBody: 'Top status strip, summary card, and chart panel all keep the campaign-poster feeling.',
   heroBlurb: '黑底、粉藍高光、年 / 月雙模式折線圖。共享故事同時計入 Miko 與 Suisei，讓兩條線一起往前看。',
   search: '搜尋故事、關鍵字、日期...',
   filter: '篩選年份：',
@@ -136,13 +140,9 @@ function Card({ item, onOpen }: { item: TimelineItem; onOpen: (item: TimelineIte
         <span className={`card-type type-${item.type.toLowerCase()}`}>{typeLabel}</span>
       </div>
       <div className="card-emoji">{item.emoji || '✨'}</div>
-      <div className="card-title">
-        {item.num} {item.title}
-      </div>
+      <div className="card-title">{item.num} {item.title}</div>
       <div className="card-ctx">{item.ctx}</div>
-      <div className="card-more">
-        {link ? (link.type === 'yt' ? '▶ 前往影片' : '🐦 前往推文') : '閱讀詳情 →'}
-      </div>
+      <div className="card-more">{link ? (link.type === 'yt' ? '▶ 前往影片' : '🐦 前往推文') : '閱讀詳情 →'}</div>
     </article>
   );
 }
@@ -150,22 +150,15 @@ function Card({ item, onOpen }: { item: TimelineItem; onOpen: (item: TimelineIte
 function Modal({ item, onClose }: { item: TimelineItem; onClose: () => void }) {
   const link = getLink(item);
   const phase = PHASES.find((p) => p.id === item.phase);
-
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>
-          ×
-        </button>
+        <button className="modal-close" onClick={onClose}>×</button>
         <div className={`modal-bar side-${item.side}`} />
         <div className="modal-body">
-          <div className="modal-kicker">
-            {item.num} · {TYPE_NAMES[item.type] ?? item.type}
-          </div>
+          <div className="modal-kicker">{item.num} · {TYPE_NAMES[item.type] ?? item.type}</div>
           <h3>{item.title}</h3>
-          <div className="modal-meta">
-            {fmt(item.date)}{phase ? ` · ${phase.label}` : ''}
-          </div>
+          <div className="modal-meta">{fmt(item.date)}{phase ? ` · ${phase.label}` : ''}</div>
           <p>{item.ctx}</p>
           {link && (
             <a href={link.url} target="_blank" rel="noreferrer" className="modal-link">
@@ -202,12 +195,7 @@ function buildChartData(mode: ChartMode) {
       cumulativeMiko += point.miko;
       cumulativeSuisei += point.suisei;
       cumulativeTotal += point.total;
-      return {
-        label: String(year),
-        miko: cumulativeMiko,
-        suisei: cumulativeSuisei,
-        total: cumulativeTotal,
-      };
+      return { label: String(year), miko: cumulativeMiko, suisei: cumulativeSuisei, total: cumulativeTotal };
     });
   }
 
@@ -259,23 +247,15 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
           <div className="chart-subtitle">{UI.chartSub}</div>
         </div>
         <div className="chart-toggle">
-          <button className={mode === 'year' ? 'active' : ''} onClick={() => onModeChange('year')}>
-            {UI.chartYear}
-          </button>
-          <button className={mode === 'month' ? 'active' : ''} onClick={() => onModeChange('month')}>
-            {UI.chartMonth}
-          </button>
+          <button className={mode === 'year' ? 'active' : ''} onClick={() => onModeChange('year')}>{UI.chartYear}</button>
+          <button className={mode === 'month' ? 'active' : ''} onClick={() => onModeChange('month')}>{UI.chartMonth}</button>
         </div>
       </div>
       <div className="chart-frame">
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.07)" strokeDasharray="4 6" />
-            <XAxis
-              dataKey="label"
-              tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }}
-              interval={mode === 'year' ? 0 : 23}
-            />
+            <XAxis dataKey="label" tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} interval={mode === 'year' ? 0 : 23} />
             <YAxis tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} allowDecimals={false} />
             <Tooltip
               contentStyle={{
@@ -313,19 +293,11 @@ export default function Index() {
   const stats = useMemo(() => {
     const counts: Record<Side, number> = { miko: 0, suisei: 0, shared: 0, others: 0 };
     const typeCounts = new Map<string, number>();
-
     items.forEach((item) => {
       counts[item.side] += 1;
       typeCounts.set(item.type, (typeCounts.get(item.type) ?? 0) + 1);
     });
-
-    return {
-      total: items.length,
-      counts,
-      typeCounts,
-      first: items[0],
-      last: items[items.length - 1],
-    };
+    return { total: items.length, counts, typeCounts, first: items[0], last: items[items.length - 1] };
   }, []);
 
   const filtered = useMemo(() => {
@@ -349,6 +321,11 @@ export default function Index() {
       <div className="backdrop-grid" />
 
       <header className="hero">
+        <div className="hero-topbar">
+          <span className="hero-status-dot" />
+          <span>{UI.heroStatus}</span>
+          <a href="https://github.com/ychuqx-oss/mcws" target="_blank" rel="noreferrer">{UI.heroEdit}</a>
+        </div>
         <div className="hero-grid">
           <div className="hero-copy">
             <div className="hero-tag">{UI.heroTag}</div>
@@ -357,7 +334,7 @@ export default function Index() {
             <div className="hero-blurb">{UI.heroBlurb}</div>
           </div>
 
-          <div className="hero-art">
+          <aside className="hero-art">
             <div className="hero-slab slab-pink" />
             <div className="hero-slab slab-blue" />
             <div className="hero-slab slab-gold" />
@@ -366,7 +343,13 @@ export default function Index() {
               <div className="badge-value">{stats.total}</div>
               <div className="badge-sub">stories archived</div>
             </div>
-          </div>
+            <div className="hero-mini-card">
+              <div className="mini-title">{UI.heroMiniTitle}</div>
+              <div className="mini-body">{UI.heroMiniBody}</div>
+              <div className="mini-metric"><span>{UI.miko}</span><strong>{stats.counts.miko}</strong></div>
+              <div className="mini-metric"><span>{UI.suisei}</span><strong>{stats.counts.suisei}</strong></div>
+            </div>
+          </aside>
         </div>
       </header>
 
@@ -394,19 +377,15 @@ export default function Index() {
             <div className="stat-note">{stats.last.title}</div>
           </div>
         </div>
-
         <div className="type-strip" style={{ marginTop: 14 }}>
           <div className="type-chip">{UI.miko} <strong>{stats.counts.miko}</strong></div>
           <div className="type-chip">{UI.suisei} <strong>{stats.counts.suisei}</strong></div>
           <div className="type-chip">{UI.shared} <strong>{stats.counts.shared}</strong></div>
           <div className="type-chip">{UI.others} <strong>{stats.counts.others}</strong></div>
         </div>
-
         <div className="type-strip">
           {typeStats.map(([type, count]) => (
-            <div key={type} className="type-chip">
-              {TYPE_NAMES[type] ?? type} <strong>{count}</strong>
-            </div>
+            <div key={type} className="type-chip">{TYPE_NAMES[type] ?? type} <strong>{count}</strong></div>
           ))}
         </div>
       </section>
@@ -420,9 +399,7 @@ export default function Index() {
         </div>
         <div className="filter-row">
           <span>{UI.filter}</span>
-          <button className={yearFilter === 0 ? 'active' : ''} onClick={() => setYearFilter(0)}>
-            {UI.all}
-          </button>
+          <button className={yearFilter === 0 ? 'active' : ''} onClick={() => setYearFilter(0)}>{UI.all}</button>
           {years.map((year) => (
             <button
               key={year}
@@ -444,7 +421,6 @@ export default function Index() {
           activePhases.map((phase) => {
             const phaseItems = filtered.filter((item) => item.phase === phase.id);
             const groups = groupByDate(phaseItems);
-
             return (
               <section key={phase.id} className="phase-block">
                 <div className="phase-head">
@@ -472,39 +448,20 @@ export default function Index() {
             );
           })
         )}
-
         <section className="convergence">
           <h3>Two Lines, Finally Converging</h3>
           <p>{UI.heroBlurb}</p>
         </section>
-
         <section className="references">
           <h3>{UI.refs}</h3>
           <ul>
-            <li>
-              <a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noreferrer">
-                Sakura Miko YouTube
-              </a>
-            </li>
-            <li>
-              <a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noreferrer">
-                Hoshimachi Suisei YouTube
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com/sakuramiko35" target="_blank" rel="noreferrer">
-                Sakura Miko X
-              </a>
-            </li>
-            <li>
-              <a href="https://twitter.com/suaborealice" target="_blank" rel="noreferrer">
-                Hoshimachi Suisei X
-              </a>
-            </li>
+            <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noreferrer">Sakura Miko YouTube</a></li>
+            <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noreferrer">Hoshimachi Suisei YouTube</a></li>
+            <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noreferrer">Sakura Miko X</a></li>
+            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noreferrer">Hoshimachi Suisei X</a></li>
           </ul>
         </section>
       </main>
-
       {modalItem && <Modal item={modalItem} onClose={() => setModalItem(null)} />}
     </div>
   );
