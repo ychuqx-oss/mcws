@@ -1,24 +1,20 @@
-
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
 
-// Define types and constants directly in the file for clarity
-
 type Lang = 'zh' | 'ja' | 'en';
+type Side = 'miko' | 'suisei' | 'shared' | 'others';
 
-// Define the shape of the transformed item that the components will use
 interface TimelineItem {
   id: string;
   date: string;
   phase: number;
-  side: 'miko' | 'suisei' | 'shared' | 'others';
+  side: Side;
   emoji: string;
-  title: { [key in Lang]?: string };
-  ctx: { [key in Lang]?: string };
+  title: Record<Lang, string>;
+  ctx: Record<Lang, string>;
   type: string;
   link?: string;
-  img?: string;
-  num?: string; // Story number, e.g., "19-1"
+  num: string;
 }
 
 interface DateGroup {
@@ -26,363 +22,130 @@ interface DateGroup {
   items: TimelineItem[];
 }
 
-// --- Data & UI Configuration ---
-
 const PHASES = [
-  { 
-    id: 1, 
-    label: { zh: '真・商業夥伴階段', ja: '真・ビジネスパートナー段階', en: 'True Business Partners' }, 
-    period: '2019 – 2020', 
-    color: '#ff7b7b', 
-    desc: { zh: '從 Project Winter 的血腥初見，到方舟伺服器的互動，兩人奠定了充滿節目效果的「商業」關係基礎。', ja: 'Project Winterでの血塗られた初対面から、ARKサーバーでの交流まで、二人はエンターテイメント性に富んだ「ビジネス」関係の基礎を築いた。', en: 'From the bloody first encounter in Project Winter to interactions on the ARK server, the two laid the foundation for a "business" relationship full of entertainment value.' } 
-  },
-  { 
-    id: 2, 
-    label: { zh: '星街寵溺，咪口畏縮階段', ja: '星街の寵愛、みこの萎縮段階', en: 'Suisei\'s Doting, Miko\'s Cowering' }, 
-    period: 'Early 2021', 
-    color: '#ff9a7b', 
-    desc: { zh: '星街開始展現出對咪口的明顯偏愛和照顧，而咪口在這份直球攻勢下，反而顯得有些害羞和退縮。', ja: '星街がみこへの明確な偏愛と世話焼きを見せ始め、みこはそのストレートなアプローチにむしろ恥ずかしがり、及び腰になっていた時期。', en: 'Suisei began to show clear favoritism and care for Miko, while Miko, in response to this directness, became somewhat shy and withdrawn.' } 
-  },
-  { 
-    id: 3, 
-    label: { zh: '咪口刻意演出想貼貼，星街假裝冷淡的商業梗階段', ja: 'みこアピール、星街ツンデレのビジネスネタ段階', en: 'The "Business" Gag: Miko\'s Advances, Suisei\'s Tsundere' }, 
-    period: 'Mid - Late 2021', 
-    color: '#ffb37b', 
-    desc: { zh: '「商業夥伴」的互動模式成熟。咪口開始主動製造貼貼機會，星街則以假裝冷淡或吐槽來回應，形成絕佳的綜藝效果。', ja: '「ビジネスパートナー」のやり取りが成熟。みこが積極的にてぇてぇな機会を作り出し、星街がツンとした態度やツッコミで応じることで、絶妙なバラエティ効果を生み出した。', en: 'The "business partner" dynamic matured. Miko actively created intimate moments, while Suisei responded with a tsundere-like coolness or retorts, creating a perfect comedic effect.' } 
-  },
-  { 
-    id: 4, 
-    label: { zh: '星街表態＆轉折點', ja: '星街の表明＆転換点', en: 'Suisei\'s Declaration & The Turning Point' }, 
-    period: 'Early 2022', 
-    color: '#ffdd7b', 
-    desc: { zh: '面對咪口的過度謹慎，星街在多人連動中明確表達想跟咪口變得更親近的意圖，並澄清兩人並非營業。此舉成為兩人關係的重大轉折點。', ja: '過度に慎重なみこに対し、星街がコラボ配信中にはっきりと「もっと仲良くなりたい」という意図を表明し、二人がビジネスでないことを明確にした。これが二人の関係における大きな転換点となった。', en: 'Facing Miko\'s over-cautiousness, Suisei clearly stated her desire to get closer during a collab, clarifying they were not just putting on an act. This became a major turning point in their relationship.' } 
-  },
-  { 
-    id: 5, 
-    label: { zh: '咪口開始敢表達親近階段', ja: 'みこが親近感を示し始めた段階', en: 'Miko Dares to Be Close' }, 
-    period: 'Mid 2022', 
-    color: '#d4e880', 
-    desc: { zh: '在星街直球表態後，咪口的心防逐漸融化，開始更自然、更大方地對星街表達自己的親近感與依賴。', ja: '星街のストレートな表明を受け、みこの心の壁が徐々に溶け始め、より自然に、そして大胆に星街への親近感や依存を示すようになった。', en: 'After Suisei\'s direct declaration, Miko\'s guard gradually melted, and she began to more naturally and openly express her closeness and reliance on Suisei.' } 
-  },
-  { 
-    id: 6, 
-    label: { zh: '雙方開始每日任務階段', ja: '双方のデイリーミッション段階', en: 'The Daily Missions Phase' }, 
-    period: 'Late 2022 – Early 2023', 
-    color: '#a0e880', 
-    desc: { zh: 'RUST、夏祭等長期連動成為常態，私下通話、互傳訊息的「每日任務」變得頻繁，生活感的互動大量增加。', ja: 'RUSTや夏祭りなどの長期コラボが常態化し、プライベートな通話やメッセージのやり取りといった「デイリーミッション」が頻繁になり、日常感のある交流が大幅に増えた。', en: 'Long-term collabs like RUST and the summer festival became the norm. "Daily missions" of private calls and messages became frequent, greatly increasing their slice-of-life interactions.' } 
-  },
-  { 
-    id: 7, 
-    label: { zh: '小秘密謎語人階段', ja: '秘密の匂わせ段階', en: 'The Riddler & Secrets Phase' }, 
-    period: 'Mid 2023', 
-    color: '#80e8c8', 
-    desc: { zh: '兩人開始在直播中有意無意地透露一些只有她們彼此才懂的「小秘密」和暗號，享受著粉絲當偵探的樂趣。', ja: '二人が配信で意図的に、あるいは無意識に、お互いだけが理解できる「秘密」や合図を匂わせ始め、ファンが探偵になるのを楽しんでいた時期。', en: 'The two started intentionally or unintentionally dropping hints and secrets in their streams that only they understood, enjoying watching their fans play detective.' } 
-  },
-  { 
-    id: 8, 
-    label: { zh: '假借商業之名大曬特曬階段', ja: 'ビジネス名目の大放出段階', en: 'Flexing in the Name of Business' }, 
-    period: 'Late 2023', 
-    color: '#80c8e8', 
-    desc: { zh: '「商業」的藉口變得越來越薄弱，兩人開始毫無顧忌地分享線下約會、過夜等故事，周圍的成員也開始大方地吐槽和戳破。', ja: '「ビジネス」という口実がますます薄弱になり、二人はオフラインでのデートや泊まりのエピソードを臆面もなく共有し始め、周りのメンバーも遠慮なくツッコミを入れるようになった。', en: 'The excuse of "business" wore increasingly thin as they shamelessly shared stories of offline dates and sleepovers, and other members began to openly tease them about it.' } 
-  },
-  { 
-    id: 9, 
-    label: { zh: '控糖大方供給階段', ja: '供給コントロールと大盤振る舞い段階', en: 'Controlled & Generous Supply' }, 
-    period: '2024', 
-    color: '#a9a3f9', 
-    desc: { zh: '雖然咪口偶爾還是會「控糖」，但兩人整體的互動變得極度自然與大方，高甜度的供給已成常態，粉絲們彷彿每天都在過年。', ja: 'みこは時折「糖分コントロール」をするものの、二人の全体的なやり取りは極めて自然でオープンになり、高糖度の供給が常態化。ファンはまるでお祭りのような毎日を送っている。', en: 'Although Miko occasionally tries to "control the sugar," their overall interaction has become extremely natural and generous. High-sweetness content is now the norm, and fans feel like they are celebrating every day.' } 
-  },
-  { 
-    id: 10, 
-    label: { zh: '放火燒村階段', ja: '村焼き段階', en: 'Burning Down the Village' }, 
-    period: 'Future', 
-    color: '#d7a3f9', 
-    desc: { zh: '傳說中的最終階段。所有的鋪陳都已完成，只待那點燃一切的最終火花，將整個村莊（粉絲社群）捲入幸福的火焰中。', ja: '伝説の最終段階。すべての準備は整い、あとは全てを燃え上がらせる最後の火花を待つのみ。村全体（ファンコミュニティ）を幸福の炎に巻き込む。', en: 'The legendary final phase. All the groundwork has been laid, waiting only for the final spark to ignite everything and engulf the entire village (the fan community) in a happy blaze.' } 
-  }
+  { id: 1, label: { zh: '真・商業夥伴階段', ja: '真・ビジネスパートナー段階', en: 'True Business Partners' }, period: '2019 - 2020', color: '#ff7b7b', desc: { zh: '從最初的 Project Winter 到後續互動，奠定了 miComet 的開端。', ja: '最初の Project Winter から、その後の交流まで。', en: 'From the first Project Winter interaction onward.' } },
+  { id: 2, label: { zh: '曖昧升溫階段', ja: '曖昧が温まる段階', en: 'Heating Up' }, period: '2021', color: '#ffb37b', desc: { zh: '兩人之間的距離開始明顯拉近。', ja: '二人の距離がはっきり縮まり始めた時期。', en: 'A clear shift toward closeness.' } },
+  { id: 3, label: { zh: '公開承認階段', ja: '公開承認段階', en: 'Openly Acknowledged' }, period: '2022', color: '#d4e880', desc: { zh: '從互動到態度，關係開始更自然。', ja: 'やり取りも態度も、より自然に。', en: 'The relationship became more natural and open.' } },
+  { id: 4, label: { zh: '日常化階段', ja: '日常化段階', en: 'Daily Life' }, period: '2023 - 2024', color: '#80c8e8', desc: { zh: '日常互動與私下連結變成常態。', ja: '日常のやり取りと私的なつながりが常態化。', en: 'Daily interaction became the norm.' } },
+  { id: 5, label: { zh: '未來階段', ja: '未来段階', en: 'Future' }, period: 'Future', color: '#a9a3f9', desc: { zh: '傳說中的最終章。', ja: '伝説の最終章。', en: 'The legendary final chapter.' } },
 ];
 
-const TYPE_NAMES: { [key: string]: { [key in Lang]: string } } = {
-    Clip: { zh: '剪輯', ja: '切り抜き', en: 'Clip' },
-    Stream: { zh: '直播', ja: '配信', en: 'Stream' },
-    Text: { zh: '文字', ja: 'テキスト', en: 'Text' },
-    Mixed: { zh: '綜合', ja: '混合', en: 'Mixed' },
-    Audio: { zh: '音訊', ja: '音声', en: 'Audio' },
-    '': { zh: '其他', ja: 'その他', en: 'Other' },
+const TYPE_NAMES: Record<string, Record<Lang, string>> = {
+  Clip: { zh: '剪輯', ja: '切り抜き', en: 'Clip' },
+  Stream: { zh: '直播', ja: '配信', en: 'Stream' },
+  Text: { zh: '文字', ja: 'テキスト', en: 'Text' },
+  Mixed: { zh: '綜合', ja: '混合', en: 'Mixed' },
+  Audio: { zh: '音訊', ja: '音声', en: 'Audio' },
+  Other: { zh: '其他', ja: 'その他', en: 'Other' },
 };
 
-const UI_STRINGS = {
+const UI = {
   title: { zh: 'miComet 編年史', ja: 'miComet クロニクル', en: 'miComet Chronicle' },
-  subtitle: { zh: '星街彗星 × 櫻巫女 ｜ Business & Beyond', ja: '星街すいせい × さくらみこ ｜ ビジネスとそれを超えて', en: 'Hoshimachi Suisei × Sakura Miko | Business & Beyond' },
-  mikoStories: { zh: '🌸 咪口', ja: '🌸 みこち', en: '🌸 Miko' },
-  suiseiStories: { zh: '⭐ 星街', ja: '⭐ すいちゃん', en: '⭐ Suisei' },
-  sharedStories: { zh: '💕 共同', ja: '💕 共有', en: '💕 Shared' },
-  searchPlaceholder: { zh: '搜尋故事...（鬼屋、Mario Kart、Animal、超市、凸待...）', ja: '物語を検索... (お化け屋敷, マリオカート, アニマル, スーパー...)', en: 'Search stories... (haunted house, Mario Kart, Animal, supermarket...)' },
-  filterPhase: { zh: '篩選階段：', ja: 'フェーズで絞り込み:', en: 'Filter by Phase:' },
+  subtitle: { zh: '星街彗星 × 櫻巫女 | Business & Beyond', ja: '星街すいせい × さくらみこ | Business & Beyond', en: 'Hoshimachi Suisei × Sakura Miko | Business & Beyond' },
+  search: { zh: '搜尋故事、關鍵字、日期...', ja: '物語・キーワード・日付を検索...', en: 'Search stories, keywords, dates...' },
+  filter: { zh: '篩選階段：', ja: '段階で絞り込み：', en: 'Filter by phase:' },
   all: { zh: '全部', ja: 'すべて', en: 'All' },
-  phaseButton: { zh: '第{id}階段 · {label}', ja: 'フェーズ{id} · {label}', en: 'Phase {id} · {label}' },
-  foundStories: { zh: '找到 {count} 個故事', ja: '{count} 件の物語が見つかりました', en: 'Found {count} stories' },
-  totalStories: { zh: '共 {count} 個故事 (2019 – {year})', ja: '合計 {count} 件の物語 (2019 – {year})', en: 'Total of {count} stories (2019 – {year})' },
-  noResults: { zh: '沒有找到符合條件的故事', ja: '該当する物語は見つかりませんでした', en: 'No matching stories found' },
-  mikoColumn: { zh: '🌸 咪口 · 櫻巫女', ja: '🌸 みこち · さくらみこ', en: '🌸 Miko · Sakura Miko' },
-  suiseiColumn: { zh: '⭐ 彗醬 · 星街彗星', ja: '⭐ すいちゃん · 星街彗星', en: '⭐ Suichan · Hoshimachi Suisei' },
-  sharedMoments: { zh: '💕 miComet 共同時刻', ja: '💕 miComet 共有の瞬間', en: '💕 miComet Shared Moments' },
-  sharedSub: { zh: '這個階段兩人一起出現的 {count} 個故事', ja: 'このフェーズで二人が一緒に登場した物語 {count} 件', en: '{count} stories where they appeared together in this phase' },
-  convergenceTitle: { zh: '兩條線，最終交匯', ja: '二つの線が、ついに交わる', en: 'Two Lines, Finally Converging' },
-  convergenceBody: {
-    zh: `從 2019 年星街悄悄打開咪口直播的那一天，<br />到卡片戰士的工商、VILLS 的擁抱、夏祭的冰船約會，<br />從「商業朋友」到「只是來看妳的」，<br /><br />miComet 的故事，從來都不只是商業。`,
-    ja: `2019年、星街がこっそりみこの配信を開いたあの日から、<br />カードファイトのコラボ、VILLSでの抱擁、夏祭りの氷上ボートデートまで、<br />「ビジネスフレンド」から「ただ、君に会いに来ただけ」へ、<br /><br />miCometの物語は、決してビジネスだけではなかった。`,
-    en: `From that day in 2019 when Suisei secretly opened Miko\'s stream,<br />to the Cardfight collab, the hug at VILLS, the ice boat date at the summer festival,<br />from "business friends" to "I just came to see you,"<br /><br />the story of miComet was never just about business.`
-  },
-  references: { zh: '📚 參考資料', ja: '📚 参考資料', en: '📚 References' },
-  cardMore: {
-    yt: { zh: '▶ 前往影片', ja: '▶ 動画へ', en: '▶ Watch Video' },
-    tw: { zh: '🐦 前往推文', ja: '🐦 ツイートへ', en: '🐦 View Tweet' },
-    default: { zh: '閱讀詳情 →', ja: '詳細を見る →', en: 'Read More →' }
-  },
-  modalPov: {
-    miko: { zh: '🌸 櫻巫女視角', ja: '🌸 さくらみこ視点', en: '🌸 Sakura Miko\'s POV' },
-    suisei: { zh: '⭐ 星街彗星視角', ja: '⭐ 星街すいせい視点', en: '⭐ Hoshimachi Suisei\'s POV' },
-    shared: { zh: '💕 miComet 共同', ja: '💕 miComet 共有', en: '💕 miComet Shared' },
-    others: { zh: '📄 其他相關', ja: '📄 その他関連', en: '📄 Others' },
-  },
-  modalPhase: { zh: '第{id}階段：{label}', ja: 'フェーズ{id}：{label}', en: 'Phase {id}: {label}' },
-  modalLink: {
-    yt: { zh: '▶ 在 YouTube 觀看', ja: '▶ YouTubeで見る', en: '▶ Watch on YouTube' },
-    tw: { zh: '🐦 在 Twitter 查看', ja: '🐦 Twitterで見る', en: '🐦 View on Twitter' }
-  },
-  mergedStoryTitle: {
-    zh: '{count} 則故事合併',
-    ja: '{count} 件の物語を統合',
-    en: '{count} stories merged'
-  },
-  mergedStoryIntro: {
-    zh: '同一天的故事已合併顯示：',
-    ja: '同じ日の物語を統合表示：',
-    en: 'Stories from the same day are merged:'
-  }
+  stats: { zh: '統計總覽', ja: '統計サマリー', en: 'Stats' },
+  total: { zh: '總故事數', ja: '総ストーリー数', en: 'Total stories' },
+  shared: { zh: '共同故事', ja: '共同ストーリー', en: 'Shared stories' },
+  first: { zh: '最早紀錄', ja: '最初の記録', en: 'First record' },
+  last: { zh: '最新紀錄', ja: '最新の記錄', en: 'Latest record' },
+  results: { zh: '找到 {count} 個結果', ja: '{count} 件見つかりました', en: '{count} results found' },
+  heroTag: { zh: 'miComet 特別企劃', ja: 'miComet 特別企画', en: 'miComet Special' },
+  heroBlurb: { zh: '以更像活動海報的方式呈現時間線、統計與重點事件。', ja: 'タイムライン、統計、主要イベントをポスター風に再構成。', en: 'A poster-style presentation of the timeline, stats, and highlights.' },
+  refs: { zh: '參考資料', ja: '参考資料', en: 'References' },
 };
 
-// --- Data Transformation (with Story Number) ---
-
-function createStoryNumberMap(stories: MiCometStory[]) {
-  const yearCounters: Record<string, number> = {};
-  const storyNumbers = new Map<MiCometStory, string>();
-
-  [...stories]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .forEach(story => {
-      const year = story.date.slice(0, 4);
-      yearCounters[year] = (yearCounters[year] || 0) + 1;
-      storyNumbers.set(story, `${year.slice(2)}-${yearCounters[year]}`);
-    });
-
-  return storyNumbers;
+function buildStoryNumberMap(stories: MiCometStory[]) {
+  const counters: Record<string, number> = {};
+  const map = new Map<string, string>();
+  [...stories].sort((a, b) => a.date.localeCompare(b.date)).forEach((story) => {
+    const year = story.date.slice(0, 4);
+    counters[year] = (counters[year] ?? 0) + 1;
+    map.set(story.id, `${year.slice(2)}-${counters[year]}`);
+  });
+  return map;
 }
 
-const storyNumbersByStory = createStoryNumberMap(MICOMET_TIMELINE);
+const storyNumbers = buildStoryNumberMap(MICOMET_TIMELINE);
 
-const transformedTimeline: TimelineItem[] = MICOMET_TIMELINE.map((story: MiCometStory): TimelineItem => {
-  const titleParts = story.title.split(' | ');
-  const storyNum = storyNumbersByStory.get(story) || story.id;
-  let title_zh, title_ja, title_en;
-
-  if (titleParts.length > 1) {
-    title_zh = titleParts[1];
-    title_ja = titleParts.length > 2 ? titleParts[2] : title_zh;
-    title_en = titleParts.length > 3 ? titleParts[3] : title_ja;
-  } else {
-    title_zh = story.titleZh || story.title;
-    title_ja = story.titleJa || story.title;
-    title_en = story.title;
-  }
-
-  return {
-    ...story,
-    num: storyNum,
-    title: { zh: title_zh, ja: title_ja, en: title_en },
-    ctx: { zh: story.ctxZh || story.ctx, ja: story.ctxJa || story.ctx, en: story.ctx },
-  };
-});
-
-// --- Evenly distribute stories across phases by date order ---
-(() => {
-  const phaseIds = PHASES.map(p => p.id);
-  const sorted = [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
-  const total = sorted.length;
-  const buckets = phaseIds.length;
-  const per = total / buckets;
-  sorted.forEach((item, i) => {
-    const idx = Math.min(buckets - 1, Math.floor(i / per));
-    item.phase = phaseIds[idx];
-  });
-})();
-
-
-// --- Helper Functions ---
-
-const monthNames: { [key in Lang]: string[] } = {
-  zh: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-  ja: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-};
+const items: TimelineItem[] = MICOMET_TIMELINE.map((story) => ({
+  ...story,
+  num: storyNumbers.get(story.id) ?? story.id,
+  title: {
+    zh: story.titleZh || story.title,
+    ja: story.titleJa || story.title,
+    en: story.title,
+  },
+  ctx: {
+    zh: story.ctxZh || story.ctx,
+    ja: story.ctxJa || story.ctx,
+    en: story.ctx,
+  },
+  type: story.type || 'Other',
+})).sort((a, b) => a.date.localeCompare(b.date));
 
 function fmt(dateISO: string, lang: Lang) {
-  if (!dateISO) return '';
-  const date = new Date(dateISO);
+  const date = new Date(`${dateISO}T00:00:00Z`);
   const y = date.getUTCFullYear();
-  const m = date.getUTCMonth();
+  const m = date.getUTCMonth() + 1;
   const d = date.getUTCDate();
-  if (lang === 'zh') return `${y}年${m + 1}月${d}日`;
-  if (lang === 'ja') return `${y}年${m + 1}月${d}日`;
-  return `${monthNames[lang][m]} ${d}, ${y}`;
+  if (lang === 'en') return `${date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })} ${d}, ${y}`;
+  return `${y}年${m}月${d}日`;
 }
 
 function getLink(item: TimelineItem) {
-    const link = item.link || '';
-    if (link && link.startsWith('http')) {
-        const type = link.includes('twitter') || link.includes('x.com') ? 'tw' : 'yt';
-        return { url: link, type };
-    }
-    const text = (item.ctx?.zh || '') + ' ' + (item.title?.zh || '');
-    const yt = text.match(/https?:\/\/(www\.)?youtu(be\.com|\.be)\/\S+/);
-    if (yt) return { url: yt[0].replace(/[）)】」』"']+$/, ''), type: 'yt' };
-    const tw = text.match(/https?:\/\/(www\.)?twitter\.com\/\S+/);
-    if (tw) return { url: tw[0].replace(/[）)】」』"']+$/, ''), type: 'tw' };
-    return null;
+  const text = `${item.title.zh} ${item.ctx.zh}`;
+  const yt = text.match(/https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/\S+/);
+  if (yt) return { type: 'yt' as const, url: yt[0].replace(/[\u300d\u300f\)]+$/, '') };
+  const tw = text.match(/https?:\/\/(?:www\.)?(?:twitter\.com|x\.com)\/\S+/);
+  if (tw) return { type: 'tw' as const, url: tw[0].replace(/[\u300d\u300f\)]+$/, '') };
+  return null;
 }
 
-function truncate(text: string, length: number): string {
-    if (text.length <= length) {
-        return text;
-    }
-    return text.substring(0, length) + '...';
-}
-
-function groupItemsByDate(items: TimelineItem[]): DateGroup[] {
-  return items.reduce<DateGroup[]>((groups, item) => {
-    const currentGroup = groups[groups.length - 1];
-    if (currentGroup?.date === item.date) {
-      currentGroup.items.push(item);
-    } else {
-      groups.push({ date: item.date, items: [item] });
-    }
-    return groups;
+function groupByDate(list: TimelineItem[]) {
+  return list.reduce<DateGroup[]>((acc, item) => {
+    const last = acc[acc.length - 1];
+    if (last && last.date === item.date) last.items.push(item);
+    else acc.push({ date: item.date, items: [item] });
+    return acc;
   }, []);
 }
 
-function mergeDateGroup(group: DateGroup): TimelineItem {
-  if (group.items.length === 1) return group.items[0];
-
-  const first = group.items[0];
-  const sideSet = new Set(group.items.map(item => item.side));
-  const mergedSide = sideSet.size === 1 ? first.side : 'shared';
-  const formatTitle = (lang: Lang) => UI_STRINGS.mergedStoryTitle[lang].replace('{count}', String(group.items.length));
-  const formatCtx = (lang: Lang) => [
-    UI_STRINGS.mergedStoryIntro[lang],
-    '',
-    ...group.items.map((item, index) => {
-      const title = item.title[lang] || item.title.zh || item.title.en || '';
-      const ctx = item.ctx[lang] || item.ctx.zh || item.ctx.en || '';
-      const num = item.num ? `${item.num} ` : '';
-      return `${index + 1}. ${num}${title}\n${ctx}`;
-    })
-  ].join('\n');
-
-  return {
-    ...first,
-    id: group.items.map(item => item.id).join('+'),
-    side: mergedSide,
-    emoji: '📚',
-    title: { zh: formatTitle('zh'), ja: formatTitle('ja'), en: formatTitle('en') },
-    ctx: { zh: formatCtx('zh'), ja: formatCtx('ja'), en: formatCtx('en') },
-    type: 'Mixed',
-    link: undefined,
-    img: undefined,
-    num: first.num && group.items[group.items.length - 1].num
-      ? `${first.num}–${group.items[group.items.length - 1].num}`
-      : first.num,
-  };
-}
-
-// --- UI Components ---
-
-function Card({ item, side, lang, showDate = true, onClick }: { item: TimelineItem; side: string; lang: Lang; showDate?: boolean; onClick: (item: TimelineItem, side: string) => void }) {
+function Card({ item, lang, onOpen }: { item: TimelineItem; lang: Lang; onOpen: (item: TimelineItem) => void }) {
   const link = getLink(item);
-  const typeKey = (item.type || '');
-  const displayType = TYPE_NAMES[typeKey]?.[lang] || typeKey;
-  
-  const rawTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
-  const displayTitle = truncate(rawTitle, 45);
-
-  const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
-  
-  let moreText = UI_STRINGS.cardMore.default[lang];
-  if (link) {
-    moreText = link.type === 'yt' ? UI_STRINGS.cardMore.yt[lang] : UI_STRINGS.cardMore.tw[lang];
-  }
+  const typeLabel = TYPE_NAMES[item.type]?.[lang] ?? item.type;
 
   return (
-    <div className={`ev-card ${side}`} onClick={() => onClick(item, side)}>
-      {item.img && <img src={item.img} alt={rawTitle} className="card-img" />}
-      <div className="card-body">
-        <div className="card-meta">
-          {showDate && <span className="card-date">{fmt(item.date, lang)}</span>}
-          <span className={`card-type ct-${typeKey.toLowerCase()}`}>{displayType}</span>
-        </div>
-        <div className="card-emoji">{item.emoji || '💫'}</div>
-        <div className="card-title">
-          {item.num && <span className="story-num">{item.num}</span>}
-          {displayTitle}
-        </div>
-        {displayCtx && <div className="card-ctx">{displayCtx}</div>}
-        <div className="card-more">{moreText}</div>
+    <article className={`card side-${item.side}`} onClick={() => onOpen(item)}>
+      <div className="card-top">
+        <span className="card-date">{fmt(item.date, lang)}</span>
+        <span className={`card-type type-${item.type.toLowerCase()}`}>{typeLabel}</span>
       </div>
-    </div>
+      <div className="card-emoji">{item.emoji || '✨'}</div>
+      <div className="card-title">{item.num} {item.title[lang]}</div>
+      <div className="card-ctx">{item.ctx[lang]}</div>
+      <div className="card-more">{link ? (link.type === 'yt' ? '▶ Watch video' : '🐦 View post') : 'Read more →'}</div>
+    </article>
   );
 }
 
-function DateStack({ group, lang, onClick }: { group: DateGroup; lang: Lang; onClick: (item: TimelineItem, side: string) => void }) {
-  const mergedItem = mergeDateGroup(group);
-
-  return (
-    <div className="date-stack">
-      <div className="date-stack-label">{fmt(group.date, lang)}</div>
-      <div className="date-stack-cards">
-        <Card key={mergedItem.id} item={mergedItem} side={mergedItem.side} lang={lang} showDate={false} onClick={onClick} />
-      </div>
-    </div>
-  );
-}
-
-function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string; lang: Lang; onClose: () => void }) {
-  if (!item) return null;
+function Modal({ item, lang, onClose }: { item: TimelineItem; lang: Lang; onClose: () => void }) {
   const link = getLink(item);
-  const povLabel = UI_STRINGS.modalPov[side as 'miko'|'suisei'|'shared'|'others'][lang];
-  const phase = PHASES.find(p => p.id === item.phase);
-  const displayTitle = item.title?.[lang] || item.title?.zh || '(顯示錯誤)';
-  const displayCtx = item.ctx?.[lang] || item.ctx?.zh;
-
+  const phase = PHASES.find((p) => p.id === item.phase);
   return (
-    <div className="modal-bg" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
-        <div className={`modal-hero ${side}`}></div>
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        <div className={`modal-bar side-${item.side}`} />
         <div className="modal-body">
-          <button className="modal-x" onClick={onClose}>✕</button>
-          {item.img && <img src={item.img} alt={displayTitle} className="modal-img" />}
-          <div className={`modal-pov ${side}`}>{povLabel}</div>
-          <div className="modal-date">
-            {fmt(item.date, lang)}
-            {item.type && ` ・ ${TYPE_NAMES[item.type]?.[lang] || item.type}`}
-            {phase ? ` ・ ${UI_STRINGS.modalPhase[lang].replace('{id}', String(phase.id)).replace('{label}', phase.label[lang])}` : ''}
-          </div>
-          <div className="modal-title">
-            {item.num && <span className="story-num">{item.num}</span>}
-            {displayTitle}
-          </div>
-          {displayCtx && <div className="modal-ctx" dangerouslySetInnerHTML={{ __html: displayCtx.replace(/\n/g, '<br />') }}></div>}
+          <div className="modal-kicker">{item.num} · {TYPE_NAMES[item.type]?.[lang] ?? item.type}</div>
+          <h3>{item.title[lang]}</h3>
+          <div className="modal-meta">{fmt(item.date, lang)}{phase ? ` · ${phase.label[lang]}` : ''}</div>
+          <p>{item.ctx[lang]}</p>
           {link && (
-            <a href={link.url} target="_blank" rel="noopener noreferrer" className={`modal-link ${link.type}`}>
-              {link.type === 'yt' ? UI_STRINGS.modalLink.yt[lang] : UI_STRINGS.modalLink.tw[lang]}
+            <a href={link.url} target="_blank" rel="noreferrer" className="modal-link">
+              {link.type === 'yt' ? 'Open YouTube' : 'Open Twitter/X'}
             </a>
           )}
         </div>
@@ -391,146 +154,185 @@ function Modal({ item, side, lang, onClose }: { item: TimelineItem; side: string
   );
 }
 
-// --- Main Page Component ---
-
 export default function Index() {
+  const [lang, setLang] = useState<Lang>('zh');
   const [search, setSearch] = useState('');
   const [phaseFilter, setPhaseFilter] = useState(0);
-  const [modal, setModal] = useState<{ item: TimelineItem; side: string } | null>(null);
-  const [lang, setLang] = useState<Lang>('zh'); // Default language set to Chinese
+  const [modalItem, setModalItem] = useState<TimelineItem | null>(null);
 
-  const allItems = useMemo(() => {
-    return [...transformedTimeline].sort((a, b) => a.date.localeCompare(b.date));
+  const stats = useMemo(() => {
+    const counts: Record<Side, number> = { miko: 0, suisei: 0, shared: 0, others: 0 };
+    const typeCounts = new Map<string, number>();
+    items.forEach((item) => {
+      counts[item.side] += 1;
+      typeCounts.set(item.type, (typeCounts.get(item.type) ?? 0) + 1);
+    });
+    return {
+      total: items.length,
+      counts,
+      typeCounts,
+      first: items[0],
+      last: items[items.length - 1],
+    };
   }, []);
 
   const filtered = useMemo(() => {
-    return allItems.filter(e => {
-      if (phaseFilter !== 0 && e.phase !== phaseFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        const title = (e.title[lang] || e.title.zh || '').toLowerCase();
-        const ctx = (e.ctx[lang] || e.ctx.zh || '').toLowerCase();
-        return e.num?.toLowerCase().includes(q) || title.includes(q) || ctx.includes(q);
-      }
-      return true;
+    const q = search.trim().toLowerCase();
+    return items.filter((item) => {
+      if (phaseFilter !== 0 && item.phase !== phaseFilter) return false;
+      if (!q) return true;
+      return [item.num, item.date, item.title[lang], item.ctx[lang], item.title.zh, item.ctx.zh].join(' ').toLowerCase().includes(q);
     });
-  }, [allItems, search, phaseFilter, lang]);
+  }, [lang, phaseFilter, search]);
 
-  const byPhase = useMemo(() => {
-    const map: Record<number, TimelineItem[]> = {};
-    filtered.forEach(e => {
-      if (!map[e.phase]) map[e.phase] = [];
-      map[e.phase].push(e);
-    });
-    return map;
-  }, [filtered]);
+  const filteredPhaseCount = useMemo(() => groupByDate(filtered).length, [filtered]);
+  const activePhases = PHASES.filter((phase) => filtered.some((item) => item.phase === phase.id));
 
-  const mikoCount = transformedTimeline.filter(e => e.side === 'miko').length;
-  const suiseiCount = transformedTimeline.filter(e => e.side === 'suisei').length;
-  const sharedCount = transformedTimeline.filter(e => e.side === 'shared').length;
-
-  const activePhases = PHASES.filter(p => byPhase[p.id] && byPhase[p.id].length > 0);
-  const currentYear = new Date().getFullYear();
-  const displayedCount = activePhases.reduce((count, phase) => count + groupItemsByDate(byPhase[phase.id] || []).length, 0);
-  const totalDisplayCount = groupItemsByDate(allItems).length;
+  const typeStats = [...stats.typeCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
 
   return (
-    <>
-      <div className="header">
-        <div className="header-lang">
-          <button onClick={() => setLang('zh')} className={lang === 'zh' ? 'on' : ''}><span>ZH</span>中文</button>
-          <button onClick={() => setLang('ja')} className={lang === 'ja' ? 'on' : ''}><span>JP</span>日本語</button>
-          <button onClick={() => setLang('en')} className={lang === 'en' ? 'on' : ''}><span>EN</span>English</button>
-        </div>
-        <div className="header-crown">🌸 ✨ ⭐</div>
-        <h1>{UI_STRINGS.title[lang]}</h1>
-        <div className="header-sub">{UI_STRINGS.subtitle[lang]}</div>
-        <div className="header-pills">
-          <span className="pill pink">{UI_STRINGS.mikoStories[lang]} {mikoCount}</span>
-          <span className="pill blue">{UI_STRINGS.suiseiStories[lang]} {suiseiCount}</span>
-          <span className="pill purple">{UI_STRINGS.sharedStories[lang]} {sharedCount}</span>
-        </div>
-      </div>
+    <div className="page-shell">
+      <div className="backdrop-blob blob-a" />
+      <div className="backdrop-blob blob-b" />
+      <div className="backdrop-grid" />
 
-      <div className="controls-wrap">
-        <div className="search-row">
-          <span className="si">🔍</span>
-          <input placeholder={UI_STRINGS.searchPlaceholder[lang]}
-            value={search} onChange={e => setSearch(e.target.value)} />
+      <header className="hero">
+        <div className="lang-switch">
+          <button className={lang === 'zh' ? 'active' : ''} onClick={() => setLang('zh')}>ZH 中文</button>
+          <button className={lang === 'ja' ? 'active' : ''} onClick={() => setLang('ja')}>JP 日本語</button>
+          <button className={lang === 'en' ? 'active' : ''} onClick={() => setLang('en')}>EN English</button>
         </div>
-        <div className="btn-row">
-          <label>{UI_STRINGS.filterPhase[lang]}</label>
-          <button className={`tbtn ${phaseFilter === 0 ? 'on' : ''}`} onClick={() => setPhaseFilter(0)}>{UI_STRINGS.all[lang]}</button>
-          {PHASES.map(p => (
-            <button key={p.id} className={`tbtn ${phaseFilter === p.id ? 'on' : ''}`}
-              onClick={() => setPhaseFilter(phaseFilter === p.id ? 0 : p.id)}>
-              {UI_STRINGS.phaseButton[lang].replace('{id}', String(p.id)).replace('{label}', p.label[lang])}
+
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <div className="hero-tag">{UI.heroTag[lang]}</div>
+            <h1>{UI.title[lang]}</h1>
+            <p>{UI.subtitle[lang]}</p>
+            <div className="hero-blurb">{UI.heroBlurb[lang]}</div>
+          </div>
+
+          <div className="hero-art">
+            <div className="hero-slab slab-pink" />
+            <div className="hero-slab slab-blue" />
+            <div className="hero-slab slab-gold" />
+            <div className="hero-badge">
+              <div className="badge-label">miComet</div>
+              <div className="badge-value">{stats.total}</div>
+              <div className="badge-sub">stories archived</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section className="stats-wrap">
+        <div className="section-title">{UI.stats[lang]}</div>
+        <div className="stats-grid">
+          <div className="stat-card accent-pink">
+            <div className="stat-label">{UI.total[lang]}</div>
+            <div className="stat-value">{stats.total}</div>
+            <div className="stat-note">2019 - {new Date().getFullYear()}</div>
+          </div>
+          <div className="stat-card accent-blue">
+            <div className="stat-label">{UI.shared[lang]}</div>
+            <div className="stat-value">{stats.counts.shared}</div>
+            <div className="stat-note">cross-over moments</div>
+          </div>
+          <div className="stat-card accent-purple">
+            <div className="stat-label">{UI.first[lang]}</div>
+            <div className="stat-value small">{fmt(stats.first.date, lang)}</div>
+            <div className="stat-note">{stats.first.title[lang]}</div>
+          </div>
+          <div className="stat-card accent-gold">
+            <div className="stat-label">{UI.last[lang]}</div>
+            <div className="stat-value small">{fmt(stats.last.date, lang)}</div>
+            <div className="stat-note">{stats.last.title[lang]}</div>
+          </div>
+        </div>
+        <div className="type-strip">
+          {typeStats.map(([type, count]) => (
+            <div key={type} className="type-chip">{TYPE_NAMES[type]?.[lang] ?? type} <strong>{count}</strong></div>
+          ))}
+        </div>
+      </section>
+
+      <section className="controls">
+        <div className="search-row">
+          <span>⌕</span>
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={UI.search[lang]} />
+        </div>
+        <div className="filter-row">
+          <span>{UI.filter[lang]}</span>
+          <button className={phaseFilter === 0 ? 'active' : ''} onClick={() => setPhaseFilter(0)}>{UI.all[lang]}</button>
+          {PHASES.map((phase) => (
+            <button
+              key={phase.id}
+              className={phaseFilter === phase.id ? 'active' : ''}
+              onClick={() => setPhaseFilter(phaseFilter === phase.id ? 0 : phase.id)}
+            >
+              {phase.id} · {phase.label[lang]}
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div className="result-line">
-        {search || phaseFilter !== 0
-          ? UI_STRINGS.foundStories[lang].replace('{count}', String(displayedCount))
-          : UI_STRINGS.totalStories[lang].replace('{count}', String(totalDisplayCount)).replace('{year}', String(currentYear))}
-      </div>
+      <section className="result-line">
+        {search || phaseFilter !== 0 ? UI.results[lang].replace('{count}', String(filteredPhaseCount)) : UI.results[lang].replace('{count}', String(stats.total))}
+      </section>
 
-      <div className="main-wrap">
-        {activePhases.length === 0 && (
-          <div className="empty-state"><div className="eico">🔍</div><p>{UI_STRINGS.noResults[lang]}</p></div>
-        )}
-
-        {activePhases.map(phase => {
-          const items = (byPhase[phase.id] || []).sort((a, b) => a.date.localeCompare(b.date));
-          const dateGroups = groupItemsByDate(items);
-
-          return (
-            <div key={phase.id} className="phase-group" id={`phase-${phase.id}`}>
-              <div className="phase-header">
-                <div className="phase-color-bar" style={{ background: phase.color }}></div>
-                <div className="phase-header-body">
+      <main className="content">
+        {activePhases.length === 0 ? (
+          <div className="empty-state">No matching stories found</div>
+        ) : (
+          activePhases.map((phase) => {
+            const phaseItems = filtered.filter((item) => item.phase === phase.id);
+            const groups = groupByDate(phaseItems);
+            return (
+              <section key={phase.id} className="phase-block">
+                <div className="phase-head">
+                  <span className="phase-bar" style={{ background: phase.color }} />
                   <div>
-                    <div className="phase-num">{UI_STRINGS.phaseButton[lang].replace('{id}', String(phase.id)).replace('{label}','')}</div>
-                    <div className="phase-name">{phase.label[lang]}</div>
+                    <div className="phase-kicker">Phase {phase.id}</div>
+                    <h2>{phase.label[lang]}</h2>
                   </div>
                   <div className="phase-period">{phase.period}</div>
                 </div>
-              </div>
-              <p className="phase-desc" dangerouslySetInnerHTML={{ __html: phase.desc[lang] }}></p>
+                <p className="phase-desc">{phase.desc[lang]}</p>
+                <div className="day-grid">
+                  {groups.map((group) => (
+                    <div key={group.date} className="day-card">
+                      <div className="day-label">{fmt(group.date, lang)}</div>
+                      <div className="card-list">
+                        {group.items.map((item) => (
+                          <Card key={item.id} item={item} lang={lang} onOpen={setModalItem} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )}
 
-              <div className="phase-day-list">
-                {dateGroups.map(group => (
-                  <DateStack key={group.date} group={group} lang={lang}
-                    onClick={(it, s) => setModal({ item: it, side: s })} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        <section className="convergence">
+          <h3>Two Lines, Finally Converging</h3>
+          <p>{UI.heroBlurb[lang]}</p>
+        </section>
 
-        <div className="convergence">
-          <div className="hearts">🌸 💫 ⭐</div>
-          <h3>{UI_STRINGS.convergenceTitle[lang]}</h3>
-          <p dangerouslySetInnerHTML={{ __html: UI_STRINGS.convergenceBody[lang] }}></p>
-        </div>
-
-        <div className="references-section">
-          <h3>{UI_STRINGS.references[lang]}</h3>
+        <section className="references">
+          <h3>{UI.refs[lang]}</h3>
           <ul>
-            <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noopener noreferrer">櫻巫女 Sakura Miko — YouTube Official Channel</a></li>
-            <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noopener noreferrer">星街彗星 Hoshimachi Suisei — YouTube Official Channel</a></li>
-            <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noopener noreferrer">櫻巫女 — Twitter / X</a></li>
-            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noopener noreferrer">星街彗星 — Twitter / X</a></li>
-            <li><a href="https://docs.google.com/document/d/e/2PACX-1vRcUa0y4lpqboc3v6Q-8qNu5a8v8TX9EkSqbQfjSdUhLcbhANp7XBYfFc2jdZTkzgwMN1P18kNjuP-U/pub" target="_blank" rel="noopener noreferrer">MiComet Compendium II</a></li>
-            <li><a href="https://www.facebook.com/groups/830223165184192/announcements" target="_blank" rel="noopener noreferrer">miComet in Love (Facebook Group)</a></li>
-            <li><a href="https://www.reddit.com/r/miComet/" target="_blank" rel="noopener noreferrer">r/miComet — Reddit Community</a></li>
-            <li>Chronicle data compiled from the fan community. All content rights belong to the original creators and Cover Corp.</li>
+            <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noreferrer">Sakura Miko YouTube</a></li>
+            <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noreferrer">Hoshimachi Suisei YouTube</a></li>
+            <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noreferrer">Sakura Miko X</a></li>
+            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noreferrer">Hoshimachi Suisei X</a></li>
           </ul>
-        </div>
-      </div>
+        </section>
+      </main>
 
-      {modal && <Modal item={modal.item} side={modal.side} lang={lang} onClose={() => setModal(null)} />}
-    </>
+      {modalItem && <Modal item={modalItem} lang={lang} onClose={() => setModalItem(null)} />}
+    </div>
   );
 }
