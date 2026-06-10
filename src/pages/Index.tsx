@@ -183,6 +183,33 @@ function chartShellStyle() {
   } as const;
 }
 
+function ChartStatCard({
+  label,
+  value,
+  accent,
+  tint,
+}: {
+  label: string;
+  value: string | number;
+  accent: string;
+  tint: string;
+}) {
+  return (
+    <div
+      style={{
+        borderRadius: 18,
+        padding: '16px 18px',
+        background: tint,
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16)',
+      }}
+    >
+      <div style={{ color: '#9aa2b2', fontSize: 13, fontWeight: 700 }}>{label}</div>
+      <div style={{ color: accent, fontSize: 28, fontWeight: 900, lineHeight: 1.05, marginTop: 8 }}>{value}</div>
+    </div>
+  );
+}
+
 function ChartShell({
   title,
   subtitle,
@@ -703,7 +730,7 @@ export default function Index() {
           </div>
         </section>
 
-        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>找到 {filtered.length} 筆故事</section>
+        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>找到 {filtered.length} 個故事</section>
 
         <main style={{ marginTop: 16, display: 'grid', gap: 18 }}>
           {groups.length === 0 ? (
@@ -729,7 +756,7 @@ export default function Index() {
         </main>
 
         <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>
-          分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版型與你提供的參考一致。
+          分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。
         </section>
       </div>
 
