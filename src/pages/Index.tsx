@@ -53,7 +53,7 @@ const TYPE_NAMES: Record<string, string> = {
 
 const UI = {
   title: 'miComet Compendium',
-  subtitle: '星街彗星 × 櫻巫女 ,
+  subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
   search: '搜尋故事、關鍵字、日期...',
   filter: '篩選年份：',
   all: '全部',
