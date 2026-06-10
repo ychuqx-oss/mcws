@@ -127,16 +127,16 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
       style={{
         marginTop: 28,
         borderRadius: 24,
-        background: '#141722',
+        background: '#080a10',
         border: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.28)',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
         padding: 20,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start', marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>miComet 累計故事折線圖</div>
-          <div style={{ color: '#9aa2b2', marginTop: 4, fontSize: 13 }}>年 / 月切換，統計 Miko、Suisei 與共同故事的累計變化</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#d6daea' }}>miComet 累計故事折線圖</div>
+          <div style={{ color: '#a0a6b6', marginTop: 4, fontSize: 13 }}>年 / 月切換，統計 Miko、Suisei 與共同故事的累計變化</div>
         </div>
         <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
           <button onClick={() => setMode('year')} style={{ background: mode === 'year' ? '#1c2030' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' }}>年</button>
@@ -146,20 +146,20 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
       <div style={{ height: 420 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 20, left: 0, bottom: 38 }}>
-            <CartesianGrid stroke="rgba(255,255,255,0.12)" strokeDasharray="4 6" />
+            <CartesianGrid stroke="rgba(255,255,255,0.10)" strokeDasharray="4 6" />
             <XAxis dataKey="label" tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} interval={mode === 'year' ? 0 : 2} angle={-45} textAnchor="end" height={48} />
             <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} label={{ value: '累計故事數', angle: -90, position: 'insideLeft', fill: '#9aa2b2' }} />
-            <Tooltip contentStyle={{ background: '#0f1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
-            <Line type="monotone" dataKey="miko" name="Miko 累計" stroke="#3b82f6" strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="suisei" name="Suisei 累計" stroke="#a855f7" strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="shared" name="共同故事累計" stroke="#ff4fa0" strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
+            <Line type="monotone" dataKey="miko" name="Miko 累計" stroke="#66a9ff" strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name="Suisei 累計" stroke="#c58cff" strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="shared" name="共同故事累計" stroke="#ff7dbb" strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 18, flexWrap: 'wrap', marginTop: 8, color: '#cfd4de' }}>
-        <div style={{ color: '#3b82f6' }}>● Miko 累計</div>
-        <div style={{ color: '#a855f7' }}>● Suisei 累計</div>
-        <div style={{ color: '#ff4fa0' }}>● 共同故事累計</div>
+        <div style={{ color: '#66a9ff' }}>● Miko 累計</div>
+        <div style={{ color: '#c58cff' }}>● Suisei 累計</div>
+        <div style={{ color: '#ff7dbb' }}>● 共同故事累計</div>
       </div>
     </section>
   );
@@ -174,16 +174,16 @@ function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
       style={{
         marginTop: 28,
         borderRadius: 24,
-        background: '#141722',
+        background: '#080a10',
         border: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.28)',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.35)',
         padding: 20,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start', marginBottom: 14 }}>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 800 }}>單月故事數量折線圖</div>
-          <div style={{ color: '#9aa2b2', marginTop: 4, fontSize: 13 }}>年 / 月切換，單月故事數量；共同故事同時計入 Miko 與 Suisei</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: '#d6daea' }}>單月故事數量折線圖</div>
+          <div style={{ color: '#a0a6b6', marginTop: 4, fontSize: 13 }}>年 / 月切換，單月故事數量；共同故事同時計入 Miko 與 Suisei</div>
         </div>
         <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
           <button onClick={() => setMode('year')} style={{ background: mode === 'year' ? '#1c2030' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' }}>年</button>
@@ -193,20 +193,20 @@ function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
       <div style={{ height: 380 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 20, left: 0, bottom: 38 }}>
-            <CartesianGrid stroke="rgba(255,255,255,0.12)" strokeDasharray="4 6" />
+            <CartesianGrid stroke="rgba(255,255,255,0.10)" strokeDasharray="4 6" />
             <XAxis dataKey="label" tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} interval={mode === 'year' ? 0 : 2} angle={-45} textAnchor="end" height={48} />
             <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} label={{ value: '單月故事數', angle: -90, position: 'insideLeft', fill: '#9aa2b2' }} />
-            <Tooltip contentStyle={{ background: '#0f1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
-            <Line type="monotone" dataKey="miko" name="Miko 數量" stroke="#3b82f6" strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="suisei" name="Suisei 數量" stroke="#a855f7" strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="shared" name="共同故事數量" stroke="#ff4fa0" strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
+            <Line type="monotone" dataKey="miko" name="Miko 數量" stroke="#66a9ff" strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name="Suisei 數量" stroke="#c58cff" strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="shared" name="共同故事數量" stroke="#ff7dbb" strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 18, flexWrap: 'wrap', marginTop: 8, color: '#cfd4de' }}>
-        <div style={{ color: '#3b82f6' }}>● Miko 數量</div>
-        <div style={{ color: '#a855f7' }}>● Suisei 數量</div>
-        <div style={{ color: '#ff4fa0' }}>● 共同故事數量</div>
+        <div style={{ color: '#66a9ff' }}>● Miko 數量</div>
+        <div style={{ color: '#c58cff' }}>● Suisei 數量</div>
+        <div style={{ color: '#ff7dbb' }}>● 共同故事數量</div>
       </div>
     </section>
   );
@@ -228,7 +228,7 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
         <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
-        <div style={{ color: item.side === 'miko' ? '#3b82f6' : item.side === 'suisei' ? '#a855f7' : '#ff4fa0', fontSize: 12, fontWeight: 700 }}>
+        <div style={{ color: item.side === 'miko' ? '#66a9ff' : item.side === 'suisei' ? '#c58cff' : '#ff7dbb', fontSize: 12, fontWeight: 700 }}>
           {item.side === 'miko' ? 'Miko' : item.side === 'suisei' ? 'Suisei' : item.side === 'shared' ? '共同故事' : '其他'}
         </div>
       </div>
@@ -355,10 +355,10 @@ export default function Index() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 14, marginTop: 18 }}>
             {[
-              { label: 'Miko', value: stats.counts.miko, tone: '#3b82f6' },
-              { label: 'Suisei', value: stats.counts.suisei, tone: '#a855f7' },
-              { label: '共同', value: stats.counts.shared, tone: '#ff4fa0' },
-              { label: '總故事', value: stats.total, tone: '#10a54d' },
+              { label: 'Miko', value: stats.counts.miko, tone: '#66a9ff' },
+              { label: 'Suisei', value: stats.counts.suisei, tone: '#c58cff' },
+              { label: '共同', value: stats.counts.shared, tone: '#ff7dbb' },
+              { label: '總故事', value: stats.total, tone: '#7ee2a8' },
             ].map((item) => (
               <div key={item.label} style={{ borderRadius: 18, padding: '16px 18px', background: '#171a26', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ color: '#9aa2b2', fontSize: 13 }}>{item.label}</div>
