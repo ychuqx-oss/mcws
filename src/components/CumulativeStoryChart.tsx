@@ -1,6 +1,6 @@
 /**
- * 累計故事折線圖
- * 展示 2019-2026 Miko 和 Suisei 的累計故事數
+ * 累計故事折線圖 - 分開展示
+ * 展示 2019-2026 Miko、Suisei 和共同故事的累計趨勢（分開三個圖表）
  */
 
 import { useMemo, useState } from 'react';
@@ -13,9 +13,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  ComposedChart,
-  Area,
-  AreaChart,
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -55,63 +52,63 @@ export function CumulativeStoryChart() {
 
   return (
     <div className="w-full space-y-4">
+      {/* 時間範圍選擇器 */}
+      <div className="flex justify-end">
+        <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="選擇時間範圍" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">全部時間</SelectItem>
+            <SelectItem value="5y">最近 5 年</SelectItem>
+            <SelectItem value="3y">最近 3 年</SelectItem>
+            <SelectItem value="1y">最近 1 年</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* 摘要統計 */}
+      {summary && (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="rounded-lg bg-blue-50 p-4">
+            <p className="text-sm text-gray-600">Miko 累計</p>
+            <p className="text-2xl font-bold text-blue-600">{summary.miko_cumulative}</p>
+          </div>
+          <div className="rounded-lg bg-purple-50 p-4">
+            <p className="text-sm text-gray-600">Suisei 累計</p>
+            <p className="text-2xl font-bold text-purple-600">{summary.suisei_cumulative}</p>
+          </div>
+          <div className="rounded-lg bg-pink-50 p-4">
+            <p className="text-sm text-gray-600">共同故事</p>
+            <p className="text-2xl font-bold text-pink-600">{summary.shared_cumulative}</p>
+          </div>
+          <div className="rounded-lg bg-green-50 p-4">
+            <p className="text-sm text-gray-600">總計</p>
+            <p className="text-2xl font-bold text-green-600">{summary.total_cumulative}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Miko 累計故事折線圖 */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>miComet 累計故事折線圖</CardTitle>
-              <CardDescription>按年月統計 2019-2026 的累計故事數，共同故事計入 Miko 與 Suisei</CardDescription>
-            </div>
-            <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="選擇時間範圍" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">全部時間</SelectItem>
-                <SelectItem value="5y">最近 5 年</SelectItem>
-                <SelectItem value="3y">最近 3 年</SelectItem>
-                <SelectItem value="1y">最近 1 年</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <CardTitle>Miko 累計故事</CardTitle>
+          <CardDescription>包含 Miko 個人故事 + 共同故事</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* 摘要統計 */}
-          {summary && (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              <div className="rounded-lg bg-blue-50 p-4">
-                <p className="text-sm text-gray-600">Miko 累計</p>
-                <p className="text-2xl font-bold text-blue-600">{summary.miko_cumulative}</p>
-              </div>
-              <div className="rounded-lg bg-purple-50 p-4">
-                <p className="text-sm text-gray-600">Suisei 累計</p>
-                <p className="text-2xl font-bold text-purple-600">{summary.suisei_cumulative}</p>
-              </div>
-              <div className="rounded-lg bg-pink-50 p-4">
-                <p className="text-sm text-gray-600">共同故事</p>
-                <p className="text-2xl font-bold text-pink-600">{summary.shared_cumulative}</p>
-              </div>
-              <div className="rounded-lg bg-green-50 p-4">
-                <p className="text-sm text-gray-600">總計</p>
-                <p className="text-2xl font-bold text-green-600">{summary.total_cumulative}</p>
-              </div>
-            </div>
-          )}
-
-          {/* 折線圖 */}
+        <CardContent>
           <div className="w-full">
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
                   angle={-45}
                   textAnchor="end"
-                  height={100}
+                  height={80}
                   tick={{ fontSize: 12 }}
                   interval={Math.max(0, Math.floor(chartData.length / 12))}
                 />
-                <YAxis label={{ value: '累計故事數', angle: -90, position: 'insideLeft' }} />
+                <YAxis label={{ value: '累計數量', angle: -90, position: 'insideLeft' }} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -127,30 +124,111 @@ export function CumulativeStoryChart() {
                   }}
                   labelFormatter={(label) => `${label}`}
                 />
-                <Legend />
                 <Line
                   type="monotone"
                   dataKey="miko_cumulative"
                   stroke="#3b82f6"
-                  strokeWidth={2}
+                  strokeWidth={3}
                   dot={false}
                   name="Miko 累計"
                   isAnimationActive={true}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Suisei 累計故事折線圖 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Suisei 累計故事</CardTitle>
+          <CardDescription>包含 Suisei 個人故事 + 共同故事</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="w-full">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="month"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                  interval={Math.max(0, Math.floor(chartData.length / 12))}
+                />
+                <YAxis label={{ value: '累計數量', angle: -90, position: 'insideLeft' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                    borderRadius: '8px',
+                    padding: '12px',
+                  }}
+                  formatter={(value) => {
+                    if (typeof value === 'number') {
+                      return value.toFixed(0);
+                    }
+                    return value;
+                  }}
+                  labelFormatter={(label) => `${label}`}
                 />
                 <Line
                   type="monotone"
                   dataKey="suisei_cumulative"
                   stroke="#a855f7"
-                  strokeWidth={2}
+                  strokeWidth={3}
                   dot={false}
                   name="Suisei 累計"
                   isAnimationActive={true}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 共同故事累計折線圖 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>共同故事累計</CardTitle>
+          <CardDescription>同時屬於 Miko 與 Suisei 的故事</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="w-full">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="month"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  tick={{ fontSize: 12 }}
+                  interval={Math.max(0, Math.floor(chartData.length / 12))}
+                />
+                <YAxis label={{ value: '累計數量', angle: -90, position: 'insideLeft' }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                    borderRadius: '8px',
+                    padding: '12px',
+                  }}
+                  formatter={(value) => {
+                    if (typeof value === 'number') {
+                      return value.toFixed(0);
+                    }
+                    return value;
+                  }}
+                  labelFormatter={(label) => `${label}`}
                 />
                 <Line
                   type="monotone"
                   dataKey="shared_cumulative"
                   stroke="#ec4899"
-                  strokeWidth={2}
+                  strokeWidth={3}
                   dot={false}
                   name="共同故事累計"
                   isAnimationActive={true}
@@ -159,9 +237,16 @@ export function CumulativeStoryChart() {
               </LineChart>
             </ResponsiveContainer>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* 數據表格預覽 */}
-          <div className="mt-6 max-h-64 overflow-y-auto rounded-lg border">
+      {/* 數據表格預覽 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>數據詳細表</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="max-h-64 overflow-y-auto rounded-lg border">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-gray-100">
                 <tr>
@@ -183,8 +268,12 @@ export function CumulativeStoryChart() {
               </tbody>
             </table>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* 說明文字 */}
+      {/* 說明文字 */}
+      <Card>
+        <CardContent className="pt-6">
           <div className="rounded-lg bg-blue-50 p-4 text-sm text-gray-700">
             <p className="font-semibold">📊 說明：</p>
             <ul className="mt-2 list-inside space-y-1">
