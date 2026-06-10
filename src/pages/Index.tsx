@@ -357,41 +357,39 @@ export default function Index() {
         </div>
         <div className="filter-row">
           <span>{UI.filter}</span>
-          <button className={phaseFilter === 0 ? 'active' : ''} onClick={() => setPhaseFilter(0)}>{UI.all}</button>
-          {PHASES.map((phase) => (
+          <button className={yearFilter === '0' ? 'active' : ''} onClick={() => setYearFilter('0')}>{UI.all}</button>
+          {YEARS.map((year) => (
             <button
-              key={phase.id}
-              className={phaseFilter === phase.id ? 'active' : ''}
-              onClick={() => setPhaseFilter(phaseFilter === phase.id ? 0 : phase.id)}
+              key={year}
+              className={yearFilter === String(year) ? 'active' : ''}
+              onClick={() => setYearFilter(yearFilter === String(year) ? '0' : String(year))}
             >
-              {phase.id} · {phase.label}
+              {year}
             </button>
           ))}
         </div>
       </section>
 
       <section className="result-line">
-        {search || phaseFilter !== 0 ? UI.results.replace('{count}', String(filteredPhaseCount)) : UI.results.replace('{count}', String(stats.total))}
+        {search || yearFilter !== '0' ? UI.results.replace('{count}', String(filteredGroupCount)) : UI.results.replace('{count}', String(stats.total))}
       </section>
 
       <main className="content">
-        {activePhases.length === 0 ? (
+        {activeYears.length === 0 ? (
           <div className="empty-state">沒有符合條件的故事</div>
         ) : (
-          activePhases.map((phase) => {
-            const phaseItems = filtered.filter((item) => item.phase === phase.id);
-            const groups = groupByDate(phaseItems);
+          activeYears.map((year) => {
+            const yearItems = filtered.filter((item) => item.date.startsWith(String(year)));
+            const groups = groupByDate(yearItems);
             return (
-              <section key={phase.id} className="phase-block">
+              <section key={year} className="phase-block">
                 <div className="phase-head">
-                  <span className="phase-bar" style={{ background: phase.color }} />
+                  <span className="phase-bar" style={{ background: yearToPhaseColor(year) }} />
                   <div>
-                    <div className="phase-kicker">Phase {phase.id}</div>
-                    <h2>{phase.label}</h2>
+                    <div className="phase-kicker">{year}</div>
+                    <h2>{year}年</h2>
                   </div>
-                  <div className="phase-period">{phase.period}</div>
                 </div>
-                <p className="phase-desc">{phase.desc}</p>
                 <div className="day-grid">
                   {groups.map((group) => (
                     <div key={group.date} className="day-card">
