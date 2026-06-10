@@ -70,12 +70,13 @@ const UI = {
   others: '其他',
   results: '找到 {count} 個結果',
   refs: '參考資料',
-  chartTitle: '故事數量折線圖',
-  chartSub: '共同故事會同時計入 Miko 與 Suisei。',
+  chartTitle: 'miComet 累計故事折線圖',
+  chartSub: '粉色是 Miko 累計，藍色是 Suisei 累計，紫色是 miComet 全體累計。',
   chartYear: '年',
   chartMonth: '月',
-  chartMiko: 'Miko',
-  chartSuisei: 'Suisei',
+  chartMiko: 'Miko 累計',
+  chartSuisei: 'Suisei 累計',
+  chartTotal: 'miComet 累計',
 };
 
 function buildStoryNumberMap(stories: MiCometStory[]) {
@@ -179,45 +180,69 @@ function Modal({ item, onClose }: { item: TimelineItem; onClose: () => void }) {
 
 function buildChartData(mode: ChartMode) {
   const years = Array.from({ length: CHART_END_YEAR - CHART_START_YEAR + 1 }, (_, i) => CHART_START_YEAR + i);
-  const source = new Map<string, { miko: number; suisei: number }>();
+  const points = new Map<string, { miko: number; suisei: number; total: number }>();
 
   if (mode === 'year') {
-    years.forEach((year) => source.set(String(year), { miko: 0, suisei: 0 }));
+    years.forEach((year) => points.set(String(year), { miko: 0, suisei: 0, total: 0 }));
     items.forEach((item) => {
       const year = item.date.slice(0, 4);
-      if (!source.has(year)) return;
-      if (item.side === 'miko' || item.side === 'shared') source.get(year)!.miko += 1;
-      if (item.side === 'suisei' || item.side === 'shared') source.get(year)!.suisei += 1;
+      if (!points.has(year)) return;
+      const point = points.get(year)!;
+      point.total += 1;
+      if (item.side === 'miko' || item.side === 'shared') point.miko += 1;
+      if (item.side === 'suisei' || item.side === 'shared') point.suisei += 1;
     });
 
-    return years.map((year) => ({
-      label: String(year),
-      miko: source.get(String(year))?.miko ?? 0,
-      suisei: source.get(String(year))?.suisei ?? 0,
-    }));
+    let cumulativeMiko = 0;
+    let cumulativeSuisei = 0;
+    let cumulativeTotal = 0;
+
+    return years.map((year) => {
+      const point = points.get(String(year)) ?? { miko: 0, suisei: 0, total: 0 };
+      cumulativeMiko += point.miko;
+      cumulativeSuisei += point.suisei;
+      cumulativeTotal += point.total;
+      return {
+        label: String(year),
+        miko: cumulativeMiko,
+        suisei: cumulativeSuisei,
+        total: cumulativeTotal,
+      };
+    });
   }
 
   years.forEach((year) => {
     for (let month = 1; month <= 12; month += 1) {
-      source.set(`${year}-${String(month).padStart(2, '0')}`, { miko: 0, suisei: 0 });
+      points.set(`${year}-${String(month).padStart(2, '0')}`, { miko: 0, suisei: 0, total: 0 });
     }
   });
 
   items.forEach((item) => {
     const key = item.date.slice(0, 7);
-    if (!source.has(key)) return;
-    if (item.side === 'miko' || item.side === 'shared') source.get(key)!.miko += 1;
-    if (item.side === 'suisei' || item.side === 'shared') source.get(key)!.suisei += 1;
+    if (!points.has(key)) return;
+    const point = points.get(key)!;
+    point.total += 1;
+    if (item.side === 'miko' || item.side === 'shared') point.miko += 1;
+    if (item.side === 'suisei' || item.side === 'shared') point.suisei += 1;
   });
+
+  let cumulativeMiko = 0;
+  let cumulativeSuisei = 0;
+  let cumulativeTotal = 0;
 
   return years.flatMap((year) =>
     Array.from({ length: 12 }, (_, monthIndex) => {
       const month = monthIndex + 1;
       const key = `${year}-${String(month).padStart(2, '0')}`;
+      const point = points.get(key) ?? { miko: 0, suisei: 0, total: 0 };
+      cumulativeMiko += point.miko;
+      cumulativeSuisei += point.suisei;
+      cumulativeTotal += point.total;
       return {
         label: `${year}/${String(month).padStart(2, '0')}`,
-        miko: source.get(key)?.miko ?? 0,
-        suisei: source.get(key)?.suisei ?? 0,
+        miko: cumulativeMiko,
+        suisei: cumulativeSuisei,
+        total: cumulativeTotal,
       };
     }),
   );
@@ -261,6 +286,7 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
               }}
               labelStyle={{ color: '#fff' }}
             />
+            <Line type="monotone" dataKey="total" name={UI.chartTotal} stroke="#c77dff" strokeWidth={3.5} dot={{ r: 2.5 }} activeDot={{ r: 5 }} />
             <Line type="monotone" dataKey="miko" name={UI.chartMiko} stroke="hsl(var(--pink))" strokeWidth={3} dot={{ r: 2.5 }} activeDot={{ r: 5 }} />
             <Line type="monotone" dataKey="suisei" name={UI.chartSuisei} stroke="hsl(var(--blue))" strokeWidth={3} dot={{ r: 2.5 }} activeDot={{ r: 5 }} />
           </LineChart>
