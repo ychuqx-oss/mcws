@@ -9,6 +9,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
+import { CumulativeStoryChart } from '@/components/CumulativeStoryChart';
 
 type Side = 'miko' | 'suisei' | 'shared' | 'others';
 type ChartMode = 'year' | 'month';
@@ -334,6 +335,10 @@ export default function Index() {
       </section>
 
       <ChartSection mode={chartMode} onModeChange={setChartMode} />
+
+      <section className="chart-wrap">
+        <CumulativeStoryChart />
+      </section>
 
       <section className="controls">
         <div className="search-row">
