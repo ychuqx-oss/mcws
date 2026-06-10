@@ -388,8 +388,9 @@ export default function Index() {
                             id: group.items.map((i) => i.id).join('+'),
                             emoji: group.items.length > 1 ? '🔄' : group.items[0].emoji,
                             title: group.items.length > 1
-                              ? `${group.items[0].num} 當日 ${group.items.length} 則故事`
-                              : `${group.items[0].num} ${group.items[0].title}`,
+                              ? `當日 ${group.items.length} 則故事`
+                              : group.items[0].title,
+                            num: group.items[0].num,
                             ctx: group.items.map((i) => `• ${i.title}\n${i.ctx}`).join('\n\n'),
                             type: group.items.length > 1 ? 'Mixed' : group.items[0].type,
                           };
