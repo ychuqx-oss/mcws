@@ -360,7 +360,7 @@ function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
 function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
-      title="miComet 累計故事折線圖"
+      title="miComet 累計故事成長圖"
       subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，紫色是共同故事累計。"
       stories={stories}
       cumulative
