@@ -382,9 +382,20 @@ export default function Index() {
                     <div key={group.date} className="day-card">
                       <div className="day-label">{fmt(group.date)}</div>
                       <div className="card-list">
-                        {group.items.map((item) => (
-                          <Card key={item.id} item={item} onOpen={setModalItem} />
-                        ))}
+                        {(() => {
+                          const merged: TimelineItem = {
+                            ...group.items[0],
+                            id: group.items.map((i) => i.id).join('+'),
+                            emoji: group.items.length > 1 ? '🔄' : group.items[0].emoji,
+                            title: group.items.length > 1
+                              ? `當日 ${group.items.length} 則故事`
+                              : group.items[0].title,
+                            num: group.items[0].num,
+                            ctx: group.items.map((i) => `• ${i.title}\n${i.ctx}`).join('\n\n'),
+                            type: group.items.length > 1 ? 'Mixed' : group.items[0].type,
+                          };
+                          return <Card key={merged.id} item={merged} onOpen={setModalItem} />;
+                        })()}
                       </div>
                     </div>
                   ))}
