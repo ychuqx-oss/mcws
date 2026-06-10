@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import {
+  CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
 } from 'recharts';
 import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
 
@@ -54,18 +54,24 @@ const TYPE_NAMES: Record<string, string> = {
 const UI = {
   title: 'miComet Compendium',
   subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
+  heroTag: '2025 Archive / Black Edition',
+  heroBlurb: '黑底、粉藍高光、年 / 月雙模式折線圖。共享故事同時計入 Miko 與 Suisei，讓兩條線一起往前看。',
   search: '搜尋故事、關鍵字、日期...',
   filter: '篩選年份：',
   all: '全部',
   stats: '統計總覽',
   total: '總故事數',
-  shared: '共同故事',
+  coverage: '故事區間',
   first: '最早紀錄',
   last: '最新紀錄',
+  miko: 'Miko',
+  suisei: 'Suisei',
+  shared: '共同',
+  others: '其他',
   results: '找到 {count} 個結果',
   refs: '參考資料',
   chartTitle: '故事數量折線圖',
-  chartSub: '共同故事會同時計入 Miko 與 Suisei',
+  chartSub: '共同故事會同時計入 Miko 與 Suisei。',
   chartYear: '年',
   chartMonth: '月',
   chartMiko: 'Miko',
@@ -75,11 +81,13 @@ const UI = {
 function buildStoryNumberMap(stories: MiCometStory[]) {
   const counters: Record<string, number> = {};
   const map = new Map<string, string>();
-  [...stories].sort((a, b) => a.date.localeCompare(b.date)).forEach((story) => {
-    const year = story.date.slice(0, 4);
-    counters[year] = (counters[year] ?? 0) + 1;
-    map.set(story.id, `${year.slice(2)}-${counters[year]}`);
-  });
+  [...stories]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach((story) => {
+      const year = story.date.slice(0, 4);
+      counters[year] = (counters[year] ?? 0) + 1;
+      map.set(story.id, `${year.slice(2)}-${counters[year]}`);
+    });
   return map;
 }
 
@@ -127,9 +135,13 @@ function Card({ item, onOpen }: { item: TimelineItem; onOpen: (item: TimelineIte
         <span className={`card-type type-${item.type.toLowerCase()}`}>{typeLabel}</span>
       </div>
       <div className="card-emoji">{item.emoji || '✨'}</div>
-      <div className="card-title">{item.num} {item.title}</div>
+      <div className="card-title">
+        {item.num} {item.title}
+      </div>
       <div className="card-ctx">{item.ctx}</div>
-      <div className="card-more">{link ? (link.type === 'yt' ? '▶ 前往影片' : '🐦 前往推文') : '閱讀詳情 →'}</div>
+      <div className="card-more">
+        {link ? (link.type === 'yt' ? '▶ 前往影片' : '🐦 前往推文') : '閱讀詳情 →'}
+      </div>
     </article>
   );
 }
@@ -137,15 +149,22 @@ function Card({ item, onOpen }: { item: TimelineItem; onOpen: (item: TimelineIte
 function Modal({ item, onClose }: { item: TimelineItem; onClose: () => void }) {
   const link = getLink(item);
   const phase = PHASES.find((p) => p.id === item.phase);
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
+        <button className="modal-close" onClick={onClose}>
+          ×
+        </button>
         <div className={`modal-bar side-${item.side}`} />
         <div className="modal-body">
-          <div className="modal-kicker">{item.num} · {TYPE_NAMES[item.type] ?? item.type}</div>
+          <div className="modal-kicker">
+            {item.num} · {TYPE_NAMES[item.type] ?? item.type}
+          </div>
           <h3>{item.title}</h3>
-          <div className="modal-meta">{fmt(item.date)}{phase ? ` · ${phase.label}` : ''}</div>
+          <div className="modal-meta">
+            {fmt(item.date)}{phase ? ` · ${phase.label}` : ''}
+          </div>
           <p>{item.ctx}</p>
           {link && (
             <a href={link.url} target="_blank" rel="noreferrer" className="modal-link">
@@ -170,6 +189,7 @@ function buildChartData(mode: ChartMode) {
       if (item.side === 'miko' || item.side === 'shared') source.get(year)!.miko += 1;
       if (item.side === 'suisei' || item.side === 'shared') source.get(year)!.suisei += 1;
     });
+
     return years.map((year) => ({
       label: String(year),
       miko: source.get(String(year))?.miko ?? 0,
@@ -179,8 +199,7 @@ function buildChartData(mode: ChartMode) {
 
   years.forEach((year) => {
     for (let month = 1; month <= 12; month += 1) {
-      const key = `${year}-${String(month).padStart(2, '0')}`;
-      source.set(key, { miko: 0, suisei: 0 });
+      source.set(`${year}-${String(month).padStart(2, '0')}`, { miko: 0, suisei: 0 });
     }
   });
 
@@ -215,15 +234,23 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
           <div className="chart-subtitle">{UI.chartSub}</div>
         </div>
         <div className="chart-toggle">
-          <button className={mode === 'year' ? 'active' : ''} onClick={() => onModeChange('year')}>{UI.chartYear}</button>
-          <button className={mode === 'month' ? 'active' : ''} onClick={() => onModeChange('month')}>{UI.chartMonth}</button>
+          <button className={mode === 'year' ? 'active' : ''} onClick={() => onModeChange('year')}>
+            {UI.chartYear}
+          </button>
+          <button className={mode === 'month' ? 'active' : ''} onClick={() => onModeChange('month')}>
+            {UI.chartMonth}
+          </button>
         </div>
       </div>
       <div className="chart-frame">
         <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.07)" strokeDasharray="4 6" />
-            <XAxis dataKey="label" tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} interval={mode === 'year' ? 0 : 11} />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }}
+              interval={mode === 'year' ? 0 : 23}
+            />
             <YAxis tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} allowDecimals={false} />
             <Tooltip
               contentStyle={{
@@ -243,13 +270,9 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
   );
 }
 
-// 生成年份篩選選項
-function getYearsFromItems(items: TimelineItem[]): number[] {
+function getYearsFromItems(list: TimelineItem[]): number[] {
   const years = new Set<number>();
-  items.forEach((item) => {
-    const year = parseInt(item.date.slice(0, 4));
-    years.add(year);
-  });
+  list.forEach((item) => years.add(parseInt(item.date.slice(0, 4), 10)));
   return Array.from(years).sort((a, b) => a - b);
 }
 
@@ -264,28 +287,34 @@ export default function Index() {
   const stats = useMemo(() => {
     const counts: Record<Side, number> = { miko: 0, suisei: 0, shared: 0, others: 0 };
     const typeCounts = new Map<string, number>();
+
     items.forEach((item) => {
       counts[item.side] += 1;
       typeCounts.set(item.type, (typeCounts.get(item.type) ?? 0) + 1);
     });
-    return { total: items.length, counts, typeCounts, first: items[0], last: items[items.length - 1] };
+
+    return {
+      total: items.length,
+      counts,
+      typeCounts,
+      first: items[0],
+      last: items[items.length - 1],
+    };
   }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return items.filter((item) => {
-      if (yearFilter !== 0) {
-        const itemYear = parseInt(item.date.slice(0, 4));
-        if (itemYear !== yearFilter) return false;
-      }
+      if (yearFilter !== 0 && parseInt(item.date.slice(0, 4), 10) !== yearFilter) return false;
       if (!q) return true;
       return [item.num, item.date, item.title, item.ctx].join(' ').toLowerCase().includes(q);
     });
-  }, [yearFilter, search]);
+  }, [search, yearFilter]);
 
   const filteredDateCount = useMemo(() => groupByDate(filtered).length, [filtered]);
   const activePhases = PHASES.filter((phase) => filtered.some((item) => item.phase === phase.id));
   const typeStats = [...stats.typeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const resultCount = search || yearFilter !== 0 ? filteredDateCount : stats.total;
 
   return (
     <div className="page-shell">
@@ -321,12 +350,12 @@ export default function Index() {
           <div className="stat-card accent-pink">
             <div className="stat-label">{UI.total}</div>
             <div className="stat-value">{stats.total}</div>
-            <div className="stat-note">2019 - {new Date().getFullYear()}</div>
+            <div className="stat-note">2019 - {CHART_END_YEAR}</div>
           </div>
           <div className="stat-card accent-blue">
-            <div className="stat-label">{UI.shared}</div>
-            <div className="stat-value">{stats.counts.shared}</div>
-            <div className="stat-note">共同出現</div>
+            <div className="stat-label">{UI.coverage}</div>
+            <div className="stat-value small">2019 - 2026</div>
+            <div className="stat-note">年 / 月雙模式統計</div>
           </div>
           <div className="stat-card accent-purple">
             <div className="stat-label">{UI.first}</div>
@@ -339,9 +368,19 @@ export default function Index() {
             <div className="stat-note">{stats.last.title}</div>
           </div>
         </div>
+
+        <div className="type-strip" style={{ marginTop: 14 }}>
+          <div className="type-chip">{UI.miko} <strong>{stats.counts.miko}</strong></div>
+          <div className="type-chip">{UI.suisei} <strong>{stats.counts.suisei}</strong></div>
+          <div className="type-chip">{UI.shared} <strong>{stats.counts.shared}</strong></div>
+          <div className="type-chip">{UI.others} <strong>{stats.counts.others}</strong></div>
+        </div>
+
         <div className="type-strip">
           {typeStats.map(([type, count]) => (
-            <div key={type} className="type-chip">{TYPE_NAMES[type] ?? type} <strong>{count}</strong></div>
+            <div key={type} className="type-chip">
+              {TYPE_NAMES[type] ?? type} <strong>{count}</strong>
+            </div>
           ))}
         </div>
       </section>
@@ -355,7 +394,9 @@ export default function Index() {
         </div>
         <div className="filter-row">
           <span>{UI.filter}</span>
-          <button className={yearFilter === 0 ? 'active' : ''} onClick={() => setYearFilter(0)}>{UI.all}</button>
+          <button className={yearFilter === 0 ? 'active' : ''} onClick={() => setYearFilter(0)}>
+            {UI.all}
+          </button>
           {years.map((year) => (
             <button
               key={year}
@@ -368,9 +409,7 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="result-line">
-        {search || yearFilter !== 0 ? UI.results.replace('{count}', String(filteredDateCount)) : UI.results.replace('{count}', String(stats.total))}
-      </section>
+      <section className="result-line">{UI.results.replace('{count}', String(resultCount))}</section>
 
       <main className="content">
         {activePhases.length === 0 ? (
@@ -379,6 +418,7 @@ export default function Index() {
           activePhases.map((phase) => {
             const phaseItems = filtered.filter((item) => item.phase === phase.id);
             const groups = groupByDate(phaseItems);
+
             return (
               <section key={phase.id} className="phase-block">
                 <div className="phase-head">
@@ -415,10 +455,26 @@ export default function Index() {
         <section className="references">
           <h3>{UI.refs}</h3>
           <ul>
-            <li><a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noreferrer">Sakura Miko YouTube</a></li>
-            <li><a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noreferrer">Hoshimachi Suisei YouTube</a></li>
-            <li><a href="https://twitter.com/sakuramiko35" target="_blank" rel="noreferrer">Sakura Miko X</a></li>
-            <li><a href="https://twitter.com/suaborealice" target="_blank" rel="noreferrer">Hoshimachi Suisei X</a></li>
+            <li>
+              <a href="https://www.youtube.com/@SakuraMiko" target="_blank" rel="noreferrer">
+                Sakura Miko YouTube
+              </a>
+            </li>
+            <li>
+              <a href="https://www.youtube.com/@HoshimachiSuisei" target="_blank" rel="noreferrer">
+                Hoshimachi Suisei YouTube
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/sakuramiko35" target="_blank" rel="noreferrer">
+                Sakura Miko X
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/suaborealice" target="_blank" rel="noreferrer">
+                Hoshimachi Suisei X
+              </a>
+            </li>
           </ul>
         </section>
       </main>
