@@ -30,6 +30,13 @@ const COLORS = {
   total: '#7ee2a8',
 };
 
+const TYPE_LABELS: Record<string, string> = {
+  Clip: '剪輯',
+  Stream: '直播',
+  News: '綜合',
+  Text: '文字',
+};
+
 function formatDate(dateISO: string) {
   const date = new Date(`${dateISO}T00:00:00Z`);
   return `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日`;
@@ -50,8 +57,6 @@ function normalizeStories(stories: MiCometStory[]) {
       return true;
     });
 }
-
-const NORMALIZED_TIMELINE = normalizeStories(MICOMET_TIMELINE);
 
 function summarizeTimeline(stories: MiCometStory[]) {
   const timeline = normalizeStories(stories);
@@ -76,6 +81,14 @@ function summarizeTimeline(stories: MiCometStory[]) {
     last: timeline[timeline.length - 1],
     years,
   };
+}
+
+function buildTypeCounts(stories: MiCometStory[]) {
+  const counts: Record<string, number> = {};
+  stories.forEach((story) => {
+    counts[story.type] = (counts[story.type] ?? 0) + 1;
+  });
+  return counts;
 }
 
 function buildMonthlyCounts(stories: MiCometStory[]) {
@@ -154,31 +167,20 @@ function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
   return points;
 }
 
-function ChartStatCard({
-  label,
-  value,
-  accent,
-  tint,
-}: {
-  label: string;
-  value: number | string;
-  accent: string;
-  tint: string;
-}) {
-  return (
-    <div
-      style={{
-        borderRadius: 18,
-        padding: '16px 18px',
-        background: tint,
-        border: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: '0 16px 36px rgba(0,0,0,0.28)',
-      }}
-    >
-      <div style={{ color: '#aab0c0', fontSize: 14 }}>{label}</div>
-      <div style={{ marginTop: 6, color: accent, fontSize: 30, fontWeight: 900, lineHeight: 1 }}>{value}</div>
-    </div>
-  );
+function formatTypeLabel(type: string) {
+  return TYPE_LABELS[type] ?? type;
+}
+
+function chartShellStyle() {
+  return {
+    marginTop: 20,
+    borderRadius: 26,
+    background:
+      'radial-gradient(1200px 480px at 18% 0%, rgba(255,125,183,0.08), transparent 45%), radial-gradient(800px 420px at 88% 12%, rgba(102,169,255,0.08), transparent 42%), #070910',
+    border: '1px solid rgba(255,255,255,0.07)',
+    boxShadow: '0 28px 70px rgba(0,0,0,0.42)',
+    padding: 20,
+  } as const;
 }
 
 function ChartShell({
@@ -186,13 +188,15 @@ function ChartShell({
   subtitle,
   stories,
   cumulative = false,
+  defaultMode = 'month',
 }: {
   title: string;
   subtitle: string;
   stories: MiCometStory[];
   cumulative?: boolean;
+  defaultMode?: ChartMode;
 }) {
-  const [mode, setMode] = useState<ChartMode>('month');
+  const [mode, setMode] = useState<ChartMode>(defaultMode);
   const summary = useMemo(() => summarizeTimeline(stories), [stories]);
   const data = useMemo(
     () => (cumulative ? buildCumulativePoints(mode, summary.timeline) : buildCountPoints(mode, summary.timeline)),
@@ -200,17 +204,7 @@ function ChartShell({
   );
 
   return (
-    <section
-      style={{
-        marginTop: 20,
-        borderRadius: 26,
-        background:
-          'radial-gradient(1200px 480px at 18% 0%, rgba(255,125,183,0.08), transparent 45%), radial-gradient(800px 420px at 88% 12%, rgba(102,169,255,0.08), transparent 42%), #070910',
-        border: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: '0 28px 70px rgba(0,0,0,0.42)',
-        padding: 20,
-      }}
-    >
+    <section style={chartShellStyle()}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 900, color: '#edf0f8' }}>{title}</div>
@@ -358,6 +352,7 @@ function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
       subtitle="共同故事會同時計入 Miko 與 Suisei"
       stories={stories}
       cumulative={false}
+      defaultMode="month"
     />
   );
 }
@@ -366,9 +361,10 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
       title="miComet 累計故事折線圖"
-      subtitle="年 / 月切換，累計統計 Miko、Suisei 與共同故事的變化"
+      subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，紫色是共同故事累計。"
       stories={stories}
       cumulative
+      defaultMode="year"
     />
   );
 }
@@ -402,7 +398,7 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
       <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{item.ctxZh || item.ctx}</div>
       <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
-        <div style={{ color: '#cfd4de', fontSize: 12 }}>詳情</div>
+        <div style={{ color: '#cfd4de', fontSize: 12 }}>{formatTypeLabel(item.type)}</div>
       </div>
     </article>
   );
@@ -460,21 +456,63 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
   );
 }
 
+function StatCard({ label, value, note, accent }: { label: string; value: string | number; note: string; accent: string }) {
+  return (
+    <div
+      style={{
+        borderRadius: 22,
+        padding: '18px 18px 20px',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015))',
+        border: '1px solid rgba(255,255,255,0.06)',
+        boxShadow: '0 14px 36px rgba(0,0,0,0.22)',
+      }}
+    >
+      <div style={{ color: '#9aa2b2', fontSize: 13, fontWeight: 700 }}>{label}</div>
+      <div style={{ color: accent, fontSize: 30, fontWeight: 900, lineHeight: 1.05, marginTop: 10 }}>{value}</div>
+      <div style={{ color: '#8d93a3', fontSize: 12, marginTop: 8 }}>{note}</div>
+    </div>
+  );
+}
+
+function CompactStatRow({
+  title,
+  items,
+}: {
+  title: string;
+  items: Array<{ label: string; value: number; color: string }>;
+}) {
+  return (
+    <div style={{ marginTop: 16 }}>
+      <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 10 }}>{title}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 22 }}>
+        {items.map((item) => (
+          <div key={item.label} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontWeight: 800 }}>
+            <span style={{ color: '#a8afbf' }}>{item.label}</span>
+            <span style={{ color: item.color }}>{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Index() {
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState(0);
   const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
 
-  const years = useMemo(() => [...new Set(NORMALIZED_TIMELINE.map((story) => Number(story.date.slice(0, 4))))].sort((a, b) => a - b), []);
+  const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
+  const typeCounts = useMemo(() => buildTypeCounts(summary.timeline), [summary.timeline]);
+  const years = useMemo(() => summary.years, [summary.years]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return NORMALIZED_TIMELINE.filter((story) => {
+    return summary.timeline.filter((story) => {
       if (yearFilter !== 0 && Number(story.date.slice(0, 4)) !== yearFilter) return false;
       if (!q) return true;
       return [story.date, story.title, story.titleZh ?? '', story.ctx, story.ctxZh ?? ''].join(' ').toLowerCase().includes(q);
     }).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  }, [search, yearFilter]);
+  }, [search, summary.timeline, yearFilter]);
 
   const groups = useMemo(
     () =>
@@ -487,6 +525,20 @@ export default function Index() {
     [filtered],
   );
 
+  const sideStats = [
+    { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
+    { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
+    { label: '共同', value: summary.counts.shared, color: COLORS.shared },
+    { label: '其他', value: summary.counts.others, color: '#aab0c0' },
+  ];
+
+  const typeStats = [
+    { label: '剪輯', value: typeCounts.Clip ?? 0, color: COLORS.shared },
+    { label: '直播', value: typeCounts.Stream ?? 0, color: COLORS.miko },
+    { label: '綜合', value: typeCounts.News ?? 0, color: COLORS.total },
+    { label: '文字', value: typeCounts.Text ?? 0, color: COLORS.suisei },
+  ];
+
   return (
     <div
       style={{
@@ -498,16 +550,103 @@ export default function Index() {
       }}
     >
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <header style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'start', flexWrap: 'wrap' }}>
+        <section
+          style={{
+            borderRadius: 30,
+            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'linear-gradient(180deg, rgba(16,18,26,0.98), rgba(10,11,16,0.98))',
+            boxShadow: '0 30px 80px rgba(0,0,0,0.52)',
+            padding: 28,
+          }}
+        >
+          <div style={{ color: '#f6d77d', fontSize: 12, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase' }}>2019 - 2026 / BLACK EDITION</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(280px, 0.8fr)', gap: 24, marginTop: 14, alignItems: 'center' }}>
             <div>
-              <h1 style={{ fontSize: 30, fontWeight: 900, margin: 0, lineHeight: 1.1 }}>miComet 故事檔案</h1>
-              <div style={{ color: '#9aa2b2', marginTop: 6, fontSize: 14 }}>黑底時間軸版面。折線圖是內容區塊，不是首頁主視覺。</div>
+              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>Live timeline • synced from GitHub</div>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(3.4rem, 8vw, 5.8rem)',
+                  lineHeight: 0.95,
+                  letterSpacing: '0.02em',
+                  fontWeight: 900,
+                  background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                miComet
+                <br />
+                Compendium
+              </h1>
+              <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>星街彗星 × 櫻巫女 | Business &amp; Beyond</div>
+              <div
+                style={{
+                  marginTop: 18,
+                  maxWidth: 680,
+                  borderRadius: 18,
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderLeft: '4px solid #ff8cc8',
+                  padding: '16px 18px',
+                  color: '#f2f4fa',
+                  lineHeight: 1.8,
+                }}
+              >
+                黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，讓兩條線一起往前看。
+              </div>
+            </div>
+            <div
+              style={{
+                borderRadius: 26,
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 18px 42px rgba(0,0,0,0.26)',
+                padding: 24,
+                minHeight: 300,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
+              <div>
+                <div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div>
+                <div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>stories archived</div>
+              </div>
+              <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>
+                {summary.first ? `${formatDate(summary.first.date)} 起` : '—'}
+                <br />
+                {summary.last ? `${formatDate(summary.last.date)} 迄` : '—'}
+              </div>
             </div>
           </div>
-        </header>
+        </section>
 
-        <MonthlyStoryChart stories={NORMALIZED_TIMELINE} />
+        <section
+          style={{
+            marginTop: 18,
+            borderRadius: 24,
+            background: '#11141c',
+            border: '1px solid rgba(255,255,255,0.06)',
+            padding: 18,
+            boxShadow: '0 18px 42px rgba(0,0,0,0.24)',
+          }}
+        >
+          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>統計總覽</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
+            <StatCard label="總故事數" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
+            <StatCard label="故事區間" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="年 / 月雙模式統計" accent="#ffb7de" />
+            <StatCard label="最早紀錄" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first?.titleZh ?? summary.first?.title ?? '—'} accent="#9ed6ff" />
+            <StatCard label="最新紀錄" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last?.titleZh ?? summary.last?.title ?? '—'} accent="#c58cff" />
+          </div>
+
+          <CompactStatRow title="side counts" items={sideStats} />
+          <CompactStatRow title="type counts" items={typeStats} />
+        </section>
+
+        <CumulativeStoryChart stories={MICOMET_TIMELINE} />
+        <MonthlyStoryChart stories={MICOMET_TIMELINE} />
 
         <section
           style={{
@@ -589,10 +728,8 @@ export default function Index() {
           )}
         </main>
 
-        <CumulativeStoryChart stories={NORMALIZED_TIMELINE} />
-
         <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>
-          分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已拆成累計與單月兩個內容區塊。
+          分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版型與你提供的參考一致。
         </section>
       </div>
 
