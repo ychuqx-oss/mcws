@@ -55,7 +55,7 @@ const UI = {
   title: 'miComet 編年史',
   subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
   search: '搜尋故事、關鍵字、日期...',
-  filter: '篩選階段：',
+  filter: '篩選年份：',
   all: '全部',
   stats: '統計總覽',
   total: '總故事數',
@@ -245,11 +245,23 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
   );
 }
 
+// 生成年份篩選選項
+function getYearsFromItems(items: TimelineItem[]): number[] {
+  const years = new Set<number>();
+  items.forEach((item) => {
+    const year = parseInt(item.date.slice(0, 4));
+    years.add(year);
+  });
+  return Array.from(years).sort((a, b) => a - b);
+}
+
 export default function Index() {
   const [search, setSearch] = useState('');
-  const [phaseFilter, setPhaseFilter] = useState(0);
+  const [yearFilter, setYearFilter] = useState(0);
   const [modalItem, setModalItem] = useState<TimelineItem | null>(null);
   const [chartMode, setChartMode] = useState<ChartMode>('year');
+
+  const years = useMemo(() => getYearsFromItems(items), []);
 
   const stats = useMemo(() => {
     const counts: Record<Side, number> = { miko: 0, suisei: 0, shared: 0, others: 0 };
@@ -264,13 +276,16 @@ export default function Index() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return items.filter((item) => {
-      if (phaseFilter !== 0 && item.phase !== phaseFilter) return false;
+      if (yearFilter !== 0) {
+        const itemYear = parseInt(item.date.slice(0, 4));
+        if (itemYear !== yearFilter) return false;
+      }
       if (!q) return true;
       return [item.num, item.date, item.title, item.ctx].join(' ').toLowerCase().includes(q);
     });
-  }, [phaseFilter, search]);
+  }, [yearFilter, search]);
 
-  const filteredPhaseCount = useMemo(() => groupByDate(filtered).length, [filtered]);
+  const filteredDateCount = useMemo(() => groupByDate(filtered).length, [filtered]);
   const activePhases = PHASES.filter((phase) => filtered.some((item) => item.phase === phase.id));
   const typeStats = [...stats.typeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
 
@@ -342,21 +357,21 @@ export default function Index() {
         </div>
         <div className="filter-row">
           <span>{UI.filter}</span>
-          <button className={phaseFilter === 0 ? 'active' : ''} onClick={() => setPhaseFilter(0)}>{UI.all}</button>
-          {PHASES.map((phase) => (
+          <button className={yearFilter === 0 ? 'active' : ''} onClick={() => setYearFilter(0)}>{UI.all}</button>
+          {years.map((year) => (
             <button
-              key={phase.id}
-              className={phaseFilter === phase.id ? 'active' : ''}
-              onClick={() => setPhaseFilter(phaseFilter === phase.id ? 0 : phase.id)}
+              key={year}
+              className={yearFilter === year ? 'active' : ''}
+              onClick={() => setYearFilter(yearFilter === year ? 0 : year)}
             >
-              {phase.id} · {phase.label}
+              {year}
             </button>
           ))}
         </div>
       </section>
 
       <section className="result-line">
-        {search || phaseFilter !== 0 ? UI.results.replace('{count}', String(filteredPhaseCount)) : UI.results.replace('{count}', String(stats.total))}
+        {search || yearFilter !== 0 ? UI.results.replace('{count}', String(filteredDateCount)) : UI.results.replace('{count}', String(stats.total))}
       </section>
 
       <main className="content">
