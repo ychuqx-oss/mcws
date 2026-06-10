@@ -1,7 +1,17 @@
 import { useMemo, useState } from 'react';
+import {
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
 import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimeline';
 
 type Side = 'miko' | 'suisei' | 'shared' | 'others';
+type ChartMode = 'year' | 'month';
 
 interface TimelineItem {
   id: string;
@@ -20,6 +30,9 @@ interface DateGroup {
   date: string;
   items: TimelineItem[];
 }
+
+const CHART_START_YEAR = 2019;
+const CHART_END_YEAR = 2026;
 
 const PHASES = [
   { id: 1, label: '真・商業夥伴階段', period: '2019 - 2020', color: '#ff7b7b', desc: '從最初的 Project Winter 到後續互動，奠定了 miComet 的開端。' },
@@ -53,6 +66,12 @@ const UI = {
   heroTag: 'miComet 特別企劃',
   heroBlurb: '以更像活動海報的方式呈現時間線、統計與重點事件。',
   refs: '參考資料',
+  chartTitle: '故事數量折線圖',
+  chartSub: '共同故事會同時計入 Miko 與 Suisei',
+  chartYear: '年',
+  chartMonth: '月',
+  chartMiko: 'Miko',
+  chartSuisei: 'Suisei',
 };
 
 function buildStoryNumberMap(stories: MiCometStory[]) {
@@ -141,10 +160,96 @@ function Modal({ item, onClose }: { item: TimelineItem; onClose: () => void }) {
   );
 }
 
+function buildChartData(mode: ChartMode) {
+  const years = Array.from({ length: CHART_END_YEAR - CHART_START_YEAR + 1 }, (_, i) => CHART_START_YEAR + i);
+  const source = new Map<string, { miko: number; suisei: number }>();
+
+  if (mode === 'year') {
+    years.forEach((year) => source.set(String(year), { miko: 0, suisei: 0 }));
+    items.forEach((item) => {
+      const year = item.date.slice(0, 4);
+      if (!source.has(year)) return;
+      if (item.side === 'miko' || item.side === 'shared') source.get(year)!.miko += 1;
+      if (item.side === 'suisei' || item.side === 'shared') source.get(year)!.suisei += 1;
+    });
+    return years.map((year) => ({
+      label: String(year),
+      miko: source.get(String(year))?.miko ?? 0,
+      suisei: source.get(String(year))?.suisei ?? 0,
+    }));
+  }
+
+  years.forEach((year) => {
+    for (let month = 1; month <= 12; month += 1) {
+      const key = `${year}-${String(month).padStart(2, '0')}`;
+      source.set(key, { miko: 0, suisei: 0 });
+    }
+  });
+
+  items.forEach((item) => {
+    const key = item.date.slice(0, 7);
+    if (!source.has(key)) return;
+    if (item.side === 'miko' || item.side === 'shared') source.get(key)!.miko += 1;
+    if (item.side === 'suisei' || item.side === 'shared') source.get(key)!.suisei += 1;
+  });
+
+  return years.flatMap((year) =>
+    Array.from({ length: 12 }, (_, monthIndex) => {
+      const month = monthIndex + 1;
+      const key = `${year}-${String(month).padStart(2, '0')}`;
+      return {
+        label: `${year}/${String(month).padStart(2, '0')}`,
+        miko: source.get(key)?.miko ?? 0,
+        suisei: source.get(key)?.suisei ?? 0,
+      };
+    }),
+  );
+}
+
+function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (mode: ChartMode) => void }) {
+  const data = useMemo(() => buildChartData(mode), [mode]);
+
+  return (
+    <section className="chart-wrap">
+      <div className="chart-head">
+        <div>
+          <div className="section-title">{UI.chartTitle}</div>
+          <div className="chart-subtitle">{UI.chartSub}</div>
+        </div>
+        <div className="chart-toggle">
+          <button className={mode === 'year' ? 'active' : ''} onClick={() => onModeChange('year')}>{UI.chartYear}</button>
+          <button className={mode === 'month' ? 'active' : ''} onClick={() => onModeChange('month')}>{UI.chartMonth}</button>
+        </div>
+      </div>
+      <div className="chart-frame">
+        <ResponsiveContainer width="100%" height={320}>
+          <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <CartesianGrid stroke="rgba(255,255,255,0.07)" strokeDasharray="4 6" />
+            <XAxis dataKey="label" tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} interval={mode === 'year' ? 0 : 11} />
+            <YAxis tick={{ fill: 'rgba(230,233,255,0.68)', fontSize: 12 }} allowDecimals={false} />
+            <Tooltip
+              contentStyle={{
+                background: 'rgba(10, 12, 18, 0.95)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 14,
+                color: '#fff',
+              }}
+              labelStyle={{ color: '#fff' }}
+            />
+            <Line type="monotone" dataKey="miko" name={UI.chartMiko} stroke="hsl(var(--pink))" strokeWidth={3} dot={{ r: 2.5 }} activeDot={{ r: 5 }} />
+            <Line type="monotone" dataKey="suisei" name={UI.chartSuisei} stroke="hsl(var(--blue))" strokeWidth={3} dot={{ r: 2.5 }} activeDot={{ r: 5 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </section>
+  );
+}
+
 export default function Index() {
   const [search, setSearch] = useState('');
   const [phaseFilter, setPhaseFilter] = useState(0);
   const [modalItem, setModalItem] = useState<TimelineItem | null>(null);
+  const [chartMode, setChartMode] = useState<ChartMode>('year');
 
   const stats = useMemo(() => {
     const counts: Record<Side, number> = { miko: 0, suisei: 0, shared: 0, others: 0 };
@@ -227,6 +332,8 @@ export default function Index() {
           ))}
         </div>
       </section>
+
+      <ChartSection mode={chartMode} onModeChange={setChartMode} />
 
       <section className="controls">
         <div className="search-row">
