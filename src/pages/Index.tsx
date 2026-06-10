@@ -56,7 +56,7 @@ const UI = {
   title: 'miComet 編年史',
   subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
   search: '搜尋故事、關鍵字、日期...',
-  filter: '篩選階段：',
+  filter: '篩選年份：',
   all: '全部',
   stats: '統計總覽',
   total: '總故事數',
@@ -84,6 +84,16 @@ function buildStoryNumberMap(stories: MiCometStory[]) {
     map.set(story.id, `${year.slice(2)}-${counters[year]}`);
   });
   return map;
+}
+
+const YEARS = Array.from({ length: CHART_END_YEAR - CHART_START_YEAR + 1 }, (_, i) => CHART_START_YEAR + i);
+
+function yearToPhaseColor(year: number): string {
+  if (year <= 2020) return PHASES.find((p) => p.id === 1)?.color ?? '#a9a3f9';
+  if (year === 2021) return PHASES.find((p) => p.id === 2)?.color ?? '#a9a3f9';
+  if (year === 2022) return PHASES.find((p) => p.id === 3)?.color ?? '#a9a3f9';
+  if (year <= 2024) return PHASES.find((p) => p.id === 4)?.color ?? '#a9a3f9';
+  return PHASES.find((p) => p.id === 5)?.color ?? '#a9a3f9';
 }
 
 const storyNumbers = buildStoryNumberMap(MICOMET_TIMELINE);
@@ -248,7 +258,7 @@ function ChartSection({ mode, onModeChange }: { mode: ChartMode; onModeChange: (
 
 export default function Index() {
   const [search, setSearch] = useState('');
-  const [phaseFilter, setPhaseFilter] = useState(0);
+  const [yearFilter, setYearFilter] = useState<string>('0');
   const [modalItem, setModalItem] = useState<TimelineItem | null>(null);
   const [chartMode, setChartMode] = useState<ChartMode>('year');
 
@@ -265,14 +275,14 @@ export default function Index() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return items.filter((item) => {
-      if (phaseFilter !== 0 && item.phase !== phaseFilter) return false;
+      if (yearFilter !== '0' && item.date.slice(0, 4) !== yearFilter) return false;
       if (!q) return true;
       return [item.num, item.date, item.title, item.ctx].join(' ').toLowerCase().includes(q);
     });
-  }, [phaseFilter, search]);
+  }, [yearFilter, search]);
 
-  const filteredPhaseCount = useMemo(() => groupByDate(filtered).length, [filtered]);
-  const activePhases = PHASES.filter((phase) => filtered.some((item) => item.phase === phase.id));
+  const filteredGroupCount = useMemo(() => groupByDate(filtered).length, [filtered]);
+  const activeYears = YEARS.filter((year) => filtered.some((item) => item.date.startsWith(String(year))));
   const typeStats = [...stats.typeCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
 
   return (
@@ -347,41 +357,39 @@ export default function Index() {
         </div>
         <div className="filter-row">
           <span>{UI.filter}</span>
-          <button className={phaseFilter === 0 ? 'active' : ''} onClick={() => setPhaseFilter(0)}>{UI.all}</button>
-          {PHASES.map((phase) => (
+          <button className={yearFilter === '0' ? 'active' : ''} onClick={() => setYearFilter('0')}>{UI.all}</button>
+          {YEARS.map((year) => (
             <button
-              key={phase.id}
-              className={phaseFilter === phase.id ? 'active' : ''}
-              onClick={() => setPhaseFilter(phaseFilter === phase.id ? 0 : phase.id)}
+              key={year}
+              className={yearFilter === String(year) ? 'active' : ''}
+              onClick={() => setYearFilter(yearFilter === String(year) ? '0' : String(year))}
             >
-              {phase.id} · {phase.label}
+              {year}
             </button>
           ))}
         </div>
       </section>
 
       <section className="result-line">
-        {search || phaseFilter !== 0 ? UI.results.replace('{count}', String(filteredPhaseCount)) : UI.results.replace('{count}', String(stats.total))}
+        {search || yearFilter !== '0' ? UI.results.replace('{count}', String(filteredGroupCount)) : UI.results.replace('{count}', String(stats.total))}
       </section>
 
       <main className="content">
-        {activePhases.length === 0 ? (
+        {activeYears.length === 0 ? (
           <div className="empty-state">沒有符合條件的故事</div>
         ) : (
-          activePhases.map((phase) => {
-            const phaseItems = filtered.filter((item) => item.phase === phase.id);
-            const groups = groupByDate(phaseItems);
+          activeYears.map((year) => {
+            const yearItems = filtered.filter((item) => item.date.startsWith(String(year)));
+            const groups = groupByDate(yearItems);
             return (
-              <section key={phase.id} className="phase-block">
+              <section key={year} className="phase-block">
                 <div className="phase-head">
-                  <span className="phase-bar" style={{ background: phase.color }} />
+                  <span className="phase-bar" style={{ background: yearToPhaseColor(year) }} />
                   <div>
-                    <div className="phase-kicker">Phase {phase.id}</div>
-                    <h2>{phase.label}</h2>
+                    <div className="phase-kicker">{year}</div>
+                    <h2>{year}年</h2>
                   </div>
-                  <div className="phase-period">{phase.period}</div>
                 </div>
-                <p className="phase-desc">{phase.desc}</p>
                 <div className="day-grid">
                   {groups.map((group) => (
                     <div key={group.date} className="day-card">
