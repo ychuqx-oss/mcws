@@ -56,7 +56,7 @@ const UI = {
   title: 'miComet 編年史',
   subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
   search: '搜尋故事、關鍵字、日期...',
-  filter: '篩選階段：',
+  filter: '篩選年份：',
   all: '全部',
   stats: '統計總覽',
   total: '總故事數',
@@ -84,6 +84,16 @@ function buildStoryNumberMap(stories: MiCometStory[]) {
     map.set(story.id, `${year.slice(2)}-${counters[year]}`);
   });
   return map;
+}
+
+const YEARS = Array.from({ length: CHART_END_YEAR - CHART_START_YEAR + 1 }, (_, i) => CHART_START_YEAR + i);
+
+function yearToPhaseColor(year: number): string {
+  if (year <= 2020) return PHASES.find((p) => p.id === 1)?.color ?? '#a9a3f9';
+  if (year === 2021) return PHASES.find((p) => p.id === 2)?.color ?? '#a9a3f9';
+  if (year === 2022) return PHASES.find((p) => p.id === 3)?.color ?? '#a9a3f9';
+  if (year <= 2024) return PHASES.find((p) => p.id === 4)?.color ?? '#a9a3f9';
+  return PHASES.find((p) => p.id === 5)?.color ?? '#a9a3f9';
 }
 
 const storyNumbers = buildStoryNumberMap(MICOMET_TIMELINE);
