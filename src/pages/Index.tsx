@@ -52,8 +52,8 @@ const TYPE_NAMES: Record<string, string> = {
 };
 
 const UI = {
-  title: 'miComet 編年史',
-  subtitle: '星街彗星 × 櫻巫女 | Business & Beyond',
+  title: 'miComet Compendium',
+  subtitle: '星街彗星 × 櫻巫女 ,
   search: '搜尋故事、關鍵字、日期...',
   filter: '篩選年份：',
   all: '全部',
@@ -63,8 +63,6 @@ const UI = {
   first: '最早紀錄',
   last: '最新紀錄',
   results: '找到 {count} 個結果',
-  heroTag: 'miComet 特別企劃',
-  heroBlurb: '以更像活動海報的方式呈現時間線、統計與重點事件。',
   refs: '參考資料',
   chartTitle: '故事數量折線圖',
   chartSub: '共同故事會同時計入 Miko 與 Suisei',
