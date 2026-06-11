@@ -24,9 +24,9 @@ const YEAR_START = 2019;
 const YEAR_END = 2026;
 
 const COLORS = {
-  miko: '#66a9ff',
-  suisei: '#c58cff',
-  shared: '#ff7dbb',
+  miko: '#ff7dbb',
+  suisei: '#66a9ff',
+  shared: '#ffd166',
   total: '#7ee2a8',
 };
 
