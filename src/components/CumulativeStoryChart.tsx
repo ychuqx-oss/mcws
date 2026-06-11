@@ -131,7 +131,7 @@ export function CumulativeStoryChart() {
                 <Line
                   type="monotone"
                   dataKey="miko_cumulative"
-                  stroke="#3b82f6"
+                  stroke="#ec4899"
                   strokeWidth={2}
                   dot={false}
                   name="Miko 累計"
@@ -140,7 +140,7 @@ export function CumulativeStoryChart() {
                 <Line
                   type="monotone"
                   dataKey="suisei_cumulative"
-                  stroke="#a855f7"
+                  stroke="#3b82f6"
                   strokeWidth={2}
                   dot={false}
                   name="Suisei 累計"
@@ -149,7 +149,7 @@ export function CumulativeStoryChart() {
                 <Line
                   type="monotone"
                   dataKey="shared_cumulative"
-                  stroke="#ec4899"
+                  stroke="#eab308"
                   strokeWidth={2}
                   dot={false}
                   name="共同故事累計"
