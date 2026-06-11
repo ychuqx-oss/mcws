@@ -79,17 +79,17 @@ export function CumulativeStoryChart() {
           {/* 摘要統計 */}
           {summary && (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              <div className="rounded-lg bg-blue-50 p-4">
-                <p className="text-sm text-gray-600">Miko 累計</p>
-                <p className="text-2xl font-bold text-blue-600">{summary.miko_cumulative}</p>
-              </div>
-              <div className="rounded-lg bg-purple-50 p-4">
-                <p className="text-sm text-gray-600">Suisei 累計</p>
-                <p className="text-2xl font-bold text-purple-600">{summary.suisei_cumulative}</p>
-              </div>
               <div className="rounded-lg bg-pink-50 p-4">
+                <p className="text-sm text-gray-600">Miko 累計</p>
+                <p className="text-2xl font-bold text-pink-600">{summary.miko_cumulative}</p>
+              </div>
+              <div className="rounded-lg bg-blue-50 p-4">
+                <p className="text-sm text-gray-600">Suisei 累計</p>
+                <p className="text-2xl font-bold text-blue-600">{summary.suisei_cumulative}</p>
+              </div>
+              <div className="rounded-lg bg-yellow-50 p-4">
                 <p className="text-sm text-gray-600">共同故事</p>
-                <p className="text-2xl font-bold text-pink-600">{summary.shared_cumulative}</p>
+                <p className="text-2xl font-bold text-yellow-600">{summary.shared_cumulative}</p>
               </div>
               <div className="rounded-lg bg-green-50 p-4">
                 <p className="text-sm text-gray-600">總計</p>
