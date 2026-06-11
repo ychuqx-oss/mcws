@@ -321,7 +321,7 @@ export default function Index() {
             <div className="stat-value">{stats.total}</div>
             <div className="stat-note">2019 - {new Date().getFullYear()}</div>
           </div>
-          <div className="stat-card accent-blue">
+          <div className="stat-card accent-gold">
             <div className="stat-label">{UI.shared}</div>
             <div className="stat-value">{stats.counts.shared}</div>
             <div className="stat-note">共同出現</div>
