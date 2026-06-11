@@ -175,9 +175,9 @@ export function CumulativeStoryChart() {
                 {chartData.map((row, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-50' : ''}>
                     <td className="px-4 py-2">{row.month}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-blue-600">{row.miko_cumulative}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-purple-600">{row.suisei_cumulative}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-pink-600">{row.shared_cumulative}</td>
+                    <td className="px-4 py-2 text-right font-semibold text-pink-600">{row.miko_cumulative}</td>
+                    <td className="px-4 py-2 text-right font-semibold text-blue-600">{row.suisei_cumulative}</td>
+                    <td className="px-4 py-2 text-right font-semibold text-yellow-600">{row.shared_cumulative}</td>
                   </tr>
                 ))}
               </tbody>
