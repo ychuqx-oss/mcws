@@ -19,6 +19,7 @@ type CountPoint = {
   miko: number;
   suisei: number;
   shared: number;
+  others: number;
 };
 
 const YEAR_START = 2019;
@@ -93,11 +94,11 @@ function buildTypeCounts(stories: MiCometStory[]) {
 }
 
 function buildMonthlyCounts(stories: MiCometStory[]) {
-  const monthly = new Map<string, { miko: number; suisei: number; shared: number }>();
+  const monthly = new Map<string, { miko: number; suisei: number; shared: number; others: number }>();
 
   stories.forEach((story) => {
     const key = monthKey(story.date);
-    const current = monthly.get(key) ?? { miko: 0, suisei: 0, shared: 0 };
+    const current = monthly.get(key) ?? { miko: 0, suisei: 0, shared: 0, others: 0 };
 
     if (story.side === 'miko') current.miko += 1;
     if (story.side === 'suisei') current.suisei += 1;
@@ -106,6 +107,7 @@ function buildMonthlyCounts(stories: MiCometStory[]) {
       current.miko += 1;
       current.suisei += 1;
     }
+    if (story.side === 'others') current.others += 1;
 
     monthly.set(key, current);
   });
@@ -113,7 +115,7 @@ function buildMonthlyCounts(stories: MiCometStory[]) {
   return monthly;
 }
 
-function sumYear(map: Map<string, { miko: number; suisei: number; shared: number }>, year: number) {
+function sumYear(map: Map<string, { miko: number; suisei: number; shared: number; others: number }>, year: number) {
   const yearKey = String(year);
   return [...map.entries()]
     .filter(([key]) => key.startsWith(yearKey))
@@ -122,8 +124,9 @@ function sumYear(map: Map<string, { miko: number; suisei: number; shared: number
         miko: acc.miko + value.miko,
         suisei: acc.suisei + value.suisei,
         shared: acc.shared + value.shared,
+        others: acc.others + (value.others ?? 0),
       }),
-      { miko: 0, suisei: 0, shared: 0 },
+      { miko: 0, suisei: 0, shared: 0, others: 0 },
     );
 }
 
@@ -143,7 +146,7 @@ function buildCountPoints(mode: ChartMode, stories: MiCometStory[]) {
   for (let year = YEAR_START; year <= YEAR_END; year += 1) {
     for (let month = 1; month <= 12; month += 1) {
       const key = `${year}-${String(month).padStart(2, '0')}`;
-      const value = monthly.get(key) ?? { miko: 0, suisei: 0, shared: 0 };
+      const value = monthly.get(key) ?? { miko: 0, suisei: 0, shared: 0, others: 0 };
       points.push({ label: `${year}/${String(month).padStart(2, '0')}`, ...value });
     }
   }
@@ -157,12 +160,14 @@ function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
   let miko = 0;
   let suisei = 0;
   let shared = 0;
+  let others = 0;
 
   countPoints.forEach((point) => {
     miko += point.miko;
     suisei += point.suisei;
     shared += point.shared;
-    points.push({ label: point.label, miko, suisei, shared });
+    others += point.others;
+    points.push({ label: point.label, miko, suisei, shared, others });
   });
 
   return points;
@@ -307,6 +312,12 @@ function ChartShell({
             tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))"
           />
           <ChartStatCard
+            label="助攻"
+            value={summary.counts.others}
+            accent="#ffffff"
+            tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))"
+          />
+          <ChartStatCard
             label="總計"
             value={summary.totals.total}
             accent={COLORS.total}
@@ -364,6 +375,7 @@ function ChartShell({
               strokeDasharray="6 6"
               dot={false}
             />
+            <Line type="monotone" dataKey="others" name={cumulative ? '助攻累計' : '助攻數量'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -372,6 +384,7 @@ function ChartShell({
         <div style={{ color: COLORS.miko }}>{cumulative ? '● Miko 累計' : '● Miko 數量'}</div>
         <div style={{ color: COLORS.suisei }}>{cumulative ? '● Suisei 累計' : '● Suisei 數量'}</div>
         <div style={{ color: COLORS.shared }}>{cumulative ? '● 共同故事累計' : '● 共同故事數量'}</div>
+        <div style={{ color: '#ffffff' }}>{cumulative ? '● 助攻累計' : '● 助攻數量'}</div>
       </div>
     </section>
   );
@@ -397,6 +410,30 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
       stories={stories}
       cumulative
       defaultMode="year"
+    />
+  );
+}
+
+function OthersCumulativeChart({ stories }: { stories: MiCometStory[] }) {
+  return (
+    <ChartShell
+      title="助攻累計成長圖"
+      subtitle="第三方成員提及或助攻 miComet 的累計趨勢（白線）。"
+      stories={stories}
+      cumulative
+      defaultMode="year"
+    />
+  );
+}
+
+function OthersMonthlyChart({ stories }: { stories: MiCometStory[] }) {
+  return (
+    <ChartShell
+      title="助攻月度數量圖"
+      subtitle="每月第三方成員提及或助攻 miComet 的次數（白線）。"
+      stories={stories}
+      cumulative={false}
+      defaultMode="month"
     />
   );
 }
@@ -680,6 +717,8 @@ export default function Index() {
 
         <CumulativeStoryChart stories={MICOMET_TIMELINE} />
         <MonthlyStoryChart stories={MICOMET_TIMELINE} />
+        <OthersCumulativeChart stories={MICOMET_TIMELINE} />
+        <OthersMonthlyChart stories={MICOMET_TIMELINE} />
 
         <section
           style={{
