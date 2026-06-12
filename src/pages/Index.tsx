@@ -418,12 +418,12 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
         <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
         <div
           style={{
-            color: item.side === 'miko' ? COLORS.miko : item.side === 'suisei' ? COLORS.suisei : item.side === 'shared' ? COLORS.shared : '#a7adbb',
+            color: item.side === 'miko' ? COLORS.miko : item.side === 'suisei' ? COLORS.suisei : item.side === 'shared' ? COLORS.shared : '#ffffff',
             fontSize: 12,
             fontWeight: 700,
           }}
         >
-          {item.side === 'miko' ? 'Miko' : item.side === 'suisei' ? 'Suisei' : item.side === 'shared' ? '共同故事' : '其他'}
+          {item.side === 'miko' ? 'Miko' : item.side === 'suisei' ? 'Suisei' : item.side === 'shared' ? '共同故事' : '助攻'}
         </div>
       </div>
       <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>{item.titleZh || item.title}</div>
@@ -562,7 +562,7 @@ export default function Index() {
     { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
     { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
     { label: '共同', value: summary.counts.shared, color: COLORS.shared },
-    { label: '其他', value: summary.counts.others, color: '#aab0c0' },
+    { label: '助攻', value: summary.counts.others, color: '#ffffff' },
   ];
 
   const typeStats = [
