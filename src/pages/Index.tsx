@@ -430,6 +430,7 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
       <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{item.ctxZh || item.ctx}</div>
       <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
+        <div style={{ color: '#5c6070', fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.04em' }}>#{item.displayId ?? item.id}</div>
         <div style={{ color: '#cfd4de', fontSize: 12 }}>{formatTypeLabel(item.type)}</div>
       </div>
     </article>
@@ -463,7 +464,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
           <div>
-            <div style={{ color: '#8f96a8', fontSize: 12 }}>{formatDate(item.date)}</div>
+            <div style={{ color: '#8f96a8', fontSize: 12 }}>{formatDate(item.date)} <span style={{ color: '#4a5060', marginLeft: 6, fontFamily: 'monospace' }}>#{item.displayId ?? item.id}</span></div>
             <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>{item.titleZh || item.title}</h3>
           </div>
           <button
