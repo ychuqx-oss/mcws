@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   CartesianGrid,
+  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -291,19 +292,19 @@ function ChartShell({
             label="Miko 累計"
             value={summary.totals.miko}
             accent={COLORS.miko}
-            tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))"
+            tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))"
           />
           <ChartStatCard
             label="Suisei 累計"
             value={summary.totals.suisei}
             accent={COLORS.suisei}
-            tint="linear-gradient(180deg, rgba(197,140,255,0.12), rgba(197,140,255,0.04))"
+            tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))"
           />
           <ChartStatCard
             label="共同故事"
             value={summary.totals.shared}
             accent={COLORS.shared}
-            tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))"
+            tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))"
           />
           <ChartStatCard
             label="總計"
@@ -348,6 +349,10 @@ function ChartShell({
               }}
               labelStyle={{ color: '#fff' }}
             />
+            <Legend
+              wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }}
+              formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>}
+            />
             <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko 累計' : 'Miko 數量'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
             <Line type="monotone" dataKey="suisei" name={cumulative ? 'Suisei 累計' : 'Suisei 數量'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
             <Line
@@ -388,7 +393,7 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
       title="miComet 累計故事成長圖"
-      subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，紫色是共同故事累計。"
+      subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。"
       stories={stories}
       cumulative
       defaultMode="year"
