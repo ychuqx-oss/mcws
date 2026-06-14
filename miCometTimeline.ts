@@ -26,67 +26,53 @@ export const MICOMET_TIMELINE: miCometStory[] = [
     ctx: 'miComet 傳說的起點。Miko 在 Project Winter 中被星街背叛並殺害。 [cite: 1]',
     type: 'Clip', link: 'https://youtu.be/u-RuvdaQU-Q'
   },
-
-  // ... (中間 s2-s732 依此類推進行三語化與編號，此處展示整合後的新增重點) ...
-
-  // --- Phase 5: 2024 關鍵轉折 (整合 PTT 討論) ---
   { 
-    id: 's733', date: '2024-03-06', phase: 5, side: 'shared', emoji: '📍',
-    title: '24-18 1122 紀念日：廣播談論「那個人」 | 1122の日：ラジオで「あの人」について語る | 1122 Day: Talking about "That Person"',
-    ctx: '星街在廣播中語氣嬌羞地提到與 Miko 的互動，引發 PTT 熱烈討論。 [cite: 1]',
-    type: 'Text', link: 'https://www.pttweb.cc/bbs/C_Chat/M.1709694032.A.C3B'
+    id: 's741', date: '2019-06-11', phase: 1, side: 'shared', emoji: '📌',
+    title: '19-2 早期線索：咪口與星街的初見互動 | 初期の接点 | Early Clues of miComet',
+    ctx: '補入最早期的互動線索，對應 2019/6/11 的相關紀錄。',
+    type: 'Text', link: 'https://www.youtube.com/watch?v=u-RuvdaQU-Q'
   },
   { 
-    id: 's734', date: '2024-11-23', phase: 5, side: 'shared', emoji: '📍',
-    title: '24-65 演唱會 0 距離接觸：超越商業的默契 | ライブでのゼロ距離接触 | Zero-Distance Contact at Live',
-    ctx: '11/23 活動中兩人的站位與頻繁視線交會，被粉絲視為真情流露。 [cite: 1]',
-    type: 'Text', link: 'https://ptt.org.tw/C_Chat/M.1732326259.A.A8F' 
-  },
-
-  // --- Phase 5: 2025 新星目錄時期 (整合 mc2325.txt) ---
-  { 
-    id: 's732', date: '2025-01-26', phase: 5, side: 'shared', emoji: '📍',
-    title: '25-4 Billboard 訪談：邁出網路圈的一步 | Billboardインタビュー：ネットの外へ踏み出す一歩 | Billboard Interview: A Step Beyond',
-    ctx: '星街談論《AWAKE》作為專輯核心，嘗試將虛擬與現實融合的概念。 [cite: 1]',
-    type: 'Mixed'
+    id: 's742', date: '2019-12-21', phase: 1, side: 'shared', emoji: '📌',
+    title: '19-3 第一個工商：先導者合作 | 最初の商業案件 | First Business Collab',
+    ctx: 'miComet 共同接下的第一個工商節點，關係從工作合作正式展開。',
+    type: 'Clip', link: 'https://youtu.be/PAj_4vs2m-o'
   },
   { 
-    id: 's735', date: '2025-02-04', phase: 5, side: 'miko', emoji: '🌸',
-    title: '25-5 Miko 的心聲：追隨星街的腳步 | みこの本音：すいせいの背中を追って | Miko\'s Reflection: Following Suisei\'s Lead',
-    ctx: 'Miko 在看完星街演唱會後提到，雖然不想成為星街，但想成為像她那樣活躍的人，走自己的賽道。 ',
-    type: 'Stream'
+    id: 's743', date: '2020-06-26', phase: 2, side: 'shared', emoji: '📌',
+    title: '20-1 miComet 名稱誕生 | miCometの命名 | miComet Named',
+    ctx: '聊天室與直播中正式確立 miComet 組合名稱，是兩人關係的重要里程碑。',
+    type: 'Text', link: 'https://www.youtube.com/live/lwszUzu_ARc'
   },
   { 
-    id: 's736', date: '2025-02-09', phase: 5, side: 'shared', emoji: '📻',
-    title: '25-6 Daoko 廣播：偶像的典範 | Daokoのラジオ：アイドルの模範 | Daoko Radio: The Model Idol',
-    ctx: '嘉賓 Daoko 表示自己是 35P，在星街面前大讚 Miko，星街笑稱 Miko 是她的「商業夥伴」。 ',
-    type: 'Stream'
+    id: 's744', date: '2021-06-14', phase: 3, side: 'shared', emoji: '📌',
+    title: '21-1 鬼屋約定：夏祭前的奇蹟聯動 | お化け屋敷の約束 | Haunted House Promise',
+    ctx: '星街在麥塊中找到咪口並突發連動，成為 2021 夏季關係轉折點。',
+    type: 'Stream', link: 'https://www.youtube.com/watch?v=Fuq9__yqZxw'
   },
   { 
-    id: 's737', date: '2025-02-19', phase: 5, side: 'shared', emoji: '🏘️',
-    title: '25-7 麥塊別莊事件：彗醬的點頭認可 | マイクラ別荘事件：すいちゃんの承認 | Minecraft Villa Incident',
-    ctx: 'Miko 在星街蓋的房子掛門牌，星街引導她掛在正確的位置並點頭認可。 ',
-    type: 'Stream'
+    id: 's745', date: '2021-06-27', phase: 3, side: 'shared', emoji: '📌',
+    title: '21-2 夏祭鬼屋與約會 | 夏祭りのお化け屋敷デート | Summer Festival Date',
+    ctx: '兩人一起蓋鬼屋、逛夏祭、後夜祭約會，是入坑經典章節。',
+    type: 'Stream', link: 'https://www.youtube.com/live/GcRZmj1OnjY'
   },
   { 
-    id: 's738', date: '2025-02-20', phase: 5, side: 'shared', emoji: '🤝',
-    title: '25-8 永遠的最強商業標語 | 永遠の最強ビジネス | Forever Strongest Business',
-    ctx: '面對同居傳聞，Miko 強調「最強商業」是兩人的標語，這點永遠不會改變。 ',
-    type: 'Stream'
+    id: 's746', date: '2021-07-09', phase: 3, side: 'shared', emoji: '📌',
+    title: '21-3 大空警察：商業夥伴的罪與罰 | 大空警察 | Oozora Police',
+    ctx: '咪口與星街一起受審，商業梗與互相吐槽的經典代表。',
+    type: 'Stream', link: 'https://www.youtube.com/watch?v=N16A2XNu0L4'
   },
   { 
-    id: 's739', date: '2025-02-23', phase: 5, side: 'suisei', emoji: '☄️',
-    title: '25-9 星街雜談：身心極限與春假 | すいせい雑談：限界と春休み | Suisei Chat: Limits and Spring Break',
-    ctx: '星街提到武道館後已達負荷極限，今年會減少工作量並爭取休假。 ',
-    type: 'Stream'
+    id: 's747', date: '2021-11-27', phase: 4, side: 'shared', emoji: '📌',
+    title: '21-4 火建迪士尼：約會模式全開 | 火建ディズニー | Disney with Hekikens',
+    ctx: '火建迪士尼事件，miComet 在園區中大量同框與私下互動。',
+    type: 'Stream', link: 'https://www.youtube.com/watch?v=Ups1nPbRDS4'
   },
-
-  // --- Phase 5: 2026 未來展望 ---
   { 
-    id: 's740', date: '2026-01-01', phase: 5, side: 'shared', emoji: '📍',
-    title: '26-1 2026 新年展望：邁向更遠的未來 | 2026年への展望：さらなる未来へ | 2026 Vision: Toward a Greater Future',
-    ctx: 'miComet 邁入第七年的預留章節，紀錄兩人邁向新高度的過程。',
-    type: 'Text'
+    id: 's748', date: '2021-12-19', phase: 4, side: 'shared', emoji: '📌',
+    title: '21-5 VILLS DAY2：商業標語外的默契 | VILLS DAY2 | Beyond Business',
+    ctx: 'VILLS 訪談中再次談到「商業關係」與實際越來越深的合作默契。',
+    type: 'Text', link: 'https://v-clan.spwn.jp/events/21032114-vills'
   }
 ];
 
