@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -467,9 +467,67 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
       <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
         <div style={{ color: '#5c6070', fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.04em' }}>#{item.displayId ?? item.id}</div>
-        <div style={{ color: '#cfd4de', fontSize: 12 }}>{formatTypeLabel(item.type)}</div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {(() => { const { ytUrls, twUrls } = extractLinks(item); return (<>
+            {ytUrls.length > 0 && <span style={{ color: '#ff4444', fontSize: 11 }}>▶</span>}
+            {twUrls.length > 0 && <span style={{ color: '#1d9bf0', fontSize: 11 }}>𝕏</span>}
+          </>); })()}
+          <div style={{ color: '#cfd4de', fontSize: 12 }}>{formatTypeLabel(item.type)}</div>
+        </div>
       </div>
     </article>
+  );
+}
+
+function extractLinks(item: MiCometStory) {
+  const ctx = item.ctx || '';
+  const ytUrls = Array.from(new Set(
+    (ctx.match(/https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)[\w\-?=&]+/g) || [])
+    .concat(ctx.match(/https?:\/\/(?:www\.)?youtube\.com\/\S+/g) || [])
+  )).slice(0, 3);
+  const twUrls = Array.from(new Set(
+    ctx.match(/https?:\/\/(?:www\.)?twitter\.com\/\S+/g) || []
+  )).slice(0, 3);
+  return { ytUrls, twUrls };
+}
+
+function LinkButtons({ item }: { item: MiCometStory }) {
+  const { ytUrls, twUrls } = extractLinks(item);
+  const isYT = ['Stream', 'Clip', 'Audio'].includes(item.type);
+  const isTW = ['Text', 'Audio'].includes(item.type);
+  if (!ytUrls.length && !twUrls.length && !isYT && !isTW) return null;
+
+  const btnStyle = (color: string): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '6px 14px',
+    borderRadius: 999,
+    border: `1px solid ${color}44`,
+    background: `${color}18`,
+    color,
+    fontSize: 12,
+    fontWeight: 700,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    letterSpacing: '0.04em',
+  });
+
+  return (
+    <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {ytUrls.map((url, i) => (
+        <a key={`yt${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#ff4444')}
+          onClick={e => e.stopPropagation()}>
+          ▶ YouTube{ytUrls.length > 1 ? ` ${i + 1}` : ''}
+        </a>
+      ))}
+      {twUrls.map((url, i) => (
+        <a key={`tw${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#1d9bf0')}
+          onClick={e => e.stopPropagation()}>
+          𝕏 Twitter{twUrls.length > 1 ? ` ${i + 1}` : ''}
+        </a>
+      ))}
+    </div>
   );
 }
 
@@ -520,6 +578,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
           </button>
         </div>
         <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{item.ctxZh || item.ctx}</div>
+        <LinkButtons item={item} />
       </div>
     </div>
   );
