@@ -53,9 +53,8 @@ function normalizeStories(stories: MiCometStory[]) {
   return [...stories]
     .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
     .filter((story) => {
-      const key = `${story.date}:${story.side}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
+      if (seen.has(story.id)) return false;
+      seen.add(story.id);
       return true;
     });
 }
