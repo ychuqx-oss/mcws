@@ -15,9 +15,19 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { MICOMET_TIMELINE } from '@/data/miCometTimeline';
-import { generateMonthlyCumulativeStats, getStatsInRange, MonthlyCumulativeStats } from '@/utils/storyAggregator';
+import {
+  generateMonthlyCumulativeStats,
+  getStatsInRange,
+  MonthlyCumulativeStats,
+} from '@/utils/storyAggregator';
 
 export function CumulativeStoryChart() {
   const [timeRange, setTimeRange] = useState<'all' | '5y' | '3y' | '1y'>('all');
@@ -260,9 +270,15 @@ export function CumulativeStoryChart() {
                 {chartData.map((row, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-50' : ''}>
                     <td className="px-4 py-2">{row.month}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-pink-600">{row.miko_cumulative}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-blue-600">{row.suisei_cumulative}</td>
-                    <td className="px-4 py-2 text-right font-semibold text-yellow-600">{row.shared_cumulative}</td>
+                    <td className="px-4 py-2 text-right font-semibold text-pink-600">
+                      {row.miko_cumulative}
+                    </td>
+                    <td className="px-4 py-2 text-right font-semibold text-blue-600">
+                      {row.suisei_cumulative}
+                    </td>
+                    <td className="px-4 py-2 text-right font-semibold text-yellow-600">
+                      {row.shared_cumulative}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -277,10 +293,18 @@ export function CumulativeStoryChart() {
           <div className="rounded-lg bg-blue-50 p-4 text-sm text-gray-700">
             <p className="font-semibold">📊 說明：</p>
             <ul className="mt-2 list-inside space-y-1">
-              <li>✨ <strong>Miko 累計</strong>：包含 Miko 個人故事 + 共同故事</li>
-              <li>✨ <strong>Suisei 累計</strong>：包含 Suisei 個人故事 + 共同故事</li>
-              <li>✨ <strong>共同故事累計</strong>：同時屬於兩人的故事</li>
-              <li>✨ <strong>總計</strong>：不重複計算的總故事數</li>
+              <li>
+                ✨ <strong>Miko 累計</strong>：包含 Miko 個人故事 + 共同故事
+              </li>
+              <li>
+                ✨ <strong>Suisei 累計</strong>：包含 Suisei 個人故事 + 共同故事
+              </li>
+              <li>
+                ✨ <strong>共同故事累計</strong>：同時屬於兩人的故事
+              </li>
+              <li>
+                ✨ <strong>總計</strong>：不重複計算的總故事數
+              </li>
             </ul>
           </div>
         </CardContent>

@@ -1,0 +1,5 @@
+dist
+node_modules
+*.html
+src/data/en-stories
+package-lock.json

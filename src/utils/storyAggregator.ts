@@ -87,7 +87,21 @@ export function generateMonthlyCumulativeStats(stories: MiCometStory[]): Aggrega
     suiseiTotal += suiseiCount;
     sharedTotal += sharedCount;
 
-    const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     const monthName = monthNames[month] || '';
 
     monthlyStats.push({
@@ -103,7 +117,10 @@ export function generateMonthlyCumulativeStats(stories: MiCometStory[]): Aggrega
   });
 
   // 年度摘要
-  const yearlySummary: Record<number, { miko: number; suisei: number; shared: number; total: number }> = {};
+  const yearlySummary: Record<
+    number,
+    { miko: number; suisei: number; shared: number; total: number }
+  > = {};
 
   monthlyStats.forEach((stat) => {
     if (!yearlySummary[stat.year]) {
@@ -134,7 +151,7 @@ export function generateMonthlyCumulativeStats(stories: MiCometStory[]): Aggrega
 export function getStatsInRange(
   stats: MonthlyCumulativeStats[],
   startYear: number,
-  endYear: number
+  endYear: number,
 ): MonthlyCumulativeStats[] {
   return stats.filter((stat) => stat.year >= startYear && stat.year <= endYear);
 }
