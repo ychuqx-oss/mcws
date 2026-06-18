@@ -846,7 +846,7 @@ export default function Index() {
       style={{
         minHeight: '100vh',
         color: '#fff',
-        padding: '22px 16px 40px',
+        padding: '16px 12px 40px',
         background:
           'radial-gradient(1200px 600px at 18% -8%, rgba(255,125,183,0.12), transparent 60%), radial-gradient(900px 500px at 84% 6%, rgba(102,169,255,0.10), transparent 55%), #000',
       }}
@@ -898,14 +898,14 @@ export default function Index() {
           </div>
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 1.2fr) minmax(280px, 0.8fr)',
+              display: 'flex',
+              flexWrap: 'wrap',
               gap: 24,
               marginTop: 14,
               alignItems: 'center',
             }}
           >
-            <div>
+            <div style={{ flex: '1 1 280px', minWidth: 0 }}>
               <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>
                 Live timeline • synced from GitHub
               </div>
@@ -947,6 +947,8 @@ export default function Index() {
             </div>
             <div
               style={{
+                flex: '1 1 260px',
+                minWidth: 0,
                 borderRadius: 26,
                 background:
                   'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
