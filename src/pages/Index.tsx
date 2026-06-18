@@ -492,7 +492,15 @@ function OthersMonthlyChart({ stories }: { stories: MiCometStory[] }) {
   );
 }
 
-function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStory) => void }) {
+function Card({
+  item,
+  onOpen,
+  lang,
+}: {
+  item: MiCometStory;
+  onOpen: (item: MiCometStory) => void;
+  lang: 'zh' | 'en';
+}) {
   return (
     <article
       onClick={() => onOpen(item)}
@@ -535,10 +543,10 @@ function Card({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStor
       <div
         style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}
       >
-        {item.titleZh || item.title}
+        {lang === 'en' ? item.title : item.titleZh || item.title}
       </div>
       <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>
-        {item.ctxZh || item.ctx}
+        {lang === 'en' ? item.ctx : item.ctxZh || item.ctx}
       </div>
       <div
         style={{
@@ -644,7 +652,15 @@ function LinkButtons({ item }: { item: MiCometStory }) {
   );
 }
 
-function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
+function Modal({
+  item,
+  onClose,
+  lang,
+}: {
+  item: MiCometStory;
+  onClose: () => void;
+  lang: 'zh' | 'en';
+}) {
   return (
     <div
       onClick={onClose}
@@ -680,7 +696,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
               </span>
             </div>
             <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>
-              {item.titleZh || item.title}
+              {lang === 'en' ? item.title : item.titleZh || item.title}
             </h3>
           </div>
           <button
@@ -700,7 +716,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
           </button>
         </div>
         <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>
-          {item.ctxZh || item.ctx}
+          {lang === 'en' ? item.ctx : item.ctxZh || item.ctx}
         </div>
         <LinkButtons item={item} />
       </div>
@@ -780,6 +796,7 @@ export default function Index() {
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState(0);
   const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
+  const [lang, setLang] = useState<'zh' | 'en'>('zh');
 
   const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
   const typeCounts = useMemo(() => buildTypeCounts(summary.timeline), [summary.timeline]);
@@ -846,14 +863,38 @@ export default function Index() {
         >
           <div
             style={{
-              color: '#f6d77d',
-              fontSize: 12,
-              fontWeight: 900,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            2019 - 2026 / BLACK EDITION
+            <div
+              style={{
+                color: '#f6d77d',
+                fontSize: 12,
+                fontWeight: 900,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+              }}
+            >
+              2019 - 2026 / BLACK EDITION
+            </div>
+            <button
+              onClick={() => setLang((l) => (l === 'zh' ? 'en' : 'zh'))}
+              style={{
+                background: lang === 'en' ? 'rgba(102,169,255,0.18)' : 'rgba(255,255,255,0.06)',
+                border: `1px solid ${lang === 'en' ? '#66a9ff' : 'rgba(255,255,255,0.15)'}`,
+                borderRadius: 8,
+                color: lang === 'en' ? '#66a9ff' : '#a0a8bc',
+                fontSize: 12,
+                fontWeight: 800,
+                letterSpacing: '0.1em',
+                padding: '5px 13px',
+                cursor: 'pointer',
+              }}
+            >
+              {lang === 'zh' ? 'EN' : '中'}
+            </button>
           </div>
           <div
             style={{
@@ -1144,7 +1185,7 @@ export default function Index() {
                   }}
                 >
                   {group.items.map((item) => (
-                    <Card key={item.id} item={item} onOpen={setOpenItem} />
+                    <Card key={item.id} item={item} onOpen={setOpenItem} lang={lang} />
                   ))}
                 </div>
               </section>
@@ -1169,7 +1210,7 @@ export default function Index() {
         </section>
       </div>
 
-      {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
+      {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} lang={lang} /> : null}
     </div>
   );
 }
