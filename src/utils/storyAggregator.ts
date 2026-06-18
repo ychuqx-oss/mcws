@@ -3,7 +3,7 @@
  * 按年月統計累計故事數，共同故事計入 Miko 與 Suisei
  */
 
-import { MiCometStory } from '@/data/miCometTimeline';
+import { MiCometStory } from '@/data/timeline';
 
 export interface MonthlyCumulativeStats {
   yearMonth: string; // "2019-07"

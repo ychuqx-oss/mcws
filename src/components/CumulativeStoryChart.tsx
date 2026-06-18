@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MICOMET_TIMELINE } from '@/data/miCometTimeline';
+import { MICOMET_TIMELINE } from '@/data/timeline';
 import {
   generateMonthlyCumulativeStats,
   getStatsInRange,

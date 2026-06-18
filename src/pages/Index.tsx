@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { MICOMET_TIMELINE, type MiCometStory } from '@/data/miCometTimelineAll';
+import { MICOMET_TIMELINE, type MiCometStory } from '@/data/timeline';
 
 type Side = 'miko' | 'suisei' | 'shared' | 'others';
 type ChartMode = 'year' | 'month';
