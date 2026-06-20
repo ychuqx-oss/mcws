@@ -1,4 +1,70 @@
-import React, { useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
+
+// ── Language context ────────────────────────────────────────────────
+const LangCtx = createContext<'zh' | 'en'>('zh');
+const useLang = () => useContext(LangCtx);
+
+const T: Record<string, { zh: string; en: string }> = {
+  // Type labels
+  Clip: { zh: '剪輯', en: 'Clip' },
+  Stream: { zh: '直播', en: 'Stream' },
+  News: { zh: '綜合', en: 'News' },
+  Text: { zh: '文字', en: 'Text' },
+  // Chart labels
+  yearBtn: { zh: '年', en: 'Year' },
+  monthBtn: { zh: '月', en: 'Month' },
+  mikoTotal: { zh: 'Miko 累計', en: 'Miko Total' },
+  suiseiTotal: { zh: 'Suisei 累計', en: 'Suisei Total' },
+  sharedLabel: { zh: '共同故事', en: 'Shared' },
+  othersLabel: { zh: '助攻', en: 'Assist' },
+  grandTotal: { zh: '總計', en: 'Total' },
+  mikoCount: { zh: 'Miko 數量', en: 'Miko Count' },
+  suiseiCount: { zh: 'Suisei 數量', en: 'Suisei Count' },
+  sharedCount: { zh: '共同故事數量', en: 'Shared Count' },
+  othersCount: { zh: '助攻數量', en: 'Assist Count' },
+  sharedCumul: { zh: '共同故事累計', en: 'Shared Cumulative' },
+  othersCumul: { zh: '助攻累計', en: 'Assist Cumulative' },
+  yAxisLabel: { zh: '累計故事數', en: 'Cumulative Stories' },
+  yAxisLabelCount: { zh: '故事數量', en: 'Story Count' },
+  // Chart titles
+  chartMonthlyTitle: { zh: '故事數量折線圖', en: 'Monthly Story Count' },
+  chartMonthlySubtitle: { zh: '共同故事會同時計入 Miko 與 Suisei', en: 'Shared stories counted for both Miko and Suisei' },
+  chartCumulTitle: { zh: 'miComet 累計故事成長圖', en: 'miComet Cumulative Story Growth' },
+  chartCumulSubtitle: { zh: '粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。', en: 'Pink = Miko, Blue = Suisei, Yellow = Shared' },
+  chartOthersCumulTitle: { zh: '助攻累計成長圖', en: 'Assist Cumulative Growth' },
+  chartOthersCumulSubtitle: { zh: '第三方成員提及或助攻 miComet 的累計趨勢（白線）。', en: 'Third-party members mentioning miComet (white line).' },
+  chartOthersMonthTitle: { zh: '助攻月度數量圖', en: 'Monthly Assist Count' },
+  chartOthersMonthSubtitle: { zh: '每月第三方成員提及或助攻 miComet 的次數（白線）。', en: 'Monthly third-party mentions/assists for miComet (white line).' },
+  // Side labels
+  sideShared: { zh: '共同故事', en: 'Shared' },
+  sideOthers: { zh: '助攻', en: 'Assist' },
+  // Stats section
+  statsTitle: { zh: '統計總覽', en: 'Statistics' },
+  statTotal: { zh: '總故事數', en: 'Total Stories' },
+  statRange: { zh: '故事區間', en: 'Date Range' },
+  statRangeNote: { zh: '年 / 月雙模式統計', en: 'Year / Month modes' },
+  statFirst: { zh: '最早紀錄', en: 'First Entry' },
+  statLast: { zh: '最新紀錄', en: 'Latest Entry' },
+  statClip: { zh: '剪輯', en: 'Clips' },
+  statStream: { zh: '直播', en: 'Streams' },
+  statNews: { zh: '綜合', en: 'Mixed' },
+  statText: { zh: '文字', en: 'Text' },
+  // Search/filter
+  searchPlaceholder: { zh: '搜尋故事、關鍵字、日期...', en: 'Search stories, keywords, dates...' },
+  filterYear: { zh: '篩選年份：', en: 'Year:' },
+  filterAll: { zh: '全部', en: 'All' },
+  foundStories: { zh: '個故事', en: 'stories found' },
+  noResults: { zh: '{lang==='en'?'No stories match your search.':'沒有符合條件的故事'}', en: 'No stories match your search.' },
+  // Hero
+  heroSub: { zh: '星街彗星 × 櫻巫女 | Business & Beyond', en: 'Hoshimachi Suisei × Sakura Miko | Business & Beyond' },
+  heroDesc: { zh: '黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，讓兩條線一起往前看。', en: 'Dark theme, pink-blue highlights, year/month chart modes. Shared stories count for both Miko and Suisei.' },
+  // Footer note
+  footerNote: { zh: '分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。', en: 'Analysis rules: one entry per person per day; shared stories count for both Miko and Suisei.' },
+};
+
+function t(key: string, lang: 'zh' | 'en'): string {
+  return T[key]?.[lang] ?? T[key]?.zh ?? key;
+}
 import {
   CartesianGrid,
   Legend,
@@ -33,15 +99,17 @@ const COLORS = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  Clip: '剪輯',
-  Stream: '直播',
-  News: '綜合',
-  Text: '文字',
+  Clip: lang === 'en' ? 'Clip' : '剪輯',
+  Stream: lang === 'en' ? 'Stream' : '直播',
+  News: lang === 'en' ? 'Mixed' : '綜合',
+  Text: lang === 'en' ? 'Text' : '文字',
 };
 
 function formatDate(dateISO: string) {
   const date = new Date(`${dateISO}T00:00:00Z`);
-  return `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日`;
+  return lang === 'en'
+    ? `${date.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric', timeZone:'UTC' })}`
+    : `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日`;
 }
 
 function monthKey(dateISO: string) {
@@ -51,7 +119,11 @@ function monthKey(dateISO: string) {
 function normalizeStories(stories: MiCometStory[]) {
   const seen = new Set<string>();
   return [...stories]
-    .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id))
+    .sort((a, b) => {
+      const dateCompare = a.date.localeCompare(b.date);
+      if (dateCompare !== 0) return dateCompare;
+      return parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, ''));
+    })
     .filter((story) => {
       if (seen.has(story.id)) return false;
       seen.add(story.id);
@@ -286,7 +358,7 @@ function ChartShell({
               cursor: 'pointer',
             }}
           >
-            年
+            {lang === 'en' ? 'Year' : '年'}
           </button>
           <button
             onClick={() => setMode('month')}
@@ -300,7 +372,7 @@ function ChartShell({
               cursor: 'pointer',
             }}
           >
-            月
+            {lang === 'en' ? 'Month' : '月'}
           </button>
         </div>
       </div>
@@ -315,31 +387,31 @@ function ChartShell({
           }}
         >
           <ChartStatCard
-            label="Miko 累計"
+            label={lang === 'en' ? 'Miko Total' : 'Miko 累計'}
             value={summary.totals.miko}
             accent={COLORS.miko}
             tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))"
           />
           <ChartStatCard
-            label="Suisei 累計"
+            label={lang === 'en' ? 'Suisei Total' : 'Suisei 累計'}
             value={summary.totals.suisei}
             accent={COLORS.suisei}
             tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))"
           />
           <ChartStatCard
-            label="共同故事"
+            label={lang === 'en' ? 'Shared' : '共同故事'}
             value={summary.totals.shared}
             accent={COLORS.shared}
             tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))"
           />
           <ChartStatCard
-            label="助攻"
+            label={lang === 'en' ? 'Assist' : '助攻'}
             value={summary.counts.others}
             accent="#ffffff"
             tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))"
           />
           <ChartStatCard
-            label="總計"
+            label={lang === 'en' ? 'Total' : '總計'}
             value={summary.totals.total}
             accent={COLORS.total}
             tint="linear-gradient(180deg, rgba(126,226,168,0.12), rgba(126,226,168,0.04))"
@@ -367,7 +439,7 @@ function ChartShell({
               tickLine={{ stroke: 'rgba(255,255,255,0.14)' }}
               allowDecimals={false}
               label={{
-                value: cumulative ? '累計故事數' : '故事數量',
+                value: cumulative ? (lang === 'en' ? 'Cumulative' : '累計故事數') : (lang === 'en' ? 'Count' : '故事數量'),
                 angle: -90,
                 position: 'insideLeft',
                 fill: '#9aa2b2',
@@ -388,7 +460,7 @@ function ChartShell({
             <Line
               type="monotone"
               dataKey="miko"
-              name={cumulative ? 'Miko 累計' : 'Miko 數量'}
+              name={cumulative ? 'Miko Total' : 'Miko Count'}
               stroke={COLORS.miko}
               strokeWidth={3}
               dot={false}
@@ -396,7 +468,7 @@ function ChartShell({
             <Line
               type="monotone"
               dataKey="suisei"
-              name={cumulative ? 'Suisei 累計' : 'Suisei 數量'}
+              name={cumulative ? 'Suisei Total' : 'Suisei Count'}
               stroke={COLORS.suisei}
               strokeWidth={3}
               dot={false}
@@ -404,7 +476,7 @@ function ChartShell({
             <Line
               type="monotone"
               dataKey="shared"
-              name={cumulative ? '共同故事累計' : '共同故事數量'}
+              name={cumulative ? (lang==='en'?'Shared Total':'共同故事累計') : (lang==='en'?'Shared Count':'共同故事數量')}
               stroke={COLORS.shared}
               strokeWidth={2.5}
               strokeDasharray="6 6"
@@ -413,7 +485,7 @@ function ChartShell({
             <Line
               type="monotone"
               dataKey="others"
-              name={cumulative ? '助攻累計' : '助攻數量'}
+              name={cumulative ? (lang==='en'?'Assist Total':'助攻累計') : (lang==='en'?'Assist Count':'助攻數量')}
               stroke="#ffffff"
               strokeWidth={2}
               strokeDasharray="3 3"
@@ -433,12 +505,12 @@ function ChartShell({
           color: '#cfd4de',
         }}
       >
-        <div style={{ color: COLORS.miko }}>{cumulative ? '● Miko 累計' : '● Miko 數量'}</div>
-        <div style={{ color: COLORS.suisei }}>{cumulative ? '● Suisei 累計' : '● Suisei 數量'}</div>
+        <div style={{ color: COLORS.miko }}>{cumulative ? '● Miko Total' : '● Miko Count'}</div>
+        <div style={{ color: COLORS.suisei }}>{cumulative ? '● Suisei Total' : '● Suisei Count'}</div>
         <div style={{ color: COLORS.shared }}>
-          {cumulative ? '● 共同故事累計' : '● 共同故事數量'}
+          {cumulative ? (lang==='en'?'● Shared Total':'● 共同故事累計') : (lang==='en'?'● Shared Count':'● 共同故事數量')}
         </div>
-        <div style={{ color: '#ffffff' }}>{cumulative ? '● 助攻累計' : '● 助攻數量'}</div>
+        <div style={{ color: '#ffffff' }}>{cumulative ? (lang==='en'?'● Assist Total':'● 助攻累計') : (lang==='en'?'● Assist Count':'● 助攻數量')}</div>
       </div>
     </section>
   );
@@ -447,8 +519,8 @@ function ChartShell({
 function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
-      title="故事數量折線圖"
-      subtitle="共同故事會同時計入 Miko 與 Suisei"
+      title={lang==='en'?'Monthly Story Count':'故事數量折線圖'}
+      subtitle={lang==='en'?'Shared stories counted for both Miko and Suisei':'共同故事會同時計入 Miko 與 Suisei'}
       stories={stories}
       cumulative={false}
       defaultMode="month"
@@ -459,8 +531,8 @@ function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
 function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
-      title="miComet 累計故事成長圖"
-      subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。"
+      title={lang==='en'?'miComet Cumulative Growth':'miComet 累計故事成長圖'}
+      subtitle={lang==='en'?'Pink=Miko, Blue=Suisei, Yellow=Shared':'粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。'}
       stories={stories}
       cumulative
       defaultMode="year"
@@ -471,8 +543,8 @@ function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
 function OthersCumulativeChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
-      title="助攻累計成長圖"
-      subtitle="第三方成員提及或助攻 miComet 的累計趨勢（白線）。"
+      title={lang==='en'?'Assist Cumulative Growth':'助攻累計成長圖'}
+      subtitle={lang==='en'?'Third-party mentions of miComet (white line)':'第三方成員提及或助攻 miComet 的累計趨勢（白線）。'}
       stories={stories}
       cumulative
       defaultMode="year"
@@ -483,8 +555,8 @@ function OthersCumulativeChart({ stories }: { stories: MiCometStory[] }) {
 function OthersMonthlyChart({ stories }: { stories: MiCometStory[] }) {
   return (
     <ChartShell
-      title="助攻月度數量圖"
-      subtitle="每月第三方成員提及或助攻 miComet 的次數（白線）。"
+      title={lang==='en'?'Monthly Assist Count':'助攻月度數量圖'}
+      subtitle={lang==='en'?'Monthly third-party mentions of miComet':'每月第三方成員提及或助攻 miComet 的次數（白線）。'}
       stories={stories}
       cumulative={false}
       defaultMode="month"
@@ -536,8 +608,8 @@ function Card({
             : item.side === 'suisei'
               ? 'Suisei'
               : item.side === 'shared'
-                ? '共同故事'
-                : '助攻'}
+                ? (lang==='en'?'Shared':'共同故事')
+                : (lang==='en'?'Assist':'助攻')}
         </div>
       </div>
       <div
@@ -813,7 +885,11 @@ export default function Index() {
           .toLowerCase()
           .includes(q);
       })
-      .sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+      .sort((a, b) => {
+        const d = a.date.localeCompare(b.date);
+        if (d !== 0) return d;
+        return parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, ''));
+      });
   }, [search, summary.timeline, yearFilter]);
 
   const groups = useMemo(
@@ -835,10 +911,10 @@ export default function Index() {
   ];
 
   const typeStats = [
-    { label: '剪輯', value: typeCounts.Clip ?? 0, color: COLORS.shared },
-    { label: '直播', value: typeCounts.Stream ?? 0, color: COLORS.miko },
-    { label: '綜合', value: typeCounts.News ?? 0, color: COLORS.total },
-    { label: '文字', value: typeCounts.Text ?? 0, color: COLORS.suisei },
+    { label: lang==='en'?'Clips':'剪輯', value: typeCounts.Clip ?? 0, color: COLORS.shared },
+    { label: lang==='en'?'Streams':'直播', value: typeCounts.Stream ?? 0, color: COLORS.miko },
+    { label: lang==='en'?'Mixed':'綜合', value: typeCounts.News ?? 0, color: COLORS.total },
+    { label: lang==='en'?'Text':'文字', value: typeCounts.Text ?? 0, color: COLORS.suisei },
   ];
 
   return (
@@ -926,7 +1002,7 @@ export default function Index() {
                 Compendium
               </h1>
               <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>
-                星街彗星 × 櫻巫女 | Business &amp; Beyond
+                {lang==='en'?'Hoshimachi Suisei × Sakura Miko | Business & Beyond':'星街彗星 × 櫻巫女 | Business & Beyond'}
               </div>
               <div
                 style={{
@@ -941,8 +1017,7 @@ export default function Index() {
                   lineHeight: 1.8,
                 }}
               >
-                黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與
-                Suisei，讓兩條線一起往前看。
+                {lang==='en'?'Dark theme, pink-blue highlights. Shared stories count for both Miko and Suisei.':'黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，讓兩條線一起往前看。'}
               </div>
             </div>
             <div
@@ -1018,25 +1093,25 @@ export default function Index() {
             }}
           >
             <StatCard
-              label="總故事數"
+              label={lang==='en'?'Total Stories':'總故事數'}
               value={summary.totals.total}
               note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`}
               accent="#f7f8fb"
             />
             <StatCard
-              label="故事區間"
+              label={lang==='en'?'Date Range':'故事區間'}
               value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`}
-              note="年 / 月雙模式統計"
+              note={lang==='en'?'Year / Month modes':'年 / 月雙模式統計'}
               accent="#ffb7de"
             />
             <StatCard
-              label="最早紀錄"
+              label={lang==='en'?'First Entry':'最早紀錄'}
               value={summary.first ? formatDate(summary.first.date) : '—'}
               note={summary.first?.titleZh ?? summary.first?.title ?? '—'}
               accent="#9ed6ff"
             />
             <StatCard
-              label="最新紀錄"
+              label={lang==='en'?'Latest Entry':'最新紀錄'}
               value={summary.last ? formatDate(summary.last.date) : '—'}
               note={summary.last?.titleZh ?? summary.last?.title ?? '—'}
               accent="#c58cff"
@@ -1087,7 +1162,7 @@ export default function Index() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="搜尋故事、關鍵字、日期..."
+                placeholder={lang==='en'?'Search stories, keywords, dates...':'搜尋故事、關鍵字、日期...'}
                 style={{
                   flex: 1,
                   background: 'transparent',
@@ -1099,7 +1174,7 @@ export default function Index() {
               />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>篩選年份：</span>
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>{lang==='en'?'Year:':'篩選年份：'}</span>
               <button
                 onClick={() => setYearFilter(0)}
                 style={{
@@ -1111,7 +1186,7 @@ export default function Index() {
                   cursor: 'pointer',
                 }}
               >
-                全部
+                {lang==='en'?'All':'全部'}
               </button>
               {years.map((year) => (
                 <button
@@ -1134,7 +1209,7 @@ export default function Index() {
         </section>
 
         <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>
-          找到 {filtered.length} 個故事
+          {lang==='en'?`${filtered.length} stories found`:`找到 ${filtered.length} 個故事`}
         </section>
 
         <main style={{ marginTop: 16, display: 'grid', gap: 18 }}>
@@ -1207,8 +1282,7 @@ export default function Index() {
             lineHeight: 1.7,
           }}
         >
-          分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與
-          Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。
+          {lang==='en'?'Rules: one entry per person per day; shared stories count for both Miko and Suisei.':'分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。'}
         </section>
       </div>
 
