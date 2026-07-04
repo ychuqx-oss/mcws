@@ -1,6 +1,7 @@
 import timelineData from './timeline.json';
 import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
 import timeline2022PttBbqData from './timeline-2022-ptt-bbq.json';
+import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
@@ -8,6 +9,7 @@ import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
 import timeline2023EarlySummerBbqData from './timeline-2023-early-summer-bbq.json';
 import timeline2023LateSummerBbqData from './timeline-2023-late-summer-bbq.json';
 import timeline2023AutumnBbqData from './timeline-2023-autumn-bbq.json';
+import timeline2023OctoberBbqData from './timeline-2023-october-bbq.json';
 import timeline2023WinterBbqData from './timeline-2023-winter-bbq.json';
 import timeline2024BbqData from './timeline-2024-bbq.json';
 import timeline2024SpringBbqData from './timeline-2024-spring-bbq.json';
@@ -34,26 +36,25 @@ export interface MiCometStory {
   link?: string;
 }
 
-type TitleRule = {
-  test: RegExp;
-  title: string;
-  ctx?: string;
-};
+type TitleRule = { test: RegExp; title: string; ctx?: string };
 
 const TITLE_RULES: TitleRule[] = [
-  { test: /1130085765029826560|串門子/, title: '星街早期串門子推文，成為 miComet 早期互動線索' },
-  { test: /kYsY8ZTcotc|雪山人狼|金斧/, title: '星街提到與 Miko 練習雪山人狼' },
-  { test: /Vanguard ZERO|先導者|工商|PAj_4vs2m-o|KPo5vaoe1Vo/, title: 'Vanguard ZERO 工商與復仇戰，逐漸形成 miComet 名稱脈絡' },
+  { test: /1576066223233851392|1576066601442992131|miComet Gacha|miCometガチャ/, title: 'miComet 先導者限定轉蛋實裝，星街與 Miko 在推文互動', ctx: '《Cardfight!! Vanguard ZERO》miComet 限定轉蛋於 2022/10/01 實裝，星街休養中仍轉發驚嘆卡圖，Miko 也在下方回覆。' },
+  { test: /1583411425141698561|1583478952458428416|vVbW9YREu6E|3D 兩週年/, title: 'Miko 3D 兩週年 Live，星街在休養期化身最強粉頭應援', ctx: 'Miko 3D 兩週年 Live 當天，星街在休養期仍於推文熱烈應援；Live 後 Miko 也回覆感謝。' },
+  { test: /1586940027661570048|1586981442004455424|萬聖節|Halloween/, title: '萬聖節隔空互動：Miko 發討糖推文，星街在下方吐槽', ctx: '萬聖節當天 Miko 發出討糖推文，星街在復歸前於下方回覆吐槽，成為 2022/11 復歸前的隔空互動紀錄。' },
+  { test: /mOrU7MQ7AsM|cemmwQPpQWE|企劃力|聲優公司/, title: '星街廣播烤肉：稱讚 Miko 的企劃力並聊到 Hololive 對照話題', ctx: '星街廣播相關烤肉，內容包含稱讚 Miko 企劃力，以及討論 Hololive 與聲優公司對照等話題。' },
+  { test: /Ranch Simulator|牧場模擬器|農業はじめよう/, title: 'miComet《牧場模擬器》雙人連動：務農變成拆家與商業相聲', ctx: '2023/10/10 的 miComet 雙人遊戲連動。兩人遊玩《牧場模擬器》，務農經營一路變成拆家、蓋怪建築、逼母雞下蛋與商業相聲。' },
+  { test: /Sugar Rush|シュガーラッシュ|Weiß Schwarz|Weiss Schwarz|15週年|15周年/, title: 'miComet 準備《Sugar Rush》與 Weiß Schwarz 15 週年紀念 Live', ctx: '2023 年 10 月是 miComet 準備 Weiß Schwarz 15 週年紀念 Live 與首支正式雙人原創曲《Sugar Rush》的前夕；歌曲於 2023/11/02 對外公開。' },
+  { test: /Vanguard ZERO|先導者|PAj_4vs2m-o|KPo5vaoe1Vo/, title: 'Vanguard ZERO 工商與復仇戰，逐漸形成 miComet 名稱脈絡' },
   { test: /AsaCoco|早安 Holo|生日快樂/, title: '早安 Holo 由星街播出，祝 Miko 生日快樂' },
-  { test: /サクラカゼ|Sakura Kaze|第二張單曲/, title: '星街幫忙宣傳 Miko 第二張單曲' },
   { test: /VILLS|笑.*停不下來|lp1DnxdKfIA|CEiN9AAkR6Y/, title: '星街雜談：與 Miko 練習 VILLS 時笑到停不下來' },
   { test: /miComet.*C|C 要大寫|lwszUzu_ARc|怨靈|怨霊/, title: '星街宣布與 Miko 的組合名稱決定為 miComet，C 要大寫' },
   { test: /rW32DH_rH-E|nbQNvhr19nU|寵物|繪師聯動/, title: '繪師聯動畫 Miko：星街說想養 Miko 當寵物' },
-  { test: /HX7vTcI|長休|宣布回歸/, title: 'Miko 宣布結束長休，星街送上祝福' },
-  { test: /15IpFst|回歸 Live|繼續.*miComet/, title: 'Miko 回歸 Live：之後還要繼續 miComet' },
-  { test: /QiQtiNK7jWw|m9K167jBLJo|大運動會|運動會前|Sports Festival/, title: 'Hololive 麥塊大運動會前練習，留下早期 miComet 互動來源' },
+  { test: /長休|宣布回歸/, title: 'Miko 宣布結束長休，星街送上祝福' },
+  { test: /回歸 Live|繼續.*miComet/, title: 'Miko 回歸 Live：之後還要繼續 miComet' },
+  { test: /大運動會|運動會前|Sports Festival/, title: 'Hololive 麥塊大運動會前練習，留下早期 miComet 互動來源' },
   { test: /Minecraft|マインクラフト|麥塊|ホロ鯖/, title: 'Miko 與星街的麥塊互動故事' },
-  { test: /GTA|Grand Theft Auto|俠盜/, title: 'miComet 的 GTA 聯動與互動故事' },
+  { test: /GTA|Grand Theft Auto|俠盜/, title: 'miComet 的俠盜獵車手聯動與互動故事' },
   { test: /Monster Hunter|魔物獵人|モンハン/, title: 'Miko 與星街的魔物獵人聯動故事' },
   { test: /Fire Construction|Shiraken|火建|不知火建設/, title: '火建活動中的 Miko 與星街互動' },
   { test: /First Elytra|鞘翅|エリトラ/, title: 'Miko 送給星街第一副鞘翅' },
@@ -62,7 +63,7 @@ const TITLE_RULES: TitleRule[] = [
   { test: /Mario Kart|マリオカート|馬車杯|0UIcSapvl9M/, title: 'miComet 的瑪利歐賽車練習與比賽互動' },
   { test: /Super Bunny Man|スーパーバニーマン|超級兔人/, title: 'miComet 的超級兔人聯動' },
   { test: /VARK/, title: 'miComet VARK 共演與後續回顧' },
-  { test: /Stellar Stellar|GHOST|駆けろ|レイニー|mTRv4YApXh8/, title: 'Miko 談自己喜歡星街的歌，並唱星街的歌曲' },
+  { test: /Stellar Stellar|GHOST|駆けろ|レイニー/, title: 'Miko 談自己喜歡星街的歌，並唱星街的歌曲' },
   { test: /9yBLZKFKXyg|アニマル|Animal/, title: 'miComet 合唱曲《動物》公開，成為兩人第一首合唱曲' },
   { test: /Raft|IJFb5BqQUTg/, title: 'miComet 木筏求生聯動，只有星街視點並充滿商業互動' },
   { test: /Us1KDp3w8IM|誕生日|生日 Live|約束|UrOvtpGoW5s/, title: 'Miko 生日 Live 與星街來賓回顧，延伸到 miComet 合唱與商業梗' },
@@ -104,14 +105,13 @@ function translateCommonTerms(value: string) {
     .replace(/Minecraft|マインクラフト|麥塊/gi, '麥塊')
     .replace(/Mario Kart|マリオカート/gi, '瑪利歐賽車')
     .replace(/WarioWare|メイドインワリオ|ワリオ/gi, '瓦利歐製造')
+    .replace(/Ranch Simulator/gi, '牧場模擬器')
     .replace(/Nintendo Switch Sports/gi, '運動遊戲')
     .replace(/Super Bunny Man|スーパーバニーマン/gi, '超級兔人')
     .replace(/Surgeon Simulator 2?/gi, '醫療模擬')
     .replace(/Grand Theft Auto|GTA/gi, '俠盜獵車手')
     .replace(/AmongUs|Among Us/gi, '太空狼人殺')
-    .replace(/HoloCure|ホロキュア/gi, 'HoloCure')
     .replace(/Animal|アニマル/g, '動物')
-    .replace(/Stellar Stellar/g, '星街代表曲')
     .replace(/Business/gi, '商業')
     .replace(/original stream/gi, '原直播')
     .replace(/stream/gi, '直播')
@@ -122,7 +122,6 @@ function translateCommonTerms(value: string) {
     .replace(/ENsub/gi, '')
     .replace(/hand-drawn|手描き/gi, '手繪')
     .replace(/mocopi/gi, '動作捕捉')
-    .replace(/ReGLOSS/g, 'ReGLOSS')
     .replace(/Hololive|hololive/g, 'Hololive');
 }
 
@@ -133,7 +132,7 @@ function removeForeignNoise(value: string) {
     .replace(/[^\S\r\n]+/g, ' ')
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
     .replace(/\b[A-Za-z]{4,}\b/g, (word) => {
-      if (/^(Miko|miComet|Hololive|HoloCure|ReGLOSS|VILLS|ARK|Aqua|Subaru|Marine|Kanata|Fubuki|Haachama|Roboco|Noel|Sora|Mio|Aki|Towa|Flare|Polka|Lui|Chihaya|JOYSOUND)$/.test(word)) return word;
+      if (/^(Miko|miComet|Hololive|HoloCure|ReGLOSS|VILLS|ARK|Aqua|Subaru|Marine|Kanata|Fubuki|Haachama|Roboco|Noel|Sora|Mio|Aki|Towa|Flare|Polka|Lui|Chihaya|JOYSOUND|Sugar|Rush|Weiß|Schwarz)$/.test(word)) return word;
       return '';
     })
     .replace(/[「」『』【】\[\]()（）]+$/g, '')
@@ -168,16 +167,13 @@ function resolveTitle(story: MiCometStory) {
   const raw = rawText(story);
   const rule = TITLE_RULES.find((item) => item.test.test(raw));
   if (rule) return rule.title;
-
   const preferred = normalizeUiText(story.titleZh || story.title || story.ctxZh || story.ctx);
   const titled = isBadChineseTitle(preferred) ? genericTitle(story) : preferred;
-
   if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示)/.test(titled)) {
     if (story.side === 'miko') return `Miko ${titled}`;
     if (story.side === 'suisei') return `星街 ${titled}`;
     if (story.side === 'shared') return `miComet ${titled}`;
   }
-
   return titled;
 }
 
@@ -185,7 +181,6 @@ function resolveContext(story: MiCometStory, titleZh: string) {
   const raw = rawText(story);
   const rule = TITLE_RULES.find((item) => item.test.test(raw));
   if (rule?.ctx) return rule.ctx;
-
   const sourceText = normalizeUiText(story.ctxZh || story.ctx || '');
   const cleaned = sourceText
     .replace(/^來源[為是]?[：:]?/g, '')
@@ -193,18 +188,15 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/^直播[：:]?/g, '')
     .replace(/。?補充來源.*$/g, '')
     .trim();
-
   if (!cleaned || /^(來源|剪輯|直播|文字)$/.test(cleaned) || cleaned.length < 8) {
     return `${titleZh}。來源連結已保留，重複故事已合併。`;
   }
-
   return cleaned.endsWith('。') ? cleaned : `${cleaned}。`;
 }
 
 function normalizeStory(story: MiCometStory): MiCometStory {
   const titleZh = resolveTitle(story);
   const ctxZh = resolveContext(story, titleZh);
-
   return {
     ...story,
     titleZh,
@@ -216,10 +208,7 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 
 function duplicateKey(story: MiCometStory) {
   const year = Number(story.date.slice(0, 4));
-  if (year >= 2019 && year <= 2026) {
-    return `${story.date}:${story.side}`;
-  }
-
+  if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
   return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
 }
@@ -231,7 +220,6 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
     .filter((url) => !baseRaw.includes(url));
   const uniqueUrls = Array.from(new Set(extraUrls)).slice(0, 12);
   const sourceAppend = uniqueUrls.length ? ` 補充來源：${uniqueUrls.join(' / ')}` : '';
-
   return {
     ...base,
     ctx: `${base.ctx}${sourceAppend}`,
@@ -241,19 +229,18 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
 
 function normalizeAndMergeStories(stories: MiCometStory[]) {
   const map = new Map<string, MiCometStory>();
-
   stories.map(normalizeStory).forEach((story) => {
     const key = duplicateKey(story);
     const current = map.get(key);
     map.set(key, current ? mergeDuplicateStory(current, story) : story);
   });
-
   return [...map.values()];
 }
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2020PttBbqData as MiCometStory[]),
   ...(timeline2022PttBbqData as MiCometStory[]),
+  ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timelineData as MiCometStory[]),
   ...(timeline2020AutumnBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
@@ -262,6 +249,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2023EarlySummerBbqData as MiCometStory[]),
   ...(timeline2023LateSummerBbqData as MiCometStory[]),
   ...(timeline2023AutumnBbqData as MiCometStory[]),
+  ...(timeline2023OctoberBbqData as MiCometStory[]),
   ...(timeline2023WinterBbqData as MiCometStory[]),
   ...(timeline2024BbqData as MiCometStory[]),
   ...(timeline2024SpringBbqData as MiCometStory[]),
