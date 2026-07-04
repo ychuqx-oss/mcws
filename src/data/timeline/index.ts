@@ -21,6 +21,7 @@ export interface MiCometStory {
   link?: string;
 }
 
+// Timeline shards are kept separate so large historical JSON files remain easy to update.
 export const MICOMET_TIMELINE: MiCometStory[] = [
   ...(timelineData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
