@@ -36,51 +36,7 @@ export interface MiCometStory {
   link?: string;
 }
 
-type TitleRule = { test: RegExp; title: string; ctx?: string };
-
-const TITLE_RULES: TitleRule[] = [
-  { test: /1576066223233851392|1576066601442992131|miComet Gacha|miCometガチャ/, title: 'miComet 先導者限定轉蛋實裝，星街與 Miko 在推文互動', ctx: '《Cardfight!! Vanguard ZERO》miComet 限定轉蛋於 2022/10/01 實裝，星街休養中仍轉發驚嘆卡圖，Miko 也在下方回覆。' },
-  { test: /1583411425141698561|1583478952458428416|vVbW9YREu6E|3D 兩週年/, title: 'Miko 3D 兩週年 Live，星街在休養期化身最強粉頭應援', ctx: 'Miko 3D 兩週年 Live 當天，星街在休養期仍於推文熱烈應援；Live 後 Miko 也回覆感謝。' },
-  { test: /1586940027661570048|1586981442004455424|萬聖節|Halloween/, title: '萬聖節隔空互動：Miko 發討糖推文，星街在下方吐槽', ctx: '萬聖節當天 Miko 發出討糖推文，星街在復歸前於下方回覆吐槽，成為 2022/11 復歸前的隔空互動紀錄。' },
-  { test: /mOrU7MQ7AsM|cemmwQPpQWE|企劃力|聲優公司/, title: '星街廣播烤肉：稱讚 Miko 的企劃力並聊到 Hololive 對照話題', ctx: '星街廣播相關烤肉，內容包含稱讚 Miko 企劃力，以及討論 Hololive 與聲優公司對照等話題。' },
-  { test: /Ranch Simulator|牧場模擬器|農業はじめよう/, title: 'miComet《牧場模擬器》雙人連動：務農變成拆家與商業相聲', ctx: '2023/10/10 的 miComet 雙人遊戲連動。兩人遊玩《牧場模擬器》，務農經營一路變成拆家、蓋怪建築、逼母雞下蛋與商業相聲。' },
-  { test: /Sugar Rush|シュガーラッシュ|Weiß Schwarz|Weiss Schwarz|15週年|15周年/, title: 'miComet 準備《Sugar Rush》與 Weiß Schwarz 15 週年紀念 Live', ctx: '2023 年 10 月是 miComet 準備 Weiß Schwarz 15 週年紀念 Live 與首支正式雙人原創曲《Sugar Rush》的前夕；歌曲於 2023/11/02 對外公開。' },
-  { test: /Vanguard ZERO|先導者|PAj_4vs2m-o|KPo5vaoe1Vo/, title: 'Vanguard ZERO 工商與復仇戰，逐漸形成 miComet 名稱脈絡' },
-  { test: /AsaCoco|早安 Holo|生日快樂/, title: '早安 Holo 由星街播出，祝 Miko 生日快樂' },
-  { test: /VILLS|笑.*停不下來|lp1DnxdKfIA|CEiN9AAkR6Y/, title: '星街雜談：與 Miko 練習 VILLS 時笑到停不下來' },
-  { test: /miComet.*C|C 要大寫|lwszUzu_ARc|怨靈|怨霊/, title: '星街宣布與 Miko 的組合名稱決定為 miComet，C 要大寫' },
-  { test: /rW32DH_rH-E|nbQNvhr19nU|寵物|繪師聯動/, title: '繪師聯動畫 Miko：星街說想養 Miko 當寵物' },
-  { test: /長休|宣布回歸/, title: 'Miko 宣布結束長休，星街送上祝福' },
-  { test: /回歸 Live|繼續.*miComet/, title: 'Miko 回歸 Live：之後還要繼續 miComet' },
-  { test: /大運動會|運動會前|Sports Festival/, title: 'Hololive 麥塊大運動會前練習，留下早期 miComet 互動來源' },
-  { test: /Minecraft|マインクラフト|麥塊|ホロ鯖/, title: 'Miko 與星街的麥塊互動故事' },
-  { test: /GTA|Grand Theft Auto|俠盜/, title: 'miComet 的俠盜獵車手聯動與互動故事' },
-  { test: /Monster Hunter|魔物獵人|モンハン/, title: 'Miko 與星街的魔物獵人聯動故事' },
-  { test: /Fire Construction|Shiraken|火建|不知火建設/, title: '火建活動中的 Miko 與星街互動' },
-  { test: /First Elytra|鞘翅|エリトラ/, title: 'Miko 送給星街第一副鞘翅' },
-  { test: /鬼屋|お化け屋敷|haunted house/, title: 'Miko 蓋鬼屋，星街加入互動' },
-  { test: /大空警察|Officer Subaru|Interrogation/, title: '大空警察審問 miComet 的商業夥伴罪行' },
-  { test: /Mario Kart|マリオカート|馬車杯|0UIcSapvl9M/, title: 'miComet 的瑪利歐賽車練習與比賽互動' },
-  { test: /Super Bunny Man|スーパーバニーマン|超級兔人/, title: 'miComet 的超級兔人聯動' },
-  { test: /VARK/, title: 'miComet VARK 共演與後續回顧' },
-  { test: /Stellar Stellar|GHOST|駆けろ|レイニー/, title: 'Miko 談自己喜歡星街的歌，並唱星街的歌曲' },
-  { test: /9yBLZKFKXyg|アニマル|Animal/, title: 'miComet 合唱曲《動物》公開，成為兩人第一首合唱曲' },
-  { test: /Raft|IJFb5BqQUTg/, title: 'miComet 木筏求生聯動，只有星街視點並充滿商業互動' },
-  { test: /Us1KDp3w8IM|誕生日|生日 Live|約束|UrOvtpGoW5s/, title: 'Miko 生日 Live 與星街來賓回顧，延伸到 miComet 合唱與商業梗' },
-  { test: /EXPO|裁判所|ElDVor7UmSE/, title: 'Hololive EXPO 法庭節目，延伸 miComet 商業貼貼梗' },
-  { test: /灼熱|Shakunetsu|UQ8oyDu08-0/, title: '星街擔心新曲又被 Miko 搶走變成 Miko 的歌' },
-  { test: /Surgeon Simulator|Dr\.miComet|ZmIY2kP/, title: 'Dr.miComet 醫療模擬聯動直播' },
-  { test: /壁ドン|kabedon|3vXDA4bprI0/, title: '星街想壁咚 Miko 卻失敗，還被嫌棄' },
-  { test: /HoloCure|ホロキュア|MiComet Collab/, title: 'HoloCure 裡的 miComet 聯動反應' },
-  { test: /年末ホロライブ|ゆくホロくるホロ|8ysl5INNWjE|6C8cH9114dI/, title: '年末 Hololive 節目中的 miComet 相關片段' },
-  { test: /mocopi|Nintendo Switch Sports|lQojdq6KdsE/, title: 'miComet 使用動作捕捉遊玩運動遊戲' },
-  { test: /1ブロ|One Block|K5XLFq8XTX4/, title: '1 Block miComet：兩人靠商業力量一起生存' },
-  { test: /ReGLOSS|l1GxSWH5glk|Bv09uCbDimQ|896inFcI2yg|2YZ4XzJF0xA|_baN-3CnuUw|Nh-L-TrCkk0/, title: 'miComet 同時視聽 ReGLOSS 初配信' },
-  { test: /Wario|ワリオ|メイドインワリオ|QVjy6dkw4HE|Ez9Z4KxXEBg|NUAKC74CCRM|hmhrDdEO2Ow|YzA7hVN1As0|1E5Ot69zKI0|qS1jL5N-N7M|AaLSN-RHvWg|ytiYjpmdah4|qBpOop6-hsA/, title: 'miComet 玩瓦利歐製造，動作捕捉變成爆笑回' },
-  { test: /すいせい列車|星街列車|dpPNQOrS5Dk|WHG5XxJz75k/, title: '手繪短片：星街列車咻咻咻' },
-  { test: /JOYSOUND|卡拉OK/, title: 'miComet 卡拉 OK 聯名活動' },
-  { test: /旅行|trip|海外|international/, title: 'miComet 相關旅行與線下互動話題' },
-];
+const SOURCE_RE = /(youtube\.com|youtu\.be|x\.com|twitter\.com|holodex\.net|ptt\.cc|pttweb\.cc|disp\.cc|moptt\.tw|fandom\.com|imgur\.com|meee\.com|note\.com|4gamers\.com|hololive|cover-corp|bushiroad|weiss|ws-tcg)/i;
 
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
@@ -88,6 +44,11 @@ function rawText(story: MiCometStory) {
 
 function extractUrls(value: string) {
   return Array.from(new Set(value.match(/https?:\/\/\S+/g) ?? []));
+}
+
+function hasExternalSource(story: MiCometStory) {
+  const sourceText = [story.link, ...extractUrls(rawText(story))].filter(Boolean).join(' ');
+  return SOURCE_RE.test(sourceText);
 }
 
 function normalizeNames(value?: string) {
@@ -119,38 +80,24 @@ function translateCommonTerms(value: string) {
     .replace(/shorts?/gi, '短片')
     .replace(/English-subtitled/gi, '')
     .replace(/Japanese/gi, '')
-    .replace(/ENsub/gi, '')
     .replace(/hand-drawn|手描き/gi, '手繪')
     .replace(/mocopi/gi, '動作捕捉')
     .replace(/Hololive|hololive/g, 'Hololive');
 }
 
-function removeForeignNoise(value: string) {
+function stripForeignNoise(value: string) {
   return value
     .replace(/https?:\/\/\S+/g, '')
     .replace(/YouTube[:：]?|YT[:：]?|Twitter[:：]?|X[:：]?/gi, '')
-    .replace(/[^\S\r\n]+/g, ' ')
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
-    .replace(/\b[A-Za-z]{4,}\b/g, (word) => {
-      if (/^(Miko|miComet|Hololive|HoloCure|ReGLOSS|VILLS|ARK|Aqua|Subaru|Marine|Kanata|Fubuki|Haachama|Roboco|Noel|Sora|Mio|Aki|Towa|Flare|Polka|Lui|Chihaya|JOYSOUND|Sugar|Rush|Weiß|Schwarz)$/.test(word)) return word;
-      return '';
-    })
-    .replace(/[「」『』【】\[\]()（）]+$/g, '')
-    .replace(/^[：:｜|、，。\s]+|[：:｜|、，。\s]+$/g, '')
+    .replace(/\b(?:Japanese|English|clip|stream|shorts|summary|moment|hilarious|funny|original|source|compilation|with|from|and|the|too|very)\b/gi, '')
     .replace(/\s{2,}/g, ' ')
+    .replace(/^[：:｜|、，。\s]+|[：:｜|、，。\s]+$/g, '')
     .trim();
 }
 
-function normalizeUiText(value?: string) {
-  return removeForeignNoise(translateCommonTerms(normalizeNames(value))).replace(/！！+/g, '！');
-}
-
-function isBadChineseTitle(value: string) {
-  if (!value) return true;
-  if (/[ぁ-ゖァ-ヺー]/.test(value)) return true;
-  if (/\b(?:Japanese|English|clip|stream|shorts|summary|moment|hilarious|funny|original|source|compilation)\b/i.test(value)) return true;
-  if (value.length <= 3) return true;
-  return false;
+function cleanUiText(value?: string) {
+  return stripForeignNoise(translateCommonTerms(normalizeNames(value))).trim();
 }
 
 function genericTitle(story: MiCometStory) {
@@ -163,47 +110,36 @@ function genericTitle(story: MiCometStory) {
   return 'miComet 共同故事';
 }
 
+function isBadTitle(value: string) {
+  return !value || value.length <= 3 || /[ぁ-ゖァ-ヺー]/.test(value) || /\b(?:Japanese|English|clip|stream|shorts|source)\b/i.test(value);
+}
+
 function resolveTitle(story: MiCometStory) {
-  const raw = rawText(story);
-  const rule = TITLE_RULES.find((item) => item.test.test(raw));
-  if (rule) return rule.title;
-  const preferred = normalizeUiText(story.titleZh || story.title || story.ctxZh || story.ctx);
-  const titled = isBadChineseTitle(preferred) ? genericTitle(story) : preferred;
-  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示)/.test(titled)) {
-    if (story.side === 'miko') return `Miko ${titled}`;
-    if (story.side === 'suisei') return `星街 ${titled}`;
-    if (story.side === 'shared') return `miComet ${titled}`;
+  const preferred = cleanUiText(story.titleZh || story.title || story.ctxZh || story.ctx);
+  const title = isBadTitle(preferred) ? genericTitle(story) : preferred;
+  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示)/.test(title)) {
+    if (story.side === 'miko') return `Miko ${title}`;
+    if (story.side === 'suisei') return `星街 ${title}`;
+    return `miComet ${title}`;
   }
-  return titled;
+  return title;
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
-  const raw = rawText(story);
-  const rule = TITLE_RULES.find((item) => item.test.test(raw));
-  if (rule?.ctx) return rule.ctx;
-  const sourceText = normalizeUiText(story.ctxZh || story.ctx || '');
-  const cleaned = sourceText
+  const cleaned = cleanUiText(story.ctxZh || story.ctx || '')
     .replace(/^來源[為是]?[：:]?/g, '')
     .replace(/^剪輯[：:]?/g, '')
     .replace(/^直播[：:]?/g, '')
     .replace(/。?補充來源.*$/g, '')
     .trim();
-  if (!cleaned || /^(來源|剪輯|直播|文字)$/.test(cleaned) || cleaned.length < 8) {
-    return `${titleZh}。來源連結已保留，重複故事已合併。`;
-  }
+  if (!cleaned || cleaned.length < 8) return `${titleZh}。外部來源已保留，重複故事已合併。`;
   return cleaned.endsWith('。') ? cleaned : `${cleaned}。`;
 }
 
 function normalizeStory(story: MiCometStory): MiCometStory {
   const titleZh = resolveTitle(story);
   const ctxZh = resolveContext(story, titleZh);
-  return {
-    ...story,
-    titleZh,
-    ctxZh,
-    title: story.title || titleZh,
-    ctx: story.ctx || ctxZh,
-  };
+  return { ...story, titleZh, ctxZh };
 }
 
 function duplicateKey(story: MiCometStory) {
@@ -219,21 +155,24 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
     .filter((url): url is string => Boolean(url))
     .filter((url) => !baseRaw.includes(url));
   const uniqueUrls = Array.from(new Set(extraUrls)).slice(0, 12);
-  const sourceAppend = uniqueUrls.length ? ` 補充來源：${uniqueUrls.join(' / ')}` : '';
+  if (!uniqueUrls.length) return base;
   return {
     ...base,
-    ctx: `${base.ctx}${sourceAppend}`,
-    ctxZh: sourceAppend ? `${base.ctxZh ?? base.ctx}補充來源已合併。` : base.ctxZh,
+    ctx: `${base.ctx} 補充來源：${uniqueUrls.join(' / ')}`,
+    ctxZh: `${base.ctxZh ?? base.ctx}補充來源已合併。`,
   };
 }
 
 function normalizeAndMergeStories(stories: MiCometStory[]) {
   const map = new Map<string, MiCometStory>();
-  stories.map(normalizeStory).forEach((story) => {
-    const key = duplicateKey(story);
-    const current = map.get(key);
-    map.set(key, current ? mergeDuplicateStory(current, story) : story);
-  });
+  stories
+    .filter(hasExternalSource)
+    .map(normalizeStory)
+    .forEach((story) => {
+      const key = duplicateKey(story);
+      const current = map.get(key);
+      map.set(key, current ? mergeDuplicateStory(current, story) : story);
+    });
   return [...map.values()];
 }
 
