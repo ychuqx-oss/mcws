@@ -1,4 +1,5 @@
 import timelineData from './timeline.json';
+import timeline2022BbqData from './timeline-2022-bbq.json';
 
 export interface MiCometStory {
   id: string;
@@ -17,4 +18,11 @@ export interface MiCometStory {
   link?: string;
 }
 
-export const MICOMET_TIMELINE: MiCometStory[] = timelineData as MiCometStory[];
+export const MICOMET_TIMELINE: MiCometStory[] = [
+  ...(timelineData as MiCometStory[]),
+  ...(timeline2022BbqData as MiCometStory[]),
+].sort((a, b) => {
+  const dateCompare = a.date.localeCompare(b.date);
+  if (dateCompare !== 0) return dateCompare;
+  return a.id.localeCompare(b.id, undefined, { numeric: true });
+});
