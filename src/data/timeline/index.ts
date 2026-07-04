@@ -41,19 +41,20 @@ function normalizeZhText(value?: string) {
     .replace(/35/g, 'Miko')
     .replace(/米子/g, 'Miko')
     .replace(/美子/g, 'Miko')
-    .replace(/巫女/g, 'Miko')
     .replace(/櫻巫女/g, 'Miko')
+    .replace(/巫女/g, 'Miko')
     .replace(/さくらみこ/g, 'Miko')
     .replace(/みこち/g, 'Miko')
     .replace(/Mikochi/g, 'Miko')
+    .replace(/星街彗星/g, '星街')
     .replace(/彗醬/g, '星街')
     .replace(/彗星/g, '星街')
-    .replace(/星街彗星/g, '星街')
     .replace(/星街すいせい/g, '星街')
     .replace(/すいちゃん/g, '星街')
     .replace(/スイセイ/g, '星街')
-    .replace(/\bsuisei\b/gi, '星街')
-    .replace(/Suisei/g, '星街')
+    .replace(/suisei/gi, '星街')
+    .replace(/みこめっと/g, 'miComet')
+    .replace(/ミコメット/g, 'miComet')
     .replace(/英文熟肉：/g, '')
     .replace(/日文切り抜き：/g, '')
     .replace(/日文手描き：/g, '手描き：')
@@ -70,7 +71,7 @@ function normalizeZhText(value?: string) {
 }
 
 function rawText(story: MiCometStory) {
-  return `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.link ?? ''}`;
+  return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
 }
 
 function fallbackTitle(story: MiCometStory, currentTitle?: string) {
@@ -147,7 +148,7 @@ function cleanup2021Title(story: MiCometStory, currentTitle?: string) {
   if (/miComet Summer|Afterdate|アフターデート/i.test(raw)) return '夏祭約會：miComet 逛遍各個攤位';
   if (/Sui-chan.*Sora-chan|そらちゃん|星街猜測是否/i.test(raw)) return '星街猜 Miko 說的是「すいちゃん」還是「そらちゃん」';
   if (/Super Bunny Man/i.test(raw)) return 'miComet《Super Bunny Man》聯動';
-  if (/Chitchat/i.test(raw) && /Miko|Miko|miComet/i.test(raw)) return '星街雜談：聊到 Miko 與 miComet 的關係';
+  if (/Chitchat/i.test(raw) && /Miko|miComet/i.test(raw)) return '星街雜談：聊到 Miko 與 miComet 的關係';
   return fallbackTitle(story, currentTitle);
 }
 
@@ -193,11 +194,65 @@ function cleanup2022Context(story: MiCometStory, currentContext?: string) {
   if (/生日.*最後來賓|VILLS 的日子|Us1KDp3w8IM/i.test(raw)) return 'Miko 生日當天早上公布最後來賓是星街；星街同日直播宣傳 Miko Live，並提到 miComet 生日大概是 VILLS 的日子。';
   if (/約束|Yakusoku|UrOvtpGoW5s|zzh53BQB7v8/i.test(raw)) return 'Miko 生日 Live 後續回顧中，miComet 合唱《約束之絆》；Miko 提到歌詞與兩人經歷重疊，也談到為何常強調 miComet 是商業。';
   if (/EXPO|裁判所|ElDVor7UmSE/i.test(raw)) return 'Hololive EXPO 現地節目《ホロライブ裁判所》，與《アニマル》頭像、商業貼貼失敗梗相關。';
-  if (/灼熱|UQ8oyDu08-0/i.test(raw)) return '星街提到新曲《灼熱にて純情》與 Miko／みこめっと相關，擔心又會被當成 Miko 的歌。';
+  if (/灼熱|UQ8oyDu08-0/i.test(raw)) return '星街提到新曲《灼熱にて純情》與 Miko／miComet相關，擔心又會被當成 Miko 的歌。';
   if (/Surgeon Simulator|Dr\.miComet|ZmIY2kP/i.test(raw)) return '原直播來源：Miko Ch. さくらみこ。2022/11/10 的 Dr.miComet《Surgeon Simulator 2》聯動。';
   if (/壁ドン|3vXDA4bprI0/i.test(raw)) return '日文剪輯。星街想壁咚 Miko 卻失敗，還被 Miko 嫌棄。';
   if (/HoloCure|MiComet Collab|UzRtq51efjs|ALxCeflv9qg|bc7ZrRJSJoU/i.test(raw)) return 'HoloCure 裡的 miComet 聯動相關反應與剪輯。';
-  if (/年末ホロライブ|ゆくホロくるホロ|8ysl5INNWjE|6C8cH9114dI/i.test(raw)) return '年末ホロライブ 2022→2023 原直播與後續みこめっと相關剪輯。';
+  if (/年末ホロライブ|ゆくホロくるホロ|8ysl5INNWjE|6C8cH9114dI/i.test(raw)) return '年末ホロライブ 2022→2023 原直播與後續 miComet相關剪輯。';
+  return currentContext;
+}
+
+function cleanup2023Title(story: MiCometStory, currentTitle?: string) {
+  if (!story.date.startsWith('2023-')) return currentTitle;
+  const raw = rawText(story);
+  if (/bDH7Jcvj72g|お揃い衣装|matching outfits/i.test(raw)) return 'miComet 同款衣裝：Miko 在意起衣裝差異';
+  if (/0UIcSapvl9M|FRXZB-hkmKY|マリオカート8DX|Mario Kart|あけおめみこめっと/i.test(raw)) return '新年 miComet《マリオカート8DX》合同練習';
+  if (/CNvhdhc0HRw|わからされちゃいます|マリン/i.test(raw)) return 'miComet 收錄「わからされちゃいますぅ」，並聊到 Marine 話題';
+  if (/IasJpJa7_zo|Haachama|はあちゃま/i.test(raw)) return 'Miko 收錄後的一句話與星街的反應';
+  if (/R0Bkq4qvXfY|New Year's Eve|年末活動/i.test(raw)) return '年末活動中 Miko 與星街互相打鬧';
+  if (/iT-xmoF1I30|ご飯|お泊まり|出去吃飯/i.test(raw)) return '星街與 Miko 為何不常出去吃飯';
+  if (/RiQNmNhFJAI|合体/i.test(raw)) return 'miComet 同步合體ネタ';
+  if (/uvgxbZs-gJs|面白すぎる|揃う/i.test(raw)) return 'Miko 與星街湊在一起時的爆笑總集編';
+  if (/575VTWDzsgA|弱気/i.test(raw)) return 'Miko 打了弱氣的星街';
+  if (/wnlXLkcCTzk|パッド|墊子/i.test(raw)) return '手描き：墊子話題引發的 miComet 玩笑';
+  if (/j6TJbFETAHQ|ゲッダン|Get Down/i.test(raw)) return '星街與 Miko 抓住空檔跳「ゲッダン」';
+  if (/ZEWpAy7_T9s|IRL footage/i.test(raw)) return '星街與 Miko 玩鬧的真人素材相關剪輯';
+  if (/lQojdq6KdsE|mocopi|Nintendo Switch Sports/i.test(raw) && story.date <= '2023-03-16') return 'miComet 使用 mocopi 遊玩 Nintendo Switch Sports';
+  if (/GZgz3ub0eAs|衣装を自慢|炫耀衣裝/i.test(raw)) return 'Miko 想炫耀衣裝，星街冷淡吐槽';
+  if (/JDXWd32DHHU|Hilarious moment/i.test(raw)) return '星街在 mocopi 直播中的爆笑瞬間';
+  if (/wRQCRg9eP2Q|Marine draws|船長が描く|商品化/i.test(raw)) return 'Marine 畫出可愛 miComet，讓人想商品化';
+  if (/6gHSAR0epVY|灼熱する度|灼熱.*見て/i.test(raw)) return '星街唱到《灼熱》時總是看向 Miko';
+  if (/BPjDLZDgS3s|問題児|teacher|老師/i.test(raw)) return '星街回憶常與老師起衝突，Miko 吐槽她是問題兒童';
+  if (/K5XLFq8XTX4|1ブロ|One Block/i.test(raw)) return '1 Block miComet 第二天：靠 Business 的力量生存';
+  if (/PB0u-LM86mc|折檻部屋|punishment/i.test(raw)) return '星街幫 Miko 做了一間折檻房';
+  if (/C1WUErvLmT0|new expression|新表情/i.test(raw)) return '星街看到 Miko 的新表情後笑到停不下來';
+  if (/jIjg0AcXrLQ|言ってること|聽不懂/i.test(raw)) return '星街有時候真的聽不懂 Miko 在說什麼';
+  if (/xhbzF9ussoo|雑談したい|想和 Miko 聊天/i.test(raw)) return '星街想和 Miko 聊天';
+  if (/iZKFvsNQ5_s|あくたん|Aqua/i.test(raw)) return 'Miko 問星街為什麼要去找 Aqua 玩';
+  if (/2F8CoD-fDz8|リスペクト|尊敬/i.test(raw)) return '星街談自己尊敬 Miko 的地方';
+  if (/xkhG27kuhQ4|お土産|伴手禮|souvenir/i.test(raw)) return 'Miko 因為 PON 害星街拿不到伴手禮，於是寫信道歉';
+  if (/--gKkzs9fjM|逆襲/i.test(raw)) return '手描き：Miko 的逆襲';
+  if (/RbJvd73aA5g|オリ曲|original song|匂わせ/i.test(raw)) return '星街暗示 miComet 原創曲，Miko 慌張阻止';
+  if (/X7gWTeXe0NE|匂わせで遊ぶ/i.test(raw)) return 'miComet 用暗示互相玩鬧';
+  if (/ReGLOSS|l1GxSWH5glk|896inFcI2yg|2YZ4XzJF0xA|_baN-3CnuUw|Nh-L-TrCkk0|Bv09uCbDimQ/i.test(raw)) return 'miComet 同時視聽 ReGLOSS 初配信';
+  if (/jlbZrQ9XE98|イキる|act smug/i.test(raw)) return 'Miko 因星街而學會得意起來';
+  if (/sIgMvt9j0fU|爆乳|busty/i.test(raw)) return 'Miko 看到爆乳化的星街後笑噴';
+  if (/QVjy6dkw4HE|Ez9Z4KxXEBg|NUAKC74CCRM|hmhrDdEO2Ow|YzA7hVN1As0|1E5Ot69zKI0|qS1jL5N-N7M|AaLSN-RHvWg|ytiYjpmdah4|qBpOop6-hsA|Wario|ワリオ|メイドインワリオ/i.test(raw)) return 'miComet《超おどるメイドインワリオ》mocopi 3D 爆笑回';
+  if (/F_DNDs98fq4|肩を揉|揉肩/i.test(raw)) return 'Miko 幫星街揉肩';
+  if (/4Uy696KG43E|こんすい|スローモーション/i.test(raw)) return '星街第一次說「こんすい」，miComet 開始慢動作玩梗';
+  if (/dpPNQOrS5Dk|WHG5XxJz75k|すいせい列車|星街列車/i.test(raw)) return '手描き：星街列車咻咻咻';
+  return fallbackTitle(story, currentTitle);
+}
+
+function cleanup2023Context(story: MiCometStory, currentContext?: string) {
+  if (!story.date.startsWith('2023-')) return currentContext;
+  const raw = rawText(story);
+  if (/ReGLOSS|l1GxSWH5glk|896inFcI2yg|2YZ4XzJF0xA|_baN-3CnuUw|Nh-L-TrCkk0|Bv09uCbDimQ/i.test(raw)) return '2023/09/09 miComet 同時視聽 ReGLOSS 初配信；同日多個中文剪輯與 9/12 奏相關剪輯都合併為同一組來源。';
+  if (/QVjy6dkw4HE|Ez9Z4KxXEBg|NUAKC74CCRM|hmhrDdEO2Ow|YzA7hVN1As0|1E5Ot69zKI0|qS1jL5N-N7M|AaLSN-RHvWg|ytiYjpmdah4|qBpOop6-hsA|Wario|ワリオ|メイドインワリオ/i.test(raw)) return '2023/11/12 miComet《超おどるメイドインワリオ》原直播與後續 mocopi 3D 爆笑剪輯。大量同源剪輯已合併為同日同類故事。';
+  if (/0UIcSapvl9M|マリオカート8DX|Mario Kart/i.test(raw)) return '新年 miComet《マリオカート8DX》合同練習原直播與相關剪輯。';
+  if (/K5XLFq8XTX4|1ブロ|One Block/i.test(raw)) return '1 Block miComet 第二天原直播，Miko 與星街靠 Business 的力量繼續生存。';
+  if (/RbJvd73aA5g|X7gWTeXe0NE|オリ曲|匂わせ/i.test(raw)) return '星街在 One Block miComet 後續片段中暗示 miComet 原創曲，Miko 慌張反應，後續也衍生匂わせ剪輯。';
+  if (/dpPNQOrS5Dk|WHG5XxJz75k|すいせい列車|星街列車/i.test(raw)) return '與 2023/11/12 WarioWare 素材相關的手描き短片，主題是星街列車咻咻咻。';
   return currentContext;
 }
 
@@ -209,6 +264,8 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   titleZh = cleanup2021Title(story, titleZh);
   titleZh = cleanup2022Title(story, titleZh);
   ctxZh = cleanup2022Context(story, ctxZh);
+  titleZh = cleanup2023Title(story, titleZh);
+  ctxZh = cleanup2023Context(story, ctxZh);
   return { ...story, titleZh, ctxZh };
 }
 
@@ -261,19 +318,41 @@ function duplicateKey(story: MiCometStory) {
     if (/HoloCure|MiComet Collab|UzRtq51efjs|ALxCeflv9qg|bc7ZrRJSJoU/i.test(text)) return `${story.date}:holocure-micomet-collab:${story.link ?? story.id}`;
     if (/年末ホロライブ|ゆくホロくるホロ|8ysl5INNWjE|6C8cH9114dI/i.test(text)) return `${story.date}:year-end-hololive-micomet:${story.link ?? story.id}`;
   }
+  if (story.date.startsWith('2023-')) {
+    if (/ReGLOSS|l1GxSWH5glk|896inFcI2yg|2YZ4XzJF0xA|_baN-3CnuUw|Nh-L-TrCkk0|Bv09uCbDimQ/i.test(text)) return '2023-09-09:regloss-watchalong';
+    if (/QVjy6dkw4HE|Ez9Z4KxXEBg|NUAKC74CCRM|hmhrDdEO2Ow|YzA7hVN1As0|1E5Ot69zKI0|qS1jL5N-N7M|AaLSN-RHvWg|ytiYjpmdah4|qBpOop6-hsA|Wario|ワリオ|メイドインワリオ/i.test(text)) return `${story.date}:warioware-mocopi:${story.side}`;
+    if (/dpPNQOrS5Dk|WHG5XxJz75k|すいせい列車|星街列車/i.test(text)) return '2023-12:suisei-train';
+    return `${story.date}:${story.side}`;
+  }
   const linkKey = story.link || `${story.ctx} ${story.ctxZh ?? ''}`.match(/https?:\/\/\S+/)?.[0];
   if (linkKey) return `link:${linkKey}`;
   return `id:${story.id}`;
 }
 
+function storyUrls(story: MiCometStory) {
+  return [story.link, ...(rawText(story).match(/https?:\/\/\S+/g) ?? [])].filter(Boolean) as string[];
+}
+
+function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
+  const existing = `${base.link ?? ''} ${base.ctx ?? ''} ${base.ctxZh ?? ''}`;
+  const extraUrls = storyUrls(extra).filter((url) => !existing.includes(url)).slice(0, 8);
+  if (extraUrls.length === 0) return base;
+  const addition = ` 補充來源：${extraUrls.join(' / ')}`;
+  return {
+    ...base,
+    ctx: `${base.ctx}${addition}`,
+    ctxZh: `${base.ctxZh ?? base.ctx}${addition}`,
+  };
+}
+
 function normalizeAndMergeStories(stories: MiCometStory[]) {
-  const seen = new Set<string>();
-  return stories.map(normalizeStory).filter((story) => {
+  const map = new Map<string, MiCometStory>();
+  stories.map(normalizeStory).forEach((story) => {
     const key = duplicateKey(story);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+    const current = map.get(key);
+    map.set(key, current ? mergeDuplicateStory(current, story) : story);
   });
+  return [...map.values()];
 }
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
