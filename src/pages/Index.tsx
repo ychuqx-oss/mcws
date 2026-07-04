@@ -1,70 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-
-// ── Language context ────────────────────────────────────────────────
-const LangCtx = createContext<'zh' | 'en'>('zh');
-const useLang = () => useContext(LangCtx);
-
-const T: Record<string, { zh: string; en: string }> = {
-  // Type labels
-  Clip: { zh: '剪輯', en: 'Clip' },
-  Stream: { zh: '直播', en: 'Stream' },
-  News: { zh: '綜合', en: 'News' },
-  Text: { zh: '文字', en: 'Text' },
-  // Chart labels
-  yearBtn: { zh: '年', en: 'Year' },
-  monthBtn: { zh: '月', en: 'Month' },
-  mikoTotal: { zh: 'Miko 累計', en: 'Miko Total' },
-  suiseiTotal: { zh: 'Suisei 累計', en: 'Suisei Total' },
-  sharedLabel: { zh: '共同故事', en: 'Shared' },
-  othersLabel: { zh: '助攻', en: 'Assist' },
-  grandTotal: { zh: '總計', en: 'Total' },
-  mikoCount: { zh: 'Miko 數量', en: 'Miko Count' },
-  suiseiCount: { zh: 'Suisei 數量', en: 'Suisei Count' },
-  sharedCount: { zh: '共同故事數量', en: 'Shared Count' },
-  othersCount: { zh: '助攻數量', en: 'Assist Count' },
-  sharedCumul: { zh: '共同故事累計', en: 'Shared Cumulative' },
-  othersCumul: { zh: '助攻累計', en: 'Assist Cumulative' },
-  yAxisLabel: { zh: '累計故事數', en: 'Cumulative Stories' },
-  yAxisLabelCount: { zh: '故事數量', en: 'Story Count' },
-  // Chart titles
-  chartMonthlyTitle: { zh: '故事數量折線圖', en: 'Monthly Story Count' },
-  chartMonthlySubtitle: { zh: '共同故事會同時計入 Miko 與 Suisei', en: 'Shared stories counted for both Miko and Suisei' },
-  chartCumulTitle: { zh: 'miComet 累計故事成長圖', en: 'miComet Cumulative Story Growth' },
-  chartCumulSubtitle: { zh: '粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。', en: 'Pink = Miko, Blue = Suisei, Yellow = Shared' },
-  chartOthersCumulTitle: { zh: '助攻累計成長圖', en: 'Assist Cumulative Growth' },
-  chartOthersCumulSubtitle: { zh: '第三方成員提及或助攻 miComet 的累計趨勢（白線）。', en: 'Third-party members mentioning miComet (white line).' },
-  chartOthersMonthTitle: { zh: '助攻月度數量圖', en: 'Monthly Assist Count' },
-  chartOthersMonthSubtitle: { zh: '每月第三方成員提及或助攻 miComet 的次數（白線）。', en: 'Monthly third-party mentions/assists for miComet (white line).' },
-  // Side labels
-  sideShared: { zh: '共同故事', en: 'Shared' },
-  sideOthers: { zh: '助攻', en: 'Assist' },
-  // Stats section
-  statsTitle: { zh: '統計總覽', en: 'Statistics' },
-  statTotal: { zh: '總故事數', en: 'Total Stories' },
-  statRange: { zh: '故事區間', en: 'Date Range' },
-  statRangeNote: { zh: '年 / 月雙模式統計', en: 'Year / Month modes' },
-  statFirst: { zh: '最早紀錄', en: 'First Entry' },
-  statLast: { zh: '最新紀錄', en: 'Latest Entry' },
-  statClip: { zh: '剪輯', en: 'Clips' },
-  statStream: { zh: '直播', en: 'Streams' },
-  statNews: { zh: '綜合', en: 'Mixed' },
-  statText: { zh: '文字', en: 'Text' },
-  // Search/filter
-  searchPlaceholder: { zh: '搜尋故事、關鍵字、日期...', en: 'Search stories, keywords, dates...' },
-  filterYear: { zh: '篩選年份：', en: 'Year:' },
-  filterAll: { zh: '全部', en: 'All' },
-  foundStories: { zh: '個故事', en: 'stories found' },
-  noResults: { zh: '{lang==='en'?'No stories match your search.':'沒有符合條件的故事'}', en: 'No stories match your search.' },
-  // Hero
-  heroSub: { zh: '星街彗星 × 櫻巫女 | Business & Beyond', en: 'Hoshimachi Suisei × Sakura Miko | Business & Beyond' },
-  heroDesc: { zh: '黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，讓兩條線一起往前看。', en: 'Dark theme, pink-blue highlights, year/month chart modes. Shared stories count for both Miko and Suisei.' },
-  // Footer note
-  footerNote: { zh: '分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。', en: 'Analysis rules: one entry per person per day; shared stories count for both Miko and Suisei.' },
-};
-
-function t(key: string, lang: 'zh' | 'en'): string {
-  return T[key]?.[lang] ?? T[key]?.zh ?? key;
-}
+import React, { useMemo, useState } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -99,36 +33,40 @@ const COLORS = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  Clip: lang === 'en' ? 'Clip' : '剪輯',
-  Stream: lang === 'en' ? 'Stream' : '直播',
-  News: lang === 'en' ? 'Mixed' : '綜合',
-  Text: lang === 'en' ? 'Text' : '文字',
+  Clip: 'Clip',
+  Stream: 'Stream',
+  News: 'Mixed',
+  Text: 'Text',
+  Audio: 'Audio',
 };
 
 function formatDate(dateISO: string) {
   const date = new Date(`${dateISO}T00:00:00Z`);
-  return lang === 'en'
-    ? `${date.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric', timeZone:'UTC' })}`
-    : `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日`;
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 function monthKey(dateISO: string) {
   return dateISO.slice(0, 7);
 }
 
+function storySort(a: MiCometStory, b: MiCometStory) {
+  const dateCompare = a.date.localeCompare(b.date);
+  if (dateCompare !== 0) return dateCompare;
+  return a.id.localeCompare(b.id, undefined, { numeric: true });
+}
+
 function normalizeStories(stories: MiCometStory[]) {
   const seen = new Set<string>();
-  return [...stories]
-    .sort((a, b) => {
-      const dateCompare = a.date.localeCompare(b.date);
-      if (dateCompare !== 0) return dateCompare;
-      return parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, ''));
-    })
-    .filter((story) => {
-      if (seen.has(story.id)) return false;
-      seen.add(story.id);
-      return true;
-    });
+  return [...stories].sort(storySort).filter((story) => {
+    if (seen.has(story.id)) return false;
+    seen.add(story.id);
+    return true;
+  });
 }
 
 function summarizeTimeline(stories: MiCometStory[]) {
@@ -143,6 +81,7 @@ function summarizeTimeline(stories: MiCometStory[]) {
   const years = [...new Set(timeline.map((story) => Number(story.date.slice(0, 4))))].sort(
     (a, b) => a - b,
   );
+
   return {
     timeline,
     counts,
@@ -159,18 +98,14 @@ function summarizeTimeline(stories: MiCometStory[]) {
 }
 
 function buildTypeCounts(stories: MiCometStory[]) {
-  const counts: Record<string, number> = {};
-  stories.forEach((story) => {
-    counts[story.type] = (counts[story.type] ?? 0) + 1;
-  });
-  return counts;
+  return stories.reduce<Record<string, number>>((acc, story) => {
+    acc[story.type] = (acc[story.type] ?? 0) + 1;
+    return acc;
+  }, {});
 }
 
 function buildMonthlyCounts(stories: MiCometStory[]) {
-  const monthly = new Map<
-    string,
-    { miko: number; suisei: number; shared: number; others: number }
-  >();
+  const monthly = new Map<string, Record<Side, number>>();
 
   stories.forEach((story) => {
     const key = monthKey(story.date);
@@ -191,33 +126,28 @@ function buildMonthlyCounts(stories: MiCometStory[]) {
   return monthly;
 }
 
-function sumYear(
-  map: Map<string, { miko: number; suisei: number; shared: number; others: number }>,
-  year: number,
-) {
+function sumYear(map: Map<string, Record<Side, number>>, year: number) {
   const yearKey = String(year);
   return [...map.entries()]
     .filter(([key]) => key.startsWith(yearKey))
-    .reduce(
+    .reduce<Record<Side, number>>(
       (acc, [, value]) => ({
         miko: acc.miko + value.miko,
         suisei: acc.suisei + value.suisei,
         shared: acc.shared + value.shared,
-        others: acc.others + (value.others ?? 0),
+        others: acc.others + value.others,
       }),
       { miko: 0, suisei: 0, shared: 0, others: 0 },
     );
 }
 
 function buildCountPoints(mode: ChartMode, stories: MiCometStory[]) {
-  const timeline = normalizeStories(stories);
-  const monthly = buildMonthlyCounts(timeline);
+  const monthly = buildMonthlyCounts(normalizeStories(stories));
   const points: CountPoint[] = [];
 
   if (mode === 'year') {
     for (let year = YEAR_START; year <= YEAR_END; year += 1) {
-      const totals = sumYear(monthly, year);
-      points.push({ label: String(year), ...totals });
+      points.push({ label: String(year), ...sumYear(monthly, year) });
     }
     return points;
   }
@@ -234,51 +164,46 @@ function buildCountPoints(mode: ChartMode, stories: MiCometStory[]) {
 }
 
 function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
-  const countPoints = buildCountPoints(mode, stories);
-  const points: CountPoint[] = [];
   let miko = 0;
   let suisei = 0;
   let shared = 0;
   let others = 0;
 
-  countPoints.forEach((point) => {
+  return buildCountPoints(mode, stories).map((point) => {
     miko += point.miko;
     suisei += point.suisei;
     shared += point.shared;
     others += point.others;
-    points.push({ label: point.label, miko, suisei, shared, others });
+    return { label: point.label, miko, suisei, shared, others };
   });
-
-  return points;
 }
 
-function formatTypeLabel(type: string) {
-  return TYPE_LABELS[type] ?? type;
+function extractLinks(item: MiCometStory) {
+  const text = `${item.link ?? ''} ${item.ctx ?? ''}`;
+  const ytUrls = Array.from(
+    new Set(text.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/\S+|youtu\.be\/\S+)/g) || []),
+  ).slice(0, 4);
+  const twUrls = Array.from(
+    new Set(text.match(/https?:\/\/(?:www\.)?(?:twitter\.com|x\.com)\/\S+/g) || []),
+  ).slice(0, 4);
+  return { ytUrls, twUrls };
 }
 
-function chartShellStyle() {
-  return {
-    marginTop: 20,
-    borderRadius: 26,
-    background:
-      'radial-gradient(1200px 480px at 18% 0%, rgba(255,125,183,0.08), transparent 45%), radial-gradient(800px 420px at 88% 12%, rgba(102,169,255,0.08), transparent 42%), #070910',
-    border: '1px solid rgba(255,255,255,0.07)',
-    boxShadow: '0 28px 70px rgba(0,0,0,0.42)',
-    padding: 20,
-  } as const;
+function sideLabel(side: Side) {
+  if (side === 'miko') return 'Miko';
+  if (side === 'suisei') return 'Suisei';
+  if (side === 'shared') return 'Shared';
+  return 'Assist';
 }
 
-function ChartStatCard({
-  label,
-  value,
-  accent,
-  tint,
-}: {
-  label: string;
-  value: string | number;
-  accent: string;
-  tint: string;
-}) {
+function sideColor(side: Side) {
+  if (side === 'miko') return COLORS.miko;
+  if (side === 'suisei') return COLORS.suisei;
+  if (side === 'shared') return COLORS.shared;
+  return '#ffffff';
+}
+
+function ChartStatCard({ label, value, accent, tint }: { label: string; value: string | number; accent: string; tint: string }) {
   return (
     <div
       style={{
@@ -313,109 +238,55 @@ function ChartShell({
   const [mode, setMode] = useState<ChartMode>(defaultMode);
   const summary = useMemo(() => summarizeTimeline(stories), [stories]);
   const data = useMemo(
-    () =>
-      cumulative
-        ? buildCumulativePoints(mode, summary.timeline)
-        : buildCountPoints(mode, summary.timeline),
+    () => (cumulative ? buildCumulativePoints(mode, summary.timeline) : buildCountPoints(mode, summary.timeline)),
     [cumulative, mode, summary.timeline],
   );
 
   return (
-    <section style={chartShellStyle()}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 16,
-          alignItems: 'flex-start',
-          marginBottom: 16,
-          flexWrap: 'wrap',
-        }}
-      >
+    <section
+      style={{
+        marginTop: 20,
+        borderRadius: 26,
+        background:
+          'radial-gradient(1200px 480px at 18% 0%, rgba(255,125,183,0.08), transparent 45%), radial-gradient(800px 420px at 88% 12%, rgba(102,169,255,0.08), transparent 42%), #070910',
+        border: '1px solid rgba(255,255,255,0.07)',
+        boxShadow: '0 28px 70px rgba(0,0,0,0.42)',
+        padding: 20,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 900, color: '#edf0f8' }}>{title}</div>
           <div style={{ color: '#9aa2b2', marginTop: 5, fontSize: 13 }}>{subtitle}</div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            background: '#0d0f15',
-            borderRadius: 14,
-            padding: 6,
-            border: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          <button
-            onClick={() => setMode('year')}
-            style={{
-              background: mode === 'year' ? '#1f2432' : 'transparent',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 10,
-              padding: '10px 14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            {lang === 'en' ? 'Year' : '年'}
-          </button>
-          <button
-            onClick={() => setMode('month')}
-            style={{
-              background: mode === 'month' ? '#1f2432' : 'transparent',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 10,
-              padding: '10px 14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            {lang === 'en' ? 'Month' : '月'}
-          </button>
+        <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
+          {(['year', 'month'] as ChartMode[]).map((item) => (
+            <button
+              key={item}
+              onClick={() => setMode(item)}
+              style={{
+                background: mode === item ? '#1f2432' : 'transparent',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 10,
+                padding: '10px 14px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {item === 'year' ? 'Year' : 'Month'}
+            </button>
+          ))}
         </div>
       </div>
 
       {!cumulative ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: 12,
-            marginBottom: 16,
-          }}
-        >
-          <ChartStatCard
-            label={lang === 'en' ? 'Miko Total' : 'Miko 累計'}
-            value={summary.totals.miko}
-            accent={COLORS.miko}
-            tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))"
-          />
-          <ChartStatCard
-            label={lang === 'en' ? 'Suisei Total' : 'Suisei 累計'}
-            value={summary.totals.suisei}
-            accent={COLORS.suisei}
-            tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))"
-          />
-          <ChartStatCard
-            label={lang === 'en' ? 'Shared' : '共同故事'}
-            value={summary.totals.shared}
-            accent={COLORS.shared}
-            tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))"
-          />
-          <ChartStatCard
-            label={lang === 'en' ? 'Assist' : '助攻'}
-            value={summary.counts.others}
-            accent="#ffffff"
-            tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))"
-          />
-          <ChartStatCard
-            label={lang === 'en' ? 'Total' : '總計'}
-            value={summary.totals.total}
-            accent={COLORS.total}
-            tint="linear-gradient(180deg, rgba(126,226,168,0.12), rgba(126,226,168,0.04))"
-          />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 16 }}>
+          <ChartStatCard label="Miko Total" value={summary.totals.miko} accent={COLORS.miko} tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))" />
+          <ChartStatCard label="Suisei Total" value={summary.totals.suisei} accent={COLORS.suisei} tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))" />
+          <ChartStatCard label="Shared" value={summary.totals.shared} accent={COLORS.shared} tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))" />
+          <ChartStatCard label="Assist" value={summary.counts.others} accent="#ffffff" tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))" />
+          <ChartStatCard label="Total" value={summary.totals.total} accent={COLORS.total} tint="linear-gradient(180deg, rgba(126,226,168,0.12), rgba(126,226,168,0.04))" />
         </div>
       ) : null}
 
@@ -423,260 +294,24 @@ function ChartShell({
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 22, left: 0, bottom: 38 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.11)" strokeDasharray="4 6" />
-            <XAxis
-              dataKey="label"
-              tick={{ fill: '#8f96a8', fontSize: 12 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.14)' }}
-              tickLine={{ stroke: 'rgba(255,255,255,0.14)' }}
-              interval={mode === 'year' ? 0 : 2}
-              angle={-45}
-              textAnchor="end"
-              height={48}
-            />
-            <YAxis
-              tick={{ fill: '#8f96a8', fontSize: 12 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.14)' }}
-              tickLine={{ stroke: 'rgba(255,255,255,0.14)' }}
-              allowDecimals={false}
-              label={{
-                value: cumulative ? (lang === 'en' ? 'Cumulative' : '累計故事數') : (lang === 'en' ? 'Count' : '故事數量'),
-                angle: -90,
-                position: 'insideLeft',
-                fill: '#9aa2b2',
-              }}
-            />
-            <Tooltip
-              contentStyle={{
-                background: '#0a0c11',
-                border: '1px solid rgba(255,255,255,0.12)',
-                borderRadius: 12,
-              }}
-              labelStyle={{ color: '#fff' }}
-            />
-            <Legend
-              wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }}
-              formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>}
-            />
-            <Line
-              type="monotone"
-              dataKey="miko"
-              name={cumulative ? 'Miko Total' : 'Miko Count'}
-              stroke={COLORS.miko}
-              strokeWidth={3}
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="suisei"
-              name={cumulative ? 'Suisei Total' : 'Suisei Count'}
-              stroke={COLORS.suisei}
-              strokeWidth={3}
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="shared"
-              name={cumulative ? (lang==='en'?'Shared Total':'共同故事累計') : (lang==='en'?'Shared Count':'共同故事數量')}
-              stroke={COLORS.shared}
-              strokeWidth={2.5}
-              strokeDasharray="6 6"
-              dot={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="others"
-              name={cumulative ? (lang==='en'?'Assist Total':'助攻累計') : (lang==='en'?'Assist Count':'助攻數量')}
-              stroke="#ffffff"
-              strokeWidth={2}
-              strokeDasharray="3 3"
-              dot={false}
-            />
+            <XAxis dataKey="label" tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} interval={mode === 'year' ? 0 : 2} angle={-45} textAnchor="end" height={48} />
+            <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} label={{ value: cumulative ? 'Cumulative' : 'Count', angle: -90, position: 'insideLeft', fill: '#9aa2b2' }} />
+            <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
+            <Legend wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }} formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>} />
+            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko Total' : 'Miko Count'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name={cumulative ? 'Suisei Total' : 'Suisei Count'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="shared" name={cumulative ? 'Shared Total' : 'Shared Count'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Line type="monotone" dataKey="others" name={cumulative ? 'Assist Total' : 'Assist Count'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
         </ResponsiveContainer>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 18,
-          flexWrap: 'wrap',
-          marginTop: 10,
-          color: '#cfd4de',
-        }}
-      >
-        <div style={{ color: COLORS.miko }}>{cumulative ? '● Miko Total' : '● Miko Count'}</div>
-        <div style={{ color: COLORS.suisei }}>{cumulative ? '● Suisei Total' : '● Suisei Count'}</div>
-        <div style={{ color: COLORS.shared }}>
-          {cumulative ? (lang==='en'?'● Shared Total':'● 共同故事累計') : (lang==='en'?'● Shared Count':'● 共同故事數量')}
-        </div>
-        <div style={{ color: '#ffffff' }}>{cumulative ? (lang==='en'?'● Assist Total':'● 助攻累計') : (lang==='en'?'● Assist Count':'● 助攻數量')}</div>
       </div>
     </section>
   );
 }
 
-function MonthlyStoryChart({ stories }: { stories: MiCometStory[] }) {
-  return (
-    <ChartShell
-      title={lang==='en'?'Monthly Story Count':'故事數量折線圖'}
-      subtitle={lang==='en'?'Shared stories counted for both Miko and Suisei':'共同故事會同時計入 Miko 與 Suisei'}
-      stories={stories}
-      cumulative={false}
-      defaultMode="month"
-    />
-  );
-}
-
-function CumulativeStoryChart({ stories }: { stories: MiCometStory[] }) {
-  return (
-    <ChartShell
-      title={lang==='en'?'miComet Cumulative Growth':'miComet 累計故事成長圖'}
-      subtitle={lang==='en'?'Pink=Miko, Blue=Suisei, Yellow=Shared':'粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。'}
-      stories={stories}
-      cumulative
-      defaultMode="year"
-    />
-  );
-}
-
-function OthersCumulativeChart({ stories }: { stories: MiCometStory[] }) {
-  return (
-    <ChartShell
-      title={lang==='en'?'Assist Cumulative Growth':'助攻累計成長圖'}
-      subtitle={lang==='en'?'Third-party mentions of miComet (white line)':'第三方成員提及或助攻 miComet 的累計趨勢（白線）。'}
-      stories={stories}
-      cumulative
-      defaultMode="year"
-    />
-  );
-}
-
-function OthersMonthlyChart({ stories }: { stories: MiCometStory[] }) {
-  return (
-    <ChartShell
-      title={lang==='en'?'Monthly Assist Count':'助攻月度數量圖'}
-      subtitle={lang==='en'?'Monthly third-party mentions of miComet':'每月第三方成員提及或助攻 miComet 的次數（白線）。'}
-      stories={stories}
-      cumulative={false}
-      defaultMode="month"
-    />
-  );
-}
-
-function Card({
-  item,
-  onOpen,
-  lang,
-}: {
-  item: MiCometStory;
-  onOpen: (item: MiCometStory) => void;
-  lang: 'zh' | 'en';
-}) {
-  return (
-    <article
-      onClick={() => onOpen(item)}
-      style={{
-        borderRadius: 16,
-        padding: 16,
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 10px 28px rgba(0,0,0,0.28)',
-        cursor: 'pointer',
-      }}
-    >
-      <div
-        style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}
-      >
-        <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
-        <div
-          style={{
-            color:
-              item.side === 'miko'
-                ? COLORS.miko
-                : item.side === 'suisei'
-                  ? COLORS.suisei
-                  : item.side === 'shared'
-                    ? COLORS.shared
-                    : '#ffffff',
-            fontSize: 12,
-            fontWeight: 700,
-          }}
-        >
-          {item.side === 'miko'
-            ? 'Miko'
-            : item.side === 'suisei'
-              ? 'Suisei'
-              : item.side === 'shared'
-                ? (lang==='en'?'Shared':'共同故事')
-                : (lang==='en'?'Assist':'助攻')}
-        </div>
-      </div>
-      <div
-        style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}
-      >
-        {lang === 'en' ? item.title : item.titleZh || item.title}
-      </div>
-      <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>
-        {lang === 'en' ? item.ctx : item.ctxZh || item.ctx}
-      </div>
-      <div
-        style={{
-          marginTop: 10,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
-        <div
-          style={{
-            color: '#5c6070',
-            fontSize: 11,
-            fontFamily: 'monospace',
-            letterSpacing: '0.04em',
-          }}
-        >
-          #{item.displayId ?? item.id}
-        </div>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {(() => {
-            const { ytUrls, twUrls } = extractLinks(item);
-            return (
-              <>
-                {ytUrls.length > 0 && <span style={{ color: '#ff4444', fontSize: 11 }}>▶</span>}
-                {twUrls.length > 0 && <span style={{ color: '#1d9bf0', fontSize: 11 }}>𝕏</span>}
-              </>
-            );
-          })()}
-          <div style={{ color: '#cfd4de', fontSize: 12 }}>{formatTypeLabel(item.type)}</div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function extractLinks(item: MiCometStory) {
-  const ctx = item.ctx || '';
-  const ytUrls = Array.from(
-    new Set(
-      (
-        ctx.match(/https?:\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)[\w\-?=&]+/g) || []
-      ).concat(ctx.match(/https?:\/\/(?:www\.)?youtube\.com\/\S+/g) || []),
-    ),
-  ).slice(0, 3);
-  const twUrls = Array.from(
-    new Set(ctx.match(/https?:\/\/(?:www\.)?twitter\.com\/\S+/g) || []),
-  ).slice(0, 3);
-  return { ytUrls, twUrls };
-}
-
 function LinkButtons({ item }: { item: MiCometStory }) {
   const { ytUrls, twUrls } = extractLinks(item);
-  const isYT = ['Stream', 'Clip', 'Audio'].includes(item.type);
-  const isTW = ['Text', 'Audio'].includes(item.type);
-  if (!ytUrls.length && !twUrls.length && !isYT && !isTW) return null;
+  if (!ytUrls.length && !twUrls.length) return null;
 
   const btnStyle = (color: string): React.CSSProperties => ({
     display: 'inline-flex',
@@ -697,26 +332,12 @@ function LinkButtons({ item }: { item: MiCometStory }) {
   return (
     <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {ytUrls.map((url, i) => (
-        <a
-          key={`yt${i}`}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={btnStyle('#ff4444')}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <a key={`yt${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#ff4444')} onClick={(e) => e.stopPropagation()}>
           ▶ YouTube{ytUrls.length > 1 ? ` ${i + 1}` : ''}
         </a>
       ))}
       {twUrls.map((url, i) => (
-        <a
-          key={`tw${i}`}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={btnStyle('#1d9bf0')}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <a key={`tw${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#1d9bf0')} onClick={(e) => e.stopPropagation()}>
           𝕏 Twitter{twUrls.length > 1 ? ` ${i + 1}` : ''}
         </a>
       ))}
@@ -724,137 +345,84 @@ function LinkButtons({ item }: { item: MiCometStory }) {
   );
 }
 
-function Modal({
-  item,
-  onClose,
-  lang,
-}: {
-  item: MiCometStory;
-  onClose: () => void;
-  lang: 'zh' | 'en';
-}) {
+function StoryCard({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStory) => void }) {
+  const { ytUrls, twUrls } = extractLinks(item);
   return (
-    <div
-      onClick={onClose}
+    <article
+      onClick={() => onOpen(item)}
       style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.72)',
-        display: 'grid',
-        placeItems: 'center',
+        borderRadius: 16,
         padding: 16,
-        zIndex: 40,
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 10px 28px rgba(0,0,0,0.28)',
+        cursor: 'pointer',
       }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: 'min(720px, 100%)',
-          borderRadius: 20,
-          background: '#111420',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
-          padding: 20,
-        }}
-      >
-        <div
-          style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}
-        >
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
+        <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
+        <div style={{ color: sideColor(item.side), fontSize: 12, fontWeight: 700 }}>{sideLabel(item.side)}</div>
+      </div>
+      <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>
+        {item.title}
+      </div>
+      <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{item.ctx}</div>
+      <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
+        <div style={{ color: '#5c6070', fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+          #{item.displayId ?? item.id}
+        </div>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {ytUrls.length > 0 && <span style={{ color: '#ff4444', fontSize: 11 }}>▶</span>}
+          {twUrls.length > 0 && <span style={{ color: '#1d9bf0', fontSize: 11 }}>𝕏</span>}
+          <div style={{ color: '#cfd4de', fontSize: 12 }}>{TYPE_LABELS[item.type] ?? item.type}</div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)', display: 'grid', placeItems: 'center', padding: 16, zIndex: 40 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(720px, 100%)', borderRadius: 20, background: '#111420', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)', padding: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
           <div>
             <div style={{ color: '#8f96a8', fontSize: 12 }}>
-              {formatDate(item.date)}{' '}
-              <span style={{ color: '#4a5060', marginLeft: 6, fontFamily: 'monospace' }}>
-                #{item.displayId ?? item.id}
-              </span>
+              {formatDate(item.date)} <span style={{ color: '#4a5060', marginLeft: 6, fontFamily: 'monospace' }}>#{item.displayId ?? item.id}</span>
             </div>
-            <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>
-              {lang === 'en' ? item.title : item.titleZh || item.title}
-            </h3>
+            <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>{item.title}</h3>
           </div>
-          <button
-            onClick={onClose}
-            style={{
-              background: '#0d0f15',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 999,
-              width: 36,
-              height: 36,
-              fontSize: 18,
-              cursor: 'pointer',
-            }}
-          >
+          <button onClick={onClose} style={{ background: '#0d0f15', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 999, width: 36, height: 36, fontSize: 18, cursor: 'pointer' }}>
             ×
           </button>
         </div>
-        <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>
-          {lang === 'en' ? item.ctx : item.ctxZh || item.ctx}
-        </div>
+        <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{item.ctx}</div>
         <LinkButtons item={item} />
       </div>
     </div>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  note,
-  accent,
-}: {
-  label: string;
-  value: string | number;
-  note: string;
-  accent: string;
-}) {
+function StatCard({ label, value, note, accent }: { label: string; value: string | number; note: string; accent: string }) {
   return (
-    <div
-      style={{
-        borderRadius: 22,
-        padding: '18px 18px 20px',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015))',
-        border: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 14px 36px rgba(0,0,0,0.22)',
-      }}
-    >
+    <div style={{ borderRadius: 22, padding: '18px 18px 20px', background: 'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015))', border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 14px 36px rgba(0,0,0,0.22)' }}>
       <div style={{ color: '#9aa2b2', fontSize: 13, fontWeight: 700 }}>{label}</div>
-      <div
-        style={{ color: accent, fontSize: 30, fontWeight: 900, lineHeight: 1.05, marginTop: 10 }}
-      >
-        {value}
-      </div>
+      <div style={{ color: accent, fontSize: 30, fontWeight: 900, lineHeight: 1.05, marginTop: 10 }}>{value}</div>
       <div style={{ color: '#8d93a3', fontSize: 12, marginTop: 8 }}>{note}</div>
     </div>
   );
 }
 
-function CompactStatRow({
-  title,
-  items,
-}: {
-  title: string;
-  items: Array<{ label: string; value: number; color: string }>;
-}) {
+function CompactStatRow({ title, items }: { title: string; items: Array<{ label: string; value: number; color: string }> }) {
   return (
     <div style={{ marginTop: 16 }}>
-      <div
-        style={{
-          color: '#8f96a8',
-          fontSize: 12,
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          fontWeight: 800,
-          marginBottom: 10,
-        }}
-      >
+      <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 10 }}>
         {title}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 22 }}>
         {items.map((item) => (
-          <div
-            key={item.label}
-            style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontWeight: 800 }}
-          >
+          <div key={item.label} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontWeight: 800 }}>
             <span style={{ color: '#a8afbf' }}>{item.label}</span>
             <span style={{ color: item.color }}>{item.value}</span>
           </div>
@@ -868,7 +436,6 @@ export default function Index() {
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState(0);
   const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
-  const [lang, setLang] = useState<'zh' | 'en'>('zh');
 
   const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
   const typeCounts = useMemo(() => buildTypeCounts(summary.timeline), [summary.timeline]);
@@ -880,16 +447,12 @@ export default function Index() {
       .filter((story) => {
         if (yearFilter !== 0 && Number(story.date.slice(0, 4)) !== yearFilter) return false;
         if (!q) return true;
-        return [story.date, story.title, story.titleZh ?? '', story.ctx, story.ctxZh ?? '']
+        return [story.date, story.title, story.titleZh ?? '', story.titleJa ?? '', story.ctx, story.ctxZh ?? '', story.ctxJa ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q);
       })
-      .sort((a, b) => {
-        const d = a.date.localeCompare(b.date);
-        if (d !== 0) return d;
-        return parseInt(a.id.replace(/\D/g, '')) - parseInt(b.id.replace(/\D/g, ''));
-      });
+      .sort(storySort);
   }, [search, summary.timeline, yearFilter]);
 
   const groups = useMemo(
@@ -906,301 +469,88 @@ export default function Index() {
   const sideStats = [
     { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
     { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
-    { label: '共同', value: summary.counts.shared, color: COLORS.shared },
-    { label: '助攻', value: summary.counts.others, color: '#ffffff' },
+    { label: 'Shared', value: summary.counts.shared, color: COLORS.shared },
+    { label: 'Assist', value: summary.counts.others, color: '#ffffff' },
   ];
 
   const typeStats = [
-    { label: lang==='en'?'Clips':'剪輯', value: typeCounts.Clip ?? 0, color: COLORS.shared },
-    { label: lang==='en'?'Streams':'直播', value: typeCounts.Stream ?? 0, color: COLORS.miko },
-    { label: lang==='en'?'Mixed':'綜合', value: typeCounts.News ?? 0, color: COLORS.total },
-    { label: lang==='en'?'Text':'文字', value: typeCounts.Text ?? 0, color: COLORS.suisei },
+    { label: 'Clips', value: typeCounts.Clip ?? 0, color: COLORS.shared },
+    { label: 'Streams', value: typeCounts.Stream ?? 0, color: COLORS.miko },
+    { label: 'Mixed', value: typeCounts.News ?? 0, color: COLORS.total },
+    { label: 'Text', value: typeCounts.Text ?? 0, color: COLORS.suisei },
   ];
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        color: '#fff',
-        padding: '16px 12px 40px',
-        background:
-          'radial-gradient(1200px 600px at 18% -8%, rgba(255,125,183,0.12), transparent 60%), radial-gradient(900px 500px at 84% 6%, rgba(102,169,255,0.10), transparent 55%), #000',
-      }}
-    >
+    <div style={{ minHeight: '100vh', color: '#fff', padding: '16px 12px 40px', background: 'radial-gradient(1200px 600px at 18% -8%, rgba(255,125,183,0.12), transparent 60%), radial-gradient(900px 500px at 84% 6%, rgba(102,169,255,0.10), transparent 55%), #000' }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <section
-          style={{
-            borderRadius: 30,
-            border: '1px solid rgba(255,255,255,0.06)',
-            background: 'linear-gradient(180deg, rgba(16,18,26,0.98), rgba(10,11,16,0.98))',
-            boxShadow: '0 30px 80px rgba(0,0,0,0.52)',
-            padding: 28,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                color: '#f6d77d',
-                fontSize: 12,
-                fontWeight: 900,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-              }}
-            >
-              2019 - 2026 / BLACK EDITION
-            </div>
-            <button
-              onClick={() => setLang((l) => (l === 'zh' ? 'en' : 'zh'))}
-              style={{
-                background: lang === 'en' ? 'rgba(102,169,255,0.18)' : 'rgba(255,255,255,0.06)',
-                border: `1px solid ${lang === 'en' ? '#66a9ff' : 'rgba(255,255,255,0.15)'}`,
-                borderRadius: 8,
-                color: lang === 'en' ? '#66a9ff' : '#a0a8bc',
-                fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: '0.1em',
-                padding: '5px 13px',
-                cursor: 'pointer',
-              }}
-            >
-              {lang === 'zh' ? 'EN' : '中'}
-            </button>
+        <section style={{ borderRadius: 30, border: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(16,18,26,0.98), rgba(10,11,16,0.98))', boxShadow: '0 30px 80px rgba(0,0,0,0.52)', padding: 28 }}>
+          <div style={{ color: '#f6d77d', fontSize: 12, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+            2019 - 2026 / BLACK EDITION
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 24,
-              marginTop: 14,
-              alignItems: 'center',
-            }}
-          >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 14, alignItems: 'center' }}>
             <div style={{ flex: '1 1 280px', minWidth: 0 }}>
-              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>
-                Live timeline • synced from GitHub
-              </div>
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: 'clamp(3.4rem, 8vw, 5.8rem)',
-                  lineHeight: 0.95,
-                  letterSpacing: '0.02em',
-                  fontWeight: 900,
-                  background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
+              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>Live timeline • synced from GitHub</div>
+              <h1 style={{ margin: 0, fontSize: 'clamp(3.4rem, 8vw, 5.8rem)', lineHeight: 0.95, letterSpacing: '0.02em', fontWeight: 900, background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 miComet
                 <br />
                 Compendium
               </h1>
               <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>
-                {lang==='en'?'Hoshimachi Suisei × Sakura Miko | Business & Beyond':'星街彗星 × 櫻巫女 | Business & Beyond'}
+                Hoshimachi Suisei × Sakura Miko | Business & Beyond
               </div>
-              <div
-                style={{
-                  marginTop: 18,
-                  maxWidth: 680,
-                  borderRadius: 18,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderLeft: '4px solid #ff8cc8',
-                  padding: '16px 18px',
-                  color: '#f2f4fa',
-                  lineHeight: 1.8,
-                }}
-              >
-                {lang==='en'?'Dark theme, pink-blue highlights. Shared stories count for both Miko and Suisei.':'黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，讓兩條線一起往前看。'}
+              <div style={{ marginTop: 18, maxWidth: 680, borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid #ff8cc8', padding: '16px 18px', color: '#f2f4fa', lineHeight: 1.8 }}>
+                Dark theme, pink-blue highlights, year/month chart modes. Shared stories count for both Miko and Suisei.
               </div>
             </div>
-            <div
-              style={{
-                flex: '1 1 260px',
-                minWidth: 0,
-                borderRadius: 26,
-                background:
-                  'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))',
-                border: '1px solid rgba(255,255,255,0.08)',
-                boxShadow: '0 18px 42px rgba(0,0,0,0.26)',
-                padding: 24,
-                minHeight: 300,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div
-                style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}
-              >
-                MI COMET
-              </div>
+            <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 260, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
               <div>
-                <div
-                  style={{
-                    fontSize: 'clamp(3.3rem, 8vw, 4.8rem)',
-                    lineHeight: 1,
-                    fontWeight: 900,
-                    color: '#f7f8fb',
-                  }}
-                >
+                <div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>
                   {summary.totals.total}
                 </div>
                 <div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>stories archived</div>
               </div>
               <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>
-                {summary.first ? `${formatDate(summary.first.date)} 起` : '—'}
+                {summary.first ? `${formatDate(summary.first.date)} start` : '—'}
                 <br />
-                {summary.last ? `${formatDate(summary.last.date)} 迄` : '—'}
+                {summary.last ? `${formatDate(summary.last.date)} latest` : '—'}
               </div>
             </div>
           </div>
         </section>
 
-        <section
-          style={{
-            marginTop: 18,
-            borderRadius: 24,
-            background: '#11141c',
-            border: '1px solid rgba(255,255,255,0.06)',
-            padding: 18,
-            boxShadow: '0 18px 42px rgba(0,0,0,0.24)',
-          }}
-        >
-          <div
-            style={{
-              color: '#8f96a8',
-              fontSize: 12,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              fontWeight: 800,
-              marginBottom: 12,
-            }}
-          >
-            統計總覽
+        <section style={{ marginTop: 18, borderRadius: 24, background: '#11141c', border: '1px solid rgba(255,255,255,0.06)', padding: 18, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
+          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>
+            Statistics
           </div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: 14,
-            }}
-          >
-            <StatCard
-              label={lang==='en'?'Total Stories':'總故事數'}
-              value={summary.totals.total}
-              note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`}
-              accent="#f7f8fb"
-            />
-            <StatCard
-              label={lang==='en'?'Date Range':'故事區間'}
-              value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`}
-              note={lang==='en'?'Year / Month modes':'年 / 月雙模式統計'}
-              accent="#ffb7de"
-            />
-            <StatCard
-              label={lang==='en'?'First Entry':'最早紀錄'}
-              value={summary.first ? formatDate(summary.first.date) : '—'}
-              note={summary.first?.titleZh ?? summary.first?.title ?? '—'}
-              accent="#9ed6ff"
-            />
-            <StatCard
-              label={lang==='en'?'Latest Entry':'最新紀錄'}
-              value={summary.last ? formatDate(summary.last.date) : '—'}
-              note={summary.last?.titleZh ?? summary.last?.title ?? '—'}
-              accent="#c58cff"
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
+            <StatCard label="Total Stories" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
+            <StatCard label="Date Range" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="Year / Month modes" accent="#ffb7de" />
+            <StatCard label="First Entry" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first?.title ?? '—'} accent="#9ed6ff" />
+            <StatCard label="Latest Entry" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last?.title ?? '—'} accent="#c58cff" />
           </div>
-
           <CompactStatRow title="side counts" items={sideStats} />
           <CompactStatRow title="type counts" items={typeStats} />
         </section>
 
-        <CumulativeStoryChart stories={MICOMET_TIMELINE} />
-        <MonthlyStoryChart stories={MICOMET_TIMELINE} />
-        <OthersCumulativeChart stories={MICOMET_TIMELINE} />
-        <OthersMonthlyChart stories={MICOMET_TIMELINE} />
+        <ChartShell title="miComet Cumulative Growth" subtitle="Pink = Miko, Blue = Suisei, Yellow = Shared" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
+        <ChartShell title="Monthly Story Count" subtitle="Shared stories counted for both Miko and Suisei" stories={MICOMET_TIMELINE} defaultMode="month" />
+        <ChartShell title="Assist Cumulative Growth" subtitle="Third-party mentions of miComet (white line)" stories={MICOMET_TIMELINE.filter((story) => story.side === 'others')} cumulative defaultMode="year" />
+        <ChartShell title="Monthly Assist Count" subtitle="Monthly third-party mentions or assists for miComet" stories={MICOMET_TIMELINE.filter((story) => story.side === 'others')} defaultMode="month" />
 
-        <section
-          style={{
-            marginTop: 18,
-            borderRadius: 20,
-            background: '#151823',
-            border: '1px solid rgba(255,255,255,0.06)',
-            padding: 16,
-            boxShadow: '0 18px 42px rgba(0,0,0,0.24)',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                flex: '1 1 320px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                background: '#0d0f15',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 14,
-                padding: '12px 14px',
-              }}
-            >
+        <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ flex: '1 1 320px', display: 'flex', alignItems: 'center', gap: 10, background: '#0d0f15', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '12px 14px' }}>
               <span style={{ color: '#8f96a8' }}>⌕</span>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={lang==='en'?'Search stories, keywords, dates...':'搜尋故事、關鍵字、日期...'}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: '#fff',
-                  fontSize: 14,
-                }}
-              />
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search stories, keywords, dates..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }} />
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>{lang==='en'?'Year:':'篩選年份：'}</span>
-              <button
-                onClick={() => setYearFilter(0)}
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: 12,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: yearFilter === 0 ? '#232838' : '#0d0f15',
-                  color: '#fff',
-                  cursor: 'pointer',
-                }}
-              >
-                {lang==='en'?'All':'全部'}
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>Year:</span>
+              <button onClick={() => setYearFilter(0)} style={{ padding: '10px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: yearFilter === 0 ? '#232838' : '#0d0f15', color: '#fff', cursor: 'pointer' }}>
+                All
               </button>
               {years.map((year) => (
-                <button
-                  key={year}
-                  onClick={() => setYearFilter(yearFilter === year ? 0 : year)}
-                  style={{
-                    padding: '10px 14px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: yearFilter === year ? '#232838' : '#0d0f15',
-                    color: '#fff',
-                    cursor: 'pointer',
-                  }}
-                >
+                <button key={year} onClick={() => setYearFilter(yearFilter === year ? 0 : year)} style={{ padding: '10px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: yearFilter === year ? '#232838' : '#0d0f15', color: '#fff', cursor: 'pointer' }}>
                   {year}
                 </button>
               ))}
@@ -1208,61 +558,26 @@ export default function Index() {
           </div>
         </section>
 
-        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>
-          {lang==='en'?`${filtered.length} stories found`:`找到 ${filtered.length} 個故事`}
-        </section>
+        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>{filtered.length} stories found</section>
 
         <main style={{ marginTop: 16, display: 'grid', gap: 18 }}>
           {groups.length === 0 ? (
-            <div
-              style={{
-                padding: 36,
-                borderRadius: 18,
-                background: '#151823',
-                color: '#9aa2b2',
-                textAlign: 'center',
-              }}
-            >
-              沒有符合條件的故事
+            <div style={{ padding: 36, borderRadius: 18, background: '#151823', color: '#9aa2b2', textAlign: 'center' }}>
+              No stories match your search.
             </div>
           ) : (
             groups.map((group) => (
-              <section
-                key={group.date}
-                style={{
-                  borderRadius: 20,
-                  background: '#151823',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  padding: 16,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 12,
-                    flexWrap: 'wrap',
-                    marginBottom: 12,
-                  }}
-                >
+              <section key={group.date} style={{ borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
                   <div>
                     <div style={{ color: '#8f96a8', fontSize: 12 }}>{group.date.slice(0, 4)}</div>
                     <h2 style={{ margin: '4px 0 0', fontSize: 20 }}>{formatDate(group.date)}</h2>
                   </div>
-                  <div style={{ color: '#9aa2b2', fontSize: 13 }}>
-                    Phase {group.items[0]?.phase ?? '-'}
-                  </div>
+                  <div style={{ color: '#9aa2b2', fontSize: 13 }}>Phase {group.items[0]?.phase ?? '-'}</div>
                 </div>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-                    gap: 12,
-                  }}
-                >
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
                   {group.items.map((item) => (
-                    <Card key={item.id} item={item} onOpen={setOpenItem} lang={lang} />
+                    <StoryCard key={item.id} item={item} onOpen={setOpenItem} />
                   ))}
                 </div>
               </section>
@@ -1270,23 +585,12 @@ export default function Index() {
           )}
         </main>
 
-        <section
-          style={{
-            marginTop: 22,
-            borderRadius: 18,
-            background: '#151823',
-            border: '1px solid rgba(255,255,255,0.06)',
-            padding: 16,
-            color: '#9aa2b2',
-            fontSize: 13,
-            lineHeight: 1.7,
-          }}
-        >
-          {lang==='en'?'Rules: one entry per person per day; shared stories count for both Miko and Suisei.':'分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。折線圖已保留累計與單月兩個內容區塊，黑底高光版本與你提供的參考一致。'}
+        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>
+          Rules: one entry per person per day; shared stories count for both Miko and Suisei.
         </section>
       </div>
 
-      {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} lang={lang} /> : null}
+      {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
     </div>
   );
 }
