@@ -1,6 +1,7 @@
 import timelineData from './timeline.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
+import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
 import timeline2023WinterBbqData from './timeline-2023-winter-bbq.json';
 import timeline2024BbqData from './timeline-2024-bbq.json';
 import timeline2024SpringBbqData from './timeline-2024-spring-bbq.json';
@@ -31,6 +32,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   ...(timelineData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
   ...(timeline2023EarlyBbqData as MiCometStory[]),
+  ...(timeline2023SpringBbqData as MiCometStory[]),
   ...(timeline2023WinterBbqData as MiCometStory[]),
   ...(timeline2024BbqData as MiCometStory[]),
   ...(timeline2024SpringBbqData as MiCometStory[]),
