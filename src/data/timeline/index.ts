@@ -42,6 +42,10 @@ function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
 }
 
+function storyYear(story: MiCometStory) {
+  return Number(story.date.slice(0, 4));
+}
+
 function extractUrls(value: string) {
   return Array.from(new Set(value.match(/https?:\/\/\S+/g) ?? []));
 }
@@ -49,6 +53,15 @@ function extractUrls(value: string) {
 function hasExternalSource(story: MiCometStory) {
   const sourceText = [story.link, ...extractUrls(rawText(story))].filter(Boolean).join(' ');
   return SOURCE_RE.test(sourceText);
+}
+
+function isRecentCuratedStory(story: MiCometStory) {
+  const year = storyYear(story);
+  return year >= 2024 && year <= 2026;
+}
+
+function shouldShowStory(story: MiCometStory) {
+  return hasExternalSource(story) || isRecentCuratedStory(story);
 }
 
 function normalizeNames(value?: string) {
@@ -132,6 +145,12 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/^直播[：:]?/g, '')
     .replace(/。?補充來源.*$/g, '')
     .trim();
+
+  if (!hasExternalSource(story) && isRecentCuratedStory(story)) {
+    const body = cleaned.length >= 8 ? cleaned : titleZh;
+    return `${body}。來源待補，先恢復近年已整理資料顯示。`;
+  }
+
   if (!cleaned || cleaned.length < 8) return `${titleZh}。外部來源已保留，重複故事已合併。`;
   return cleaned.endsWith('。') ? cleaned : `${cleaned}。`;
 }
@@ -143,7 +162,7 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 }
 
 function duplicateKey(story: MiCometStory) {
-  const year = Number(story.date.slice(0, 4));
+  const year = storyYear(story);
   if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
   return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
@@ -166,7 +185,7 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
 function normalizeAndMergeStories(stories: MiCometStory[]) {
   const map = new Map<string, MiCometStory>();
   stories
-    .filter(hasExternalSource)
+    .filter(shouldShowStory)
     .map(normalizeStory)
     .forEach((story) => {
       const key = duplicateKey(story);
