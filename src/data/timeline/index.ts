@@ -1,4 +1,5 @@
 import timelineData from './timeline.json';
+import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
@@ -38,10 +39,12 @@ function normalizeZhText(value?: string) {
     .replace(/咪口/g, 'Miko')
     .replace(/35/g, 'Miko')
     .replace(/米子/g, 'Miko')
+    .replace(/美子/g, 'Miko')
     .replace(/巫女/g, 'Miko')
     .replace(/彗醬/g, '星街')
     .replace(/星街彗星/g, '星街')
     .replace(/櫻巫女/g, 'Miko')
+    .replace(/彗星/g, '星街')
     .replace(/さくらみこ/g, 'Miko')
     .replace(/みこち/g, 'Miko')
     .replace(/すいちゃん/g, '星街')
@@ -69,23 +72,53 @@ function cleanup2020Title(story: MiCometStory, currentTitle?: string) {
   if (!story.date.startsWith('2020-')) return currentTitle;
   const raw = `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''}`;
 
-  if (/Chitchat|VILLS|笑.*停不下來|laugh/i.test(raw) && story.date === '2020-07-27') {
-    return '星街雜談：與 Miko 排練 VILLS 時笑到停不下來';
+  if (/AsaCoco|早安 Holo|生日快樂/i.test(raw) && story.date === '2020-03-05') {
+    return '早安 Holo 由星街播出，祝 Miko 生日快樂';
   }
-  if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動/i.test(raw)) {
-    return '星街想把 Miko 當成寵物';
+  if (/ARK|洞窟探險/i.test(raw) && story.date === '2020-03-07') {
+    return 'Miko、Fubuki、Haachama 與星街一起去 ARK 洞窟探險';
   }
-  if (/先導者|抽自己|神抽/i.test(raw)) {
-    return '星街抽先導者卡包，Miko 在聊天室稱讚神抽';
+  if (/サクラカゼ|Sakura Kaze|第二張單曲/i.test(raw)) {
+    return '星街幫忙宣傳 Miko 第二張單曲《サクラカゼ》';
+  }
+  if (/Vanguard ZERO|復仇戰|unit-name|組合名稱/i.test(raw) && story.date === '2020-06-06') {
+    return 'Vanguard ZERO 復仇戰：星街勝利，開始徵求組合名稱';
+  }
+  if (/天彗龍|同居守則|QDJrYiuQoZc/i.test(raw)) {
+    return '天彗龍同居守則：聊天室喊貼貼，Miko 也在聊天室喊貼貼';
+  }
+  if (/個人私物|私物|zs47h3uXbYg/i.test(raw)) {
+    return 'Subaru 台猜個人私物企劃，收錄 Miko 與星街相關脈絡';
+  }
+  if (/表では案件|私下其實聊很多|組合名還沒決定|Roboco|蘿蔔子/i.test(raw)) {
+    return '星街談與 Miko 的關係：台面上是工商與 VILLS，私下其實聊很多';
+  }
+  if (/怨靈|怨霊|miComet.*C|C 要大寫|lwszUzu_ARc/i.test(raw)) {
+    return '星街宣布與 Miko 的組合名稱決定為 miComet，C 要大寫';
+  }
+  if (/Hololiver|主張企劃|n5gjfie8sQY|3xYfZp5CTqo/i.test(raw)) {
+    return 'Subaru 的 Hololiver 主張企劃，精靈是 Subaru、Miko、Mio';
+  }
+  if (/H game|5000|Aki|30 萬/i.test(raw)) {
+    return '星街說 Aki 模仿 Miko 啟動 H game 太好笑，自己看了 5000 次';
+  }
+  if (/Chitchat|VILLS|笑.*停不下來|laugh|lp1DnxdKfIA|CEiN9AAkR6Y/i.test(raw)) {
+    return '星街雜談：與 Miko 練習 VILLS 時笑到停不下來';
+  }
+  if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動|rW32DH_rH-E|nbQNvhr19nU/i.test(raw)) {
+    return '繪師聯動畫 Miko：星街說想養 Miko 當寵物';
+  }
+  if (/先導者|抽自己|神抽|KPo5vaoe1Vo/i.test(raw)) {
+    return '星街開台抽自己的 Vanguard 卡，Miko 在聊天室稱讚神抽';
   }
   if (/長休|宣布回歸/i.test(raw)) {
     return 'Miko 宣布結束長休，星街送上祝福';
   }
-  if (/回歸LIVE|繼續miComet/i.test(raw)) {
-    return 'Miko 回歸 Live：miComet 還會繼續';
+  if (/回歸LIVE|回歸 Live|繼續miComet|15IpFst/i.test(raw)) {
+    return 'Miko 回歸 Live：之後還要繼續 miComet';
   }
-  if (/運動會前調整|彗醬想去哪裡|沒有想去的地方/i.test(raw)) {
-    return '運動會前調整：Miko 與星街討論接下來要去哪裡';
+  if (/運動會前調整|m9K167jBLJo/i.test(raw)) {
+    return 'Miko 進行 2020 年 Hololive 麥塊大運動會前調整與練習';
   }
   if (/Kissing Monster|Business miComet|confess|坦白/i.test(raw)) {
     return '星街在 Minecraft 中對 Miko 說出少見告白';
@@ -93,8 +126,8 @@ function cleanup2020Title(story: MiCometStory, currentTitle?: string) {
   if (/鉱石争奪|礦石爭奪|Ore scramble|PvP/i.test(raw)) {
     return 'Minecraft 礦石爭奪 PvP：Miko 與星街同場互動';
   }
-  if (/hololive Minecraft server|ホロ鯖|運動会までもう少し/i.test(raw)) {
-    return '星街在運動會前於 Hololive Minecraft 伺服器散步';
+  if (/QiQtiNK7jWw|hololive Minecraft server|ホロ鯖|運動会までもう少し|Sports Festival practice/i.test(raw)) {
+    return '星街的麥塊運動會前練習，成為多個早期 miComet 剪輯來源';
   }
   if (/Epic Fail Impostor|AmongUs/i.test(raw)) {
     return 'Miko 在 Among Us 的經典失誤場面';
@@ -115,38 +148,68 @@ function cleanup2020Context(story: MiCometStory, currentContext?: string) {
   if (!story.date.startsWith('2020-')) return currentContext;
   const raw = `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''}`;
 
-  if (/Chitchat|VILLS|笑.*停不下來|laugh/i.test(raw) && story.date === '2020-07-27') {
-    return '星街雜談提到，與 Miko 一起排練 VILLS 時笑到停不下來，最近也常與 Miko 見面，排演過程很開心。';
+  if (/AsaCoco|早安 Holo|生日快樂/i.test(raw) && story.date === '2020-03-05') {
+    return '2020/03/05 是 Miko 生日，當天早安 Holo 由星街播出並祝 Miko 生日快樂。';
   }
-  if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動/i.test(raw)) {
-    return '繪師聯動中，觀眾詢問想把哪位 Hololive 成員當成寵物，星街回答 Miko。此題材已有多筆重複紀錄，已合併顯示。';
+  if (/ARK|洞窟探險/i.test(raw) && story.date === '2020-03-07') {
+    return 'Miko、Fubuki、Haachama 與星街一起去 ARK 洞窟探險，是早期多人互動脈絡之一。';
   }
-  if (/先導者|抽自己|神抽/i.test(raw)) {
-    return '星街開台抽先導者卡包，因卡池中全是星街而中獎率 100%；Miko 在聊天室出現並稱讚神抽。';
+  if (/サクラカゼ|Sakura Kaze|第二張單曲/i.test(raw)) {
+    return '星街幫忙宣傳 Miko 第二張單曲《サクラカゼ》，屬於 2020 年早期互動紀錄。';
+  }
+  if (/Vanguard ZERO|復仇戰|unit-name|組合名稱/i.test(raw) && story.date === '2020-06-06') {
+    return '距離第一次 Vanguard ZERO 工商半年後進行復仇戰；星街勝利，並開始徵求兩人的組合名稱。';
+  }
+  if (/天彗龍|同居守則|QDJrYiuQoZc/i.test(raw)) {
+    return '天音彼方台的天彗龍同居守則中，聊天室喊貼貼，Miko 也在聊天室加入貼貼氣氛。';
+  }
+  if (/個人私物|私物|zs47h3uXbYg/i.test(raw)) {
+    return 'Subaru 台猜哪個不是成員個人私物的企劃，屬於 2020 年 Miko／星街互動脈絡補充。';
+  }
+  if (/表では案件|私下其實聊很多|組合名還沒決定|Roboco|蘿蔔子/i.test(raw)) {
+    return '星街與 Roboco 的棉花糖雜談中，被問到 0 期生關係；她提到與 Miko 檯面上是工商與 VILLS，私下其實聊很多，當時組合名還沒決定。';
+  }
+  if (/怨靈|怨霊|miComet.*C|C 要大寫|lwszUzu_ARc/i.test(raw)) {
+    return '星街在《怨靈》最終回中宣布，與 Miko 的組合名稱決定為 miComet，C 要大寫；VILLS 官推也在同日公布組合名稱。';
+  }
+  if (/Hololiver|主張企劃|n5gjfie8sQY|3xYfZp5CTqo/i.test(raw)) {
+    return '星街參加 Subaru 的 Hololiver 主張企劃，企劃中精靈角色包含 Subaru、Miko、Mio。';
+  }
+  if (/H game|5000|Aki|30 萬/i.test(raw)) {
+    return '星街發推說 Aki 模仿 Miko 啟動 H game 很好笑，自己看了 5000 次；此事與 Miko 30 萬人紀念凸待內容相關。';
+  }
+  if (/Chitchat|VILLS|笑.*停不下來|laugh|lp1DnxdKfIA|CEiN9AAkR6Y/i.test(raw)) {
+    return '星街雜談提到，與 Miko 一起練習 VILLS 時笑到停不下來；最近也常與 Miko 見面，排練過程很開心。';
+  }
+  if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動|rW32DH_rH-E|nbQNvhr19nU/i.test(raw)) {
+    return '船長台繪師聯動畫 Miko，船長、星街、羽衣、犬山一起畫 Miko；星街提到想養 Miko 當寵物。此題材已有多筆重複紀錄，已合併顯示。';
+  }
+  if (/先導者|抽自己|神抽|KPo5vaoe1Vo/i.test(raw)) {
+    return '星街開台抽 Vanguard 卡，因卡池中全是星街而中獎率 100%；Miko 在聊天室出現並稱讚神抽。';
   }
   if (/長休|宣布回歸/i.test(raw)) {
     return 'Miko 宣布即將結束長休回歸，星街送上祝福；Miko 也恭喜星街達成 50 萬訂閱。';
   }
-  if (/回歸LIVE|繼續miComet/i.test(raw)) {
+  if (/回歸LIVE|回歸 Live|繼續miComet|15IpFst/i.test(raw)) {
     return 'Miko 回歸 Live 後提到之後還要繼續 miComet，成為兩人關係延續的重要節點。';
   }
-  if (/運動會前調整|彗醬想去哪裡|沒有想去的地方/i.test(raw)) {
-    return 'Hololive 運動會前的 Minecraft 調整期，Miko 與星街延續互動，也留下「想去哪裡／沒有想去的地方」等早期 miComet 對話。';
+  if (/運動會前調整|m9K167jBLJo/i.test(raw)) {
+    return '2020 年 Hololive 麥塊大運動會前調整與練習，Miko 視點留下早期 miComet 相關脈絡。';
   }
   if (/Kissing Monster|Business miComet|confess|坦白/i.test(raw)) {
     return 'Minecraft 互動剪輯。星街少見地對 Miko 表達好感，形成早期 Business miComet 代表片段之一。';
   }
   if (/鉱石争奪|礦石爭奪|Ore scramble|PvP/i.test(raw)) {
-    return '2020/11/20 星街 Minecraft 直播來源的合作剪輯，Aqua、Subaru、Miko、星街、Noel 參與礦石爭奪 PvP。';
+    return '2020 年 Hololive 麥塊運動會前練習的合作剪輯，Aqua、Subaru、Miko、星街、Noel 參與礦石爭奪 PvP。';
   }
-  if (/hololive Minecraft server|ホロ鯖|運動会までもう少し/i.test(raw)) {
-    return '2020/11/20 星街 Minecraft 原直播。運動會前在 Hololive 伺服器散步，是後續多個 Miko／星街互動剪輯的來源。';
+  if (/QiQtiNK7jWw|hololive Minecraft server|ホロ鯖|運動会までもう少し|Sports Festival practice/i.test(raw)) {
+    return '2020 年 Hololive 麥塊大運動會前練習，星街視點；這場成為後續多個早期 miComet 互動剪輯的來源。';
   }
   if (/Epic Fail Impostor|AmongUs/i.test(raw)) {
     return 'Holodex 收錄的 Among Us 補充剪輯，作為 Miko／星街互動脈絡的一部分保留。';
   }
   if (/セクハラ|close to Miko and Aqua|靠太近/i.test(raw)) {
-    return '後續剪輯引用 2020/11/20 星街 Minecraft 原直播，內容是星街在 Minecraft 中對 Miko 與 Aqua 的距離感玩笑。';
+    return '後續剪輯引用 2020 年星街 Minecraft 原直播，內容是星街在 Minecraft 中對 Miko 與 Aqua 的距離感玩笑。';
   }
 
   return currentContext;
@@ -190,21 +253,38 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 }
 
 function duplicateKey(story: MiCometStory) {
-  const linkKey = story.link || `${story.ctx} ${story.ctxZh ?? ''}`.match(/https?:\/\/\S+/)?.[0];
-  if (linkKey) return `link:${linkKey}`;
-
   const text = `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''}`;
+
   if (story.date.startsWith('2020-')) {
-    if (/Chitchat|VILLS|Couldn.t Stop|笑.*停不下來|laugh/i.test(text) && story.date === '2020-07-27') return '2020-07-27:vills-laughing';
-    if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動|Others/i.test(text) && story.date === '2020-08-03') return '2020-08-03:suisei-wants-miko-as-pet';
-    if (/運動會前調整|彗醬想去哪裡|沒有想去的地方/i.test(text)) return '2020-11-18:sports-festival-prep';
-    if (/鉱石争奪|礦石爭奪|Ore scramble|PvP/i.test(text)) return '2020-11-20:ore-pvp';
+    if (/AsaCoco|早安 Holo|生日快樂/i.test(text) && story.date === '2020-03-05') return '2020-03-05:miko-birthday';
+    if (/ARK|洞窟探險/i.test(text) && story.date === '2020-03-07') return '2020-03-07:ark-cave';
+    if (/サクラカゼ|Sakura Kaze|第二張單曲/i.test(text)) return '2020-03-28:sakura-kaze-promo';
+    if (/Vanguard ZERO|復仇戰|unit-name|組合名稱/i.test(text) && story.date === '2020-06-06') return '2020-06-06:vanguard-rematch-name';
+    if (/天彗龍|同居守則|QDJrYiuQoZc/i.test(text)) return '2020-06-10:kanata-suisei-house-rules-miko-chat';
+    if (/個人私物|私物|zs47h3uXbYg/i.test(text)) return '2020-06-12:subaru-private-items';
+    if (/表では案件|私下其實聊很多|組合名還沒決定|Roboco|蘿蔔子/i.test(text)) return '2020-06-19:roboco-marshmallow-relationship';
+    if (/怨靈|怨霊|miComet.*C|C 要大寫|lwszUzu_ARc/i.test(text)) return '2020-06-26:micomet-name-decided';
+    if (/Hololiver|主張企劃|n5gjfie8sQY|3xYfZp5CTqo/i.test(text)) return '2020-06-27:subaru-hololiver-claim';
+    if (/H game|5000|Aki|30 萬/i.test(text)) return '2020-06-29:aki-miko-h-game';
+    if (/Chitchat|VILLS|Couldn.t Stop|笑.*停不下來|laugh|lp1DnxdKfIA|CEiN9AAkR6Y/i.test(text)) return '2020-07:vills-laughing';
+    if (/Drawing Live|Suisei Wants Miko as a Pet|寵物|繪師聯動|Others|rW32DH_rH-E|nbQNvhr19nU/i.test(text) && story.date === '2020-08-03') return '2020-08-03:suisei-wants-miko-as-pet';
+    if (/先導者|抽自己|神抽|KPo5vaoe1Vo/i.test(text)) return '2020-09-19:vanguard-card-pull';
+    if (/長休|宣布回歸/i.test(text)) return '2020-10-17:miko-return-announcement';
+    if (/回歸LIVE|回歸 Live|繼續miComet|15IpFst/i.test(text)) return '2020-10-21:miko-return-live';
+    if (/Epic Fail Impostor|AmongUs/i.test(text)) return '2020-10-21:among-us-clip';
+    if (/運動會前調整|m9K167jBLJo/i.test(text)) return '2020-11-18:sports-festival-prep-miko';
+    if (/QiQtiNK7jWw|Kissing Monster|Business miComet|confess|坦白|hololive Minecraft server|ホロ鯖|運動会までもう少し|Sports Festival practice/i.test(text)) return '2020-11-19:sports-festival-prep-suisei';
+    if (/鉱石争奪|礦石爭奪|Ore scramble|PvP/i.test(text)) return '2020-11-19:ore-pvp';
   }
+
   if (story.date.startsWith('2021-')) {
     if (/Kanata and Rushia|カナタとルシア/i.test(text)) return `${story.date}:kanata-rushia-micomet-chat`;
     if (/Jump Scares|jump scare|ジャンプ/i.test(text)) return `${story.date}:suisei-jump-scare-miko`;
     if (/Minecraft Usaken Festival|Summer Festival|兔建夏祭/i.test(text)) return `${story.date}:usaken-summer-festival:${story.type}`;
   }
+
+  const linkKey = story.link || `${story.ctx} ${story.ctxZh ?? ''}`.match(/https?:\/\/\S+/)?.[0];
+  if (linkKey) return `link:${linkKey}`;
 
   return `id:${story.id}`;
 }
@@ -220,6 +300,7 @@ function normalizeAndMergeStories(stories: MiCometStory[]) {
 }
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
+  ...(timeline2020PttBbqData as MiCometStory[]),
   ...(timelineData as MiCometStory[]),
   ...(timeline2020AutumnBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
