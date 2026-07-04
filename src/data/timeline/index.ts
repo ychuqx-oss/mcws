@@ -28,6 +28,25 @@ export interface MiCometStory {
   link?: string;
 }
 
+function normalizeUiText(value?: string) {
+  if (!value) return value;
+  return value
+    .replace(/咪口/g, 'Miko')
+    .replace(/彗醬/g, '星街')
+    .replace(/\b35\b/g, 'Miko')
+    .replace(/\bsuisei\b/gi, '星街');
+}
+
+function normalizeStory(story: MiCometStory): MiCometStory {
+  return {
+    ...story,
+    title: normalizeUiText(story.title) ?? story.title,
+    titleZh: normalizeUiText(story.titleZh),
+    ctx: normalizeUiText(story.ctx) ?? story.ctx,
+    ctxZh: normalizeUiText(story.ctxZh),
+  };
+}
+
 export const MICOMET_TIMELINE: MiCometStory[] = [
   ...(timelineData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
@@ -41,8 +60,10 @@ export const MICOMET_TIMELINE: MiCometStory[] = [
   ...(timeline2024AutumnBbqData as MiCometStory[]),
   ...(timeline2024WinterBbqData as MiCometStory[]),
   ...(timeline2026EarlySummerBbqData as MiCometStory[]),
-].sort((a, b) => {
-  const dateCompare = a.date.localeCompare(b.date);
-  if (dateCompare !== 0) return dateCompare;
-  return a.id.localeCompare(b.id, undefined, { numeric: true });
-});
+]
+  .map(normalizeStory)
+  .sort((a, b) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+    return a.id.localeCompare(b.id, undefined, { numeric: true });
+  });
