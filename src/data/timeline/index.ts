@@ -51,6 +51,10 @@ function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
 }
 
+function storyYear(story: MiCometStory) {
+  return Number(story.date.slice(0, 4));
+}
+
 function extractUrls(value: string) {
   return Array.from(new Set(value.match(/https?:\/\/\S+/g) ?? []));
 }
@@ -177,12 +181,23 @@ function compactTitle(value: string) {
     .trim();
 }
 
-function firstUsefulSentence(value?: string) {
-  const cleaned = cleanUiText(value)
-    .replace(/^來源待補[。:：]?/g, '')
-    .replace(/^外部來源已保留[，。]?/g, '')
+function stripSourceNotes(value: string) {
+  return value
+    .replace(/PTT\s*編年史來源[。:：]?/g, '')
+    .replace(/PTT chronology source\.?/gi, '')
+    .replace(/編年史來源[。:：]?/g, '')
     .replace(/來源：編年史。?/g, '')
+    .replace(/來源待補。?/g, '')
+    .replace(/外部來源已保留，?重複故事已合併。?/g, '')
+    .replace(/補充來源已合併。?/g, '')
+    .replace(/。?補充來源.*$/g, '')
+    .replace(/。{2,}/g, '。')
+    .replace(/^。+|。+$/g, '')
     .trim();
+}
+
+function firstUsefulSentence(value?: string) {
+  const cleaned = stripSourceNotes(cleanUiText(value));
   return cleaned.split(/[。\n]/).map((item) => item.trim()).find((item) => item.length >= 8 && !isBadTitle(item));
 }
 
@@ -249,26 +264,17 @@ function chronologySourceText(story: MiCometStory) {
 }
 
 function appendChronologySource(value: string, useChronologySource: boolean) {
-  const text = value
-    .replace(/PTT\s*編年史來源[。:：]?/g, '')
-    .replace(/PTT chronology source\.?/gi, '')
-    .replace(/編年史來源[。:：]?/g, '')
-    .replace(/來源：編年史。?/g, '')
-    .replace(/。{2,}/g, '。')
-    .replace(/^。+|。+$/g, '')
-    .trim();
+  const text = stripSourceNotes(value);
   const base = text ? `${text}。` : '';
   return useChronologySource ? `${base}來源：編年史。` : base;
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
   const useChronologySource = chronologySourceText(story);
-  const cleaned = cleanUiText(story.ctxZh || story.ctx || '')
-    .replace(/^來源待補[。:：]?/g, '')
+  const cleaned = stripSourceNotes(cleanUiText(story.ctxZh || story.ctx || ''))
     .replace(/^來源[為是]?[：:]?/g, '')
     .replace(/^剪輯[：:]?/g, '')
     .replace(/^直播[：:]?/g, '')
-    .replace(/。?補充來源.*$/g, '')
     .replace(/這是[^。]*(分類歸|歸)(Miko|星街|miComet|共同|其他Hololive成員)[^。]*。?/g, '')
     .replace(/此筆[^。]*(分類歸|歸)(Miko|星街|miComet|共同|其他Hololive成員)[^。]*。?/g, '')
     .trim();
@@ -345,9 +351,50 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 }
 
 function duplicateKey(story: MiCometStory) {
+  const year = storyYear(story);
+  if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
-  if (firstUrl) return `url:${firstUrl}`;
-  return story.displayId ? `display:${story.displayId}` : `id:${story.id}`;
+  return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
+}
+
+function titleScore(value?: string) {
+  const title = value ?? '';
+  const chineseChars = title.match(/[\u4e00-\u9fff]/g)?.length ?? 0;
+  const latinChars = title.match(/[A-Za-z]/g)?.length ?? 0;
+  const subjectScore = titleHasSubject(title) ? 12 : 0;
+  const genericPenalty = /互動故事|相關故事|故事$/.test(title) ? 20 : 0;
+  const englishPenalty = latinChars > chineseChars ? 10 : 0;
+  return chineseChars + Math.min(title.length, 36) * 0.2 + subjectScore - genericPenalty - englishPenalty;
+}
+
+function pickBetterTitle(base: MiCometStory, extra: MiCometStory) {
+  const baseTitle = base.titleZh ?? base.title;
+  const extraTitle = extra.titleZh ?? extra.title;
+  if (isBadTitle(baseTitle) && !isBadTitle(extraTitle)) return extraTitle;
+  return titleScore(extraTitle) > titleScore(baseTitle) + 6 ? extraTitle : baseTitle;
+}
+
+function splitCleanContext(value?: string) {
+  const cleaned = stripSourceNotes(cleanUiText(value || ''));
+  return cleaned
+    .split(/[。\n]/)
+    .map((item) => item.trim())
+    .filter((item) => item.length >= 8 && !/^(來源|YT|補充來源)/.test(item));
+}
+
+function mergeContextText(base: MiCometStory, extra: MiCometStory) {
+  const parts = [...splitCleanContext(base.ctxZh ?? base.ctx), ...splitCleanContext(extra.ctxZh ?? extra.ctx)];
+  const seen = new Set<string>();
+  const unique = parts.filter((part) => {
+    const key = part.replace(/[，、。「」《》〈〉]/g, '').slice(0, 36);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const merged = unique.join('。');
+  const useChronologySource = chronologySourceText(base) || chronologySourceText(extra);
+  const hasPending = /來源待補/.test(`${base.ctxZh ?? ''}${extra.ctxZh ?? ''}`) || !hasExternalSource(base) || !hasExternalSource(extra);
+  return appendChronologySource(`${merged || base.titleZh || base.title}${hasPending ? '。來源待補' : ''}`, useChronologySource);
 }
 
 function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
@@ -356,11 +403,13 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
     .filter((url): url is string => Boolean(url))
     .filter((url) => !baseRaw.includes(url));
   const uniqueUrls = Array.from(new Set(extraUrls)).slice(0, 12);
-  if (!uniqueUrls.length) return base;
+  const titleZh = compactTitle(pickBetterTitle(base, extra));
   return {
     ...base,
-    ctx: `${base.ctx} 補充來源：${uniqueUrls.join(' / ')}`,
-    ctxZh: `${base.ctxZh ?? base.ctx}補充來源已合併。`,
+    titleZh,
+    ctx: uniqueUrls.length ? `${base.ctx} 補充來源：${uniqueUrls.join(' / ')}` : base.ctx,
+    ctxZh: mergeContextText(base, extra),
+    link: base.link || extra.link,
   };
 }
 
