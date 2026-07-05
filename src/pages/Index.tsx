@@ -439,8 +439,6 @@ export default function Index() {
 
         <ChartShell title="miComet 累計故事成長圖" subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
         <ChartShell title="故事數量折線圖" subtitle="共同故事會同時計入 Miko 與 Suisei" stories={MICOMET_TIMELINE} defaultMode="month" />
-        <ChartShell title="助攻累計成長圖" subtitle="第三方成員提及或助攻 miComet 的累計趨勢（白線）。" stories={MICOMET_TIMELINE.filter((story) => story.side === 'others')} cumulative defaultMode="year" />
-        <ChartShell title="助攻月度數量圖" subtitle="每月第三方成員提及或助攻 miComet 的次數（白線）。" stories={MICOMET_TIMELINE.filter((story) => story.side === 'others')} defaultMode="month" />
 
         <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
