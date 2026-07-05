@@ -55,13 +55,13 @@ function hasExternalSource(story: MiCometStory) {
   return SOURCE_RE.test(sourceText);
 }
 
-function isRecentCuratedStory(story: MiCometStory) {
+function isTimelineYear(story: MiCometStory) {
   const year = storyYear(story);
-  return year >= 2024 && year <= 2026;
+  return year >= 2019 && year <= 2026;
 }
 
 function shouldShowStory(story: MiCometStory) {
-  return hasExternalSource(story) || isRecentCuratedStory(story);
+  return isTimelineYear(story) || hasExternalSource(story);
 }
 
 function normalizeNames(value?: string) {
@@ -146,9 +146,9 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/。?補充來源.*$/g, '')
     .trim();
 
-  if (!hasExternalSource(story) && isRecentCuratedStory(story)) {
+  if (!hasExternalSource(story) && isTimelineYear(story)) {
     const body = cleaned.length >= 8 ? cleaned : titleZh;
-    return `${body}。來源待補，先恢復近年已整理資料顯示。`;
+    return `${body}。來源待補。`;
   }
 
   if (!cleaned || cleaned.length < 8) return `${titleZh}。外部來源已保留，重複故事已合併。`;
