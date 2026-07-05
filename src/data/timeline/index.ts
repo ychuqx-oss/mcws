@@ -37,7 +37,9 @@ export interface MiCometStory {
 }
 
 const SOURCE_RE = /(youtube\.com|youtu\.be|x\.com|twitter\.com|holodex\.net|ptt\.cc|pttweb\.cc|disp\.cc|moptt\.tw|fandom\.com|imgur\.com|meee\.com|note\.com|4gamers\.com|hololive|cover-corp|bushiroad|weiss|ws-tcg)/i;
-const HOLO_MEMBER_RE = /(白上|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|亞綺·羅森塔爾|常闇永遠|阿火|尾丸波爾卡|鷹嶺琉依|火威青|音乃瀨奏|一條莉莉華|儒烏風亭螺鈿|轟一|輪堂千速|角卷綿芽|姬森璐娜|雪花菈米|桃鈴音音|獅白牡丹|拉普拉斯·暗黑|博衣小夜璃|沙花叉克蘿耶|風真伊呂波|AZKi|Aqua|Subaru|Fubuki|Mio|Marine|Kanata|Haachama|Haato|Pekora|Noel|Sora|Roboco|Aki|Towa|Flare|Polka|Lui|Ao|Kanade|Ririka|Raden|Hajime|Chihaya|狐|耀斑)/i;
+const HOLO_MEMBER_RE = /(白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|亞綺·羅森塔爾|常闇永遠|阿火|尾丸波爾卡|鷹嶺琉依|火威青|音乃瀨奏|一條莉莉華|儒烏風亭螺鈿|轟一|輪堂千速|角卷綿芽|姬森璐娜|雪花菈米|桃鈴音音|獅白牡丹|拉普拉斯·暗黑|博衣小夜璃|沙花叉克蘿耶|風真伊呂波|AZKi|Aqua|Subaru|Fubuki|Mio|Marine|Kanata|Haachama|Haato|Pekora|Noel|Sora|Roboco|Aki|Towa|Flare|Polka|Lui|Ao|Kanade|Ririka|Raden|Hajime|Chihaya)/i;
+
+type Side = MiCometStory['side'];
 
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
@@ -63,13 +65,12 @@ function shouldShowStory() {
 function normalizeMemberNames(value?: string) {
   if (!value) return '';
   return value
-    .replace(/星街彗星|星街すいせい|すいちゃん|スイセイ|彗醬|彗星|小水|星町|\bSuisei\b|\bsuisei\b/gi, '星街')
+    .replace(/星街彗星|星街すいせい|星町|小水|すいちゃん|スイセイ|彗醬|彗星|\bSuisei\b|\bsuisei\b/gi, '星街')
     .replace(/櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女|\bMikochi\b/gi, 'Miko')
     .replace(/\b35\b/g, 'Miko')
     .replace(/みこめっと|ミコメット/gi, 'miComet')
     .replace(/MiComet/g, 'miComet')
-    .replace(/全息/g, 'hololive')
-    .replace(/白上フブキ|Shirakami Fubuki|\bFubuki\b|狐/g, '白上')
+    .replace(/白上フブキ|Shirakami Fubuki|\bFubuki\b|狐/g, '白上吹雪')
     .replace(/大空スバル|Oozora Subaru|\bSubaru\b/gi, '大空昴')
     .replace(/大神ミオ|Ookami Mio|\bMio\b/gi, '大神澪')
     .replace(/宝鐘マリン|寶鐘マリン|Houshou Marine|\bMarine\b/gi, '寶鐘瑪琳')
@@ -82,7 +83,7 @@ function normalizeMemberNames(value?: string) {
     .replace(/ロボ子さん|Roboco-san|\bRoboco\b/gi, '蘿蔔子')
     .replace(/アキ・ローゼンタール|Aki Rosenthal|\bAki\b/gi, '亞綺·羅森塔爾')
     .replace(/常闇トワ|Tokoyami Towa|\bTowa\b/gi, '常闇永遠')
-    .replace(/不知火フレア|不知火芙蕾雅|Shiranui Flare|\bFlare\b|耀斑/gi, '阿火')
+    .replace(/不知火フレア|Shiranui Flare|\bFlare\b|耀斑/gi, '阿火')
     .replace(/尾丸ポルカ|Omaru Polka|\bPolka\b/gi, '尾丸波爾卡')
     .replace(/鷹嶺ルイ|Takane Lui|\bLui\b/gi, '鷹嶺琉依')
     .replace(/火威青|Hiodoshi Ao|\bAo\b/gi, '火威青')
@@ -91,6 +92,29 @@ function normalizeMemberNames(value?: string) {
     .replace(/儒烏風亭らでん|Juufuutei Raden|\bRaden\b/gi, '儒烏風亭螺鈿')
     .replace(/轟はじめ|Todoroki Hajime|\bHajime\b/gi, '轟一')
     .replace(/輪堂千速|Rindo Chihaya|\bChihaya\b/gi, '輪堂千速');
+}
+
+function normalizeTaiwanUsage(value: string) {
+  return value
+    .replace(/全息/g, 'Hololive')
+    .replace(/视频|視頻/g, '影片')
+    .replace(/信息|资讯|資訊/g, '資訊')
+    .replace(/链接|連結/g, '連結')
+    .replace(/质量|品質/g, '品質')
+    .replace(/粉丝/g, '粉絲')
+    .replace(/后台/g, '後台')
+    .replace(/账号/g, '帳號')
+    .replace(/点击/g, '點擊')
+    .replace(/发布/g, '發布')
+    .replace(/通过/g, '透過')
+    .replace(/以后/g, '之後')
+    .replace(/里面/g, '裡面')
+    .replace(/转发|轉發/g, '轉推')
+    .replace(/回复|回復/g, '回覆')
+    .replace(/实现|實裝/g, '上線')
+    .replace(/联动|聯動/g, '連動')
+    .replace(/游戏|遊戲/g, '遊戲')
+    .replace(/直播间/g, '聊天室');
 }
 
 function translateCommonTerms(value: string) {
@@ -114,47 +138,7 @@ function translateCommonTerms(value: string) {
     .replace(/Japanese/gi, '')
     .replace(/hand-drawn|手描き/gi, '手繪')
     .replace(/mocopi/gi, '動作捕捉')
-    .replace(/Hololive/g, 'hololive');
-}
-
-function normalizeTaiwanTerms(value: string) {
-  return value
-    .replace(/視頻/g, '影片')
-    .replace(/质量/g, '品質')
-    .replace(/質量/g, '品質')
-    .replace(/回复/g, '回覆')
-    .replace(/回覆覆/g, '回覆')
-    .replace(/运营/g, '營運')
-    .replace(/帐号/g, '帳號')
-    .replace(/账号/g, '帳號')
-    .replace(/屏幕/g, '螢幕')
-    .replace(/链接/g, '連結')
-    .replace(/链接/g, '連結')
-    .replace(/通过/g, '透過')
-    .replace(/成为/g, '成為')
-    .replace(/发表/g, '發表')
-    .replace(/发表/g, '發表')
-    .replace(/发现/g, '發現')
-    .replace(/为什麼/g, '為什麼')
-    .replace(/为什么/g, '為什麼')
-    .replace(/里面/g, '裡面')
-    .replace(/里/g, '裡')
-    .replace(/节目/g, '節目')
-    .replace(/节目/g, '節目')
-    .replace(/弹幕/g, '聊天室')
-    .replace(/直播间/g, '直播間')
-    .replace(/官方号/g, '官方帳號')
-    .replace(/活动/g, '活動')
-    .replace(/准备/g, '準備')
-    .replace(/观众/g, '觀眾')
-    .replace(/经典/g, '經典')
-    .replace(/公布/g, '公開')
-    .replace(/转发/g, '轉發')
-    .replace(/专属/g, '專屬')
-    .replace(/单曲/g, '單曲')
-    .replace(/后台/g, '後台')
-    .replace(/现场/g, '現場')
-    .replace(/强度/g, '強度');
+    .replace(/Hololive|hololive/g, 'Hololive');
 }
 
 function stripForeignNoise(value: string) {
@@ -162,51 +146,62 @@ function stripForeignNoise(value: string) {
     .replace(/https?:\/\/\S+/g, '')
     .replace(/YouTube[:：]?|YT[:：]?|Twitter[:：]?|X[:：]?/gi, '')
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
-    .replace(/\b(?:Japanese|English|clip|stream|shorts|summary|moment|hilarious|funny|original|source|compilation|with|from|and|the|too|very)\b/gi, '')
-    .replace(/\s*[|｜／]\s*/g, '、')
-    .replace(/\s*\/\s*/g, '、')
-    .replace(/[，、]{2,}/g, '、')
-    .replace(/[：:]{2,}/g, '：')
-    .replace(/\s+([，。！？、：；])/g, '$1')
-    .replace(/([（「『【])\s+/g, '$1')
-    .replace(/\s+([）」』】])/g, '$1')
+    .replace(/\b(?:Japanese|English|clip|stream|shorts|summary|moment|hilarious|funny|original|source|compilation|with|from|and|the|too|very|before|after|together|during|behind|scenes|remote|interaction)\b/gi, '')
+    .replace(/\s*[|｜]\s*/g, '、')
+    .replace(/\s*[•·]\s*/g, '、')
+    .replace(/\s*--+\s*/g, '，')
     .replace(/\s{2,}/g, ' ')
+    .replace(/、{2,}/g, '、')
+    .replace(/，{2,}/g, '，')
+    .replace(/[、，]\s*。/g, '。')
     .replace(/^[：:｜|、，。\s]+|[：:｜|、，。\s]+$/g, '')
     .trim();
 }
 
-function fixSelfWatchingTitle(value: string, story: MiCometStory) {
-  const raw = rawText(story);
-  if (/星街.*看.*星街/.test(value) && hasMiko(raw)) return value.replace(/星街(.*看.*)星街/, '星街$1Miko');
-  if (/Miko.*看.*Miko/i.test(value) && hasSuisei(raw)) return value.replace(/Miko(.*看.*)Miko/i, 'Miko$1星街');
-  if (/星街.*自己.*星街/.test(value) && hasMiko(raw)) return value.replace(/自己.*星街/, 'Miko');
-  if (/Miko.*自己.*Miko/i.test(value) && hasSuisei(raw)) return value.replace(/自己.*Miko/i, '星街');
-  return value;
+function cleanUiText(value?: string) {
+  return stripForeignNoise(normalizeTaiwanUsage(translateCommonTerms(normalizeMemberNames(value)))).trim();
 }
 
-function cleanUiText(value?: string, story?: MiCometStory) {
-  const cleaned = stripForeignNoise(normalizeTaiwanTerms(translateCommonTerms(normalizeMemberNames(value))));
-  return story ? fixSelfWatchingTitle(cleaned, story) : cleaned;
+function firstUsefulSentence(value?: string) {
+  const cleaned = cleanUiText(value)
+    .replace(/^來源待補[。:：]?/g, '')
+    .replace(/^外部來源已保留[，。]?/g, '')
+    .trim();
+  return cleaned.split(/[。\n]/).map((item) => item.trim()).find((item) => item.length >= 8 && !isBadTitle(item));
 }
 
 function genericTitle(story: MiCometStory) {
   if (story.side === 'miko') return 'Miko 與星街的互動故事';
   if (story.side === 'suisei') return '星街與 Miko 的互動故事';
-  if (story.side === 'others') return '其他 hololive 成員提及或助攻 miComet';
+  if (story.side === 'others') return '其他成員提及或助攻 miComet';
   if (story.type === 'Music') return 'miComet 音樂相關故事';
-  if (story.type === 'Stream') return 'miComet 合作實況故事';
+  if (story.type === 'Stream') return 'miComet 聯動直播故事';
   if (story.type === 'Clip') return 'miComet 互動剪輯故事';
   return 'miComet 共同故事';
 }
 
 function isBadTitle(value: string) {
-  return !value || value.length <= 3 || /[ぁ-ゖァ-ヺー]/.test(value) || /\b(?:Japanese|English|clip|stream|shorts|source)\b/i.test(value);
+  if (!value || value.length <= 3) return true;
+  if (/[ぁ-ゖァ-ヺー]/.test(value)) return true;
+  if (/\b(?:Japanese|English|clip|stream|shorts|source|summary|moment|hilarious|funny|original)\b/i.test(value)) return true;
+  const latinChars = value.match(/[A-Za-z]/g)?.length ?? 0;
+  const chineseChars = value.match(/[\u4e00-\u9fff]/g)?.length ?? 0;
+  return latinChars > chineseChars && chineseChars < 4;
+}
+
+function fixSelfWatchingTitle(value: string) {
+  return value
+    .replace(/星街看(了)?星街/g, '星街看了 Miko 相關內容')
+    .replace(/Miko看(了)?Miko/g, 'Miko 看了星街相關內容')
+    .replace(/星街稱讚星街/g, '星街稱讚 Miko')
+    .replace(/Miko稱讚Miko/g, 'Miko 稱讚星街');
 }
 
 function resolveTitle(story: MiCometStory) {
-  const preferred = cleanUiText(story.titleZh || story.title || story.ctxZh || story.ctx, story);
-  const title = isBadTitle(preferred) ? genericTitle(story) : preferred;
-  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示|幫忙|稱讚|吐槽|回覆|轉發)/.test(title)) {
+  const preferred = fixSelfWatchingTitle(cleanUiText(story.titleZh || story.title));
+  const fallback = firstUsefulSentence(story.ctxZh || story.ctx);
+  const title = isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred;
+  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示|幫忙|稱讚|吐槽|回覆|轉推|分享)/.test(title)) {
     if (story.side === 'miko') return `Miko ${title}`;
     if (story.side === 'suisei') return `星街 ${title}`;
     return `miComet ${title}`;
@@ -215,7 +210,8 @@ function resolveTitle(story: MiCometStory) {
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
-  const cleaned = cleanUiText(story.ctxZh || story.ctx || '', story)
+  const cleaned = cleanUiText(story.ctxZh || story.ctx || '')
+    .replace(/^來源待補[。:：]?/g, '')
     .replace(/^來源[為是]?[：:]?/g, '')
     .replace(/^剪輯[：:]?/g, '')
     .replace(/^直播[：:]?/g, '')
@@ -236,44 +232,47 @@ function hasMiko(text: string) {
 }
 
 function hasSuisei(text: string) {
-  return /星街|星街彗星|星街すいせい|すいちゃん|小水|星町|彗星|彗醬|Suisei/i.test(text);
+  return /星街|星街彗星|星街すいせい|星町|小水|すいちゃん|彗星|彗醬|Suisei/i.test(text);
 }
 
-function oneWayReplySide(text: string): MiCometStory['side'] | null {
-  if (/(互相|彼此|雙方).{0,12}(回覆|回應|互動)/.test(text)) return 'shared';
-  if (/星街.{0,20}(回覆|回應|吐槽|轉發).{0,30}Miko/i.test(text)) return 'suisei';
-  if (/Miko.{0,20}(回覆|回應|吐槽|轉發).{0,30}星街/i.test(text)) return 'miko';
-  if (/Miko.{0,20}(發|發布|推文).{0,40}星街.{0,20}(回覆|回應|吐槽)/i.test(text)) return 'suisei';
-  if (/星街.{0,20}(發|發布|推文).{0,40}Miko.{0,20}(回覆|回應|吐槽)/i.test(text)) return 'miko';
+function oneWayReplySide(text: string): Side | null {
+  if (/星街.{0,40}(回覆|回覆吐槽|留言|轉推|轉貼|反應|吐槽|分享).{0,40}Miko/i.test(text)) return 'suisei';
+  if (/Miko.{0,40}(推文|貼文|發文).{0,80}星街.{0,30}(回覆|留言|吐槽|轉推|反應)/i.test(text)) return 'suisei';
+  if (/Miko.{0,40}(回覆|留言|轉推|轉貼|反應|吐槽|分享).{0,40}星街/i.test(text)) return 'miko';
+  if (/星街.{0,40}(推文|貼文|發文).{0,80}Miko.{0,30}(回覆|留言|吐槽|轉推|反應)/i.test(text)) return 'miko';
+  if (/(對方沒有回覆|沒有再回覆|單方面回覆|隔空互動)/.test(text)) {
+    if (/星街.{0,40}(回覆|吐槽|轉推|留言)/.test(text)) return 'suisei';
+    if (/Miko.{0,40}(回覆|吐槽|轉推|留言)/.test(text)) return 'miko';
+  }
   return null;
 }
 
 function isJointStory(text: string) {
-  if (oneWayReplySide(text) && oneWayReplySide(text) !== 'shared') return false;
-  return /miComet|Miko.*星街|星街.*Miko|雙人|一起|一同|共同|同時|連動|合作|合唱|同場|同接|凸待|fubumiComet|火建|不知火建設|Shiraken|VILLS|大運動會|運動會|ReGLOSS.*視聽/i.test(text);
+  if (oneWayReplySide(text)) return false;
+  return /(miComet|雙人|兩人|一起|一同|共同|互相|彼此|同時|連動直播|雙視點|合作|合唱|同場|同接|凸待|fubumiComet|火建|不知火建設|Shiraken|VILLS|大運動會|運動會|ReGLOSS.*視聽)/i.test(text);
 }
 
-function activeBySubject(text: string): MiCometStory['side'] | null {
-  const replySide = oneWayReplySide(text);
-  if (replySide) return replySide;
+function activeBySubject(text: string): Side | null {
   if (/^(Miko|櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女)/i.test(text)) return 'miko';
-  if (/^(星街|星街彗星|星街すいせい|すいちゃん|小水|星町|彗星|彗醬|Suisei)/i.test(text)) return 'suisei';
-  if (/Miko.{0,12}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|實況|轉發)/i.test(text)) return 'miko';
-  if (/星街.{0,12}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|實況|轉發)/i.test(text)) return 'suisei';
+  if (/^(星街|星街彗星|星街すいせい|星町|小水|すいちゃん|彗星|彗醬|Suisei)/i.test(text)) return 'suisei';
+  if (/Miko.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享)/i.test(text)) return 'miko';
+  if (/星街.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享)/i.test(text)) return 'suisei';
   return null;
 }
 
-function resolveSide(story: MiCometStory, titleZh: string, ctxZh: string): MiCometStory['side'] {
+function resolveSide(story: MiCometStory, titleZh: string, ctxZh: string): Side {
   const text = `${titleZh} ${ctxZh} ${rawText(story)}`;
   const miko = hasMiko(text);
   const suisei = hasSuisei(text);
-  const otherMember = HOLO_MEMBER_RE.test(text);
+  const otherMember = HOLO_MEMBER_RE.test(normalizeMemberNames(text));
+  const oneWay = oneWayReplySide(text);
   const active = activeBySubject(text);
 
-  if (active && active !== 'shared') return active;
+  if (oneWay) return oneWay;
   if (miko && suisei && isJointStory(text)) return 'shared';
+  if (active) return active;
   if (!miko && !suisei && otherMember) return 'others';
-  if (story.side === 'others' && (miko || suisei)) return active ?? (miko && !suisei ? 'miko' : suisei && !miko ? 'suisei' : story.side);
+  if (story.side === 'others' && (miko || suisei)) return miko && !suisei ? 'miko' : suisei && !miko ? 'suisei' : story.side;
   if (miko && !suisei) return 'miko';
   if (suisei && !miko) return 'suisei';
   if (miko && suisei) return 'shared';
