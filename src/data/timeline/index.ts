@@ -7,6 +7,7 @@ import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
 import timeline2021SpringBbqData from './timeline-2021-spring-bbq.json';
 import timeline2021MidBbqData from './timeline-2021-mid-bbq.json';
 import timeline2021LateSummerBbqData from './timeline-2021-late-summer-bbq.json';
+import timeline2021WinterBbqData from './timeline-2021-winter-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
 import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
@@ -191,10 +192,10 @@ function genericTitle(story: MiCometStory) {
   if (story.side === 'miko') return 'Miko與星街的互動故事';
   if (story.side === 'suisei') return '星街與Miko的互動故事';
   if (story.side === 'others') return '其他Hololive成員提及或助攻miComet';
-  if (story.type === 'Music') return 'miComet音樂相關故事';
-  if (story.type === 'Stream') return 'miComet連動直播故事';
-  if (story.type === 'Clip') return 'miComet互動剪輯故事';
-  return 'miComet共同故事';
+  if (story.type === 'Music') return 'Miko與星街音樂相關故事';
+  if (story.type === 'Stream') return 'Miko與星街連動直播故事';
+  if (story.type === 'Clip') return 'Miko與星街互動剪輯故事';
+  return 'Miko與星街共同故事';
 }
 
 function isBadTitle(value: string) {
@@ -207,14 +208,28 @@ function isBadTitle(value: string) {
 }
 
 function titleHasSubject(value: string) {
-  return /(Miko|星街|miComet|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|Hololive|火建|不知火建設)/.test(value);
+  return /(Miko與星街|Miko|星街|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|Hololive|火建|不知火建設|其他Hololive成員)/.test(value);
 }
 
 function subjectForSide(side: Side) {
   if (side === 'miko') return 'Miko';
   if (side === 'suisei') return '星街';
-  if (side === 'shared') return 'miComet';
+  if (side === 'shared') return 'Miko與星街';
   return '其他Hololive成員';
+}
+
+function removeLeadingSubject(value: string) {
+  return value
+    .replace(/^(Miko與星街|miComet|Miko|星街|其他Hololive成員|火建|不知火建設|Hololive)/, '')
+    .replace(/^(、|，|：|:|-)+/, '')
+    .trim();
+}
+
+function subjectFirstTitle(value: string, side: Side) {
+  const title = compactTitle(removeLeadingSubject(value));
+  const subject = subjectForSide(side);
+  if (!title) return subject;
+  return compactTitle(`${subject}${title}`);
 }
 
 function fixSelfWatchingTitle(value: string) {
@@ -227,26 +242,11 @@ function fixSelfWatchingTitle(value: string) {
     .replace(/Miko稱讚Miko/g, 'Miko稱讚星街');
 }
 
-function needsSubject(value: string) {
-  if (titleHasSubject(value)) return false;
-  return /^(玩|看|唱|聊|談|說|問|送|拿|做|幫|救|追|開|參加|加入|回覆|轉推|稱讚|吐槽|發現|聽到|準備|介紹|挑戰|搶劫|約會|破產|成立|祝賀)/.test(value);
-}
-
 function resolveTitle(story: MiCometStory) {
   const preferred = fixSelfWatchingTitle(cleanUiText(story.titleZh || story.title));
   const fallback = firstUsefulSentence(story.ctxZh || story.ctx);
-  let title = isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred;
-  title = fixSelfWatchingTitle(title);
-
-  if (needsSubject(title)) {
-    title = `${subjectForSide(story.side)}${title}`;
-  }
-
-  if (/^(看到|聽到|發現|玩|看|唱|跳|談|聊|說|提到|表示|幫忙|稱讚|吐槽|回覆|轉推|分享|參加|加入|祝賀)/.test(title)) {
-    title = `${subjectForSide(story.side)}${title}`;
-  }
-
-  return compactTitle(title);
+  const baseTitle = fixSelfWatchingTitle(isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred);
+  return subjectFirstTitle(baseTitle, story.side);
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
@@ -256,6 +256,8 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/^剪輯[：:]?/g, '')
     .replace(/^直播[：:]?/g, '')
     .replace(/。?補充來源.*$/g, '')
+    .replace(/這是[^。]*(分類歸|歸)(Miko|星街|miComet|共同|其他Hololive成員)[^。]*。?/g, '')
+    .replace(/此筆[^。]*(分類歸|歸)(Miko|星街|miComet|共同|其他Hololive成員)[^。]*。?/g, '')
     .trim();
 
   if (!hasExternalSource(story)) {
@@ -320,9 +322,12 @@ function resolveSide(story: MiCometStory, titleZh: string, ctxZh: string): Side 
 }
 
 function normalizeStory(story: MiCometStory): MiCometStory {
-  const titleZh = resolveTitle(story);
-  const ctxZh = resolveContext(story, titleZh);
-  const side = resolveSide(story, titleZh, ctxZh);
+  const draftTitle = resolveTitle(story);
+  const draftCtx = resolveContext(story, draftTitle);
+  const side = resolveSide(story, draftTitle, draftCtx);
+  const storyWithSide = { ...story, side };
+  const titleZh = resolveTitle(storyWithSide);
+  const ctxZh = resolveContext(storyWithSide, titleZh);
   return { ...story, side, titleZh, ctxZh };
 }
 
@@ -368,6 +373,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2021SpringBbqData as MiCometStory[]),
   ...(timeline2021MidBbqData as MiCometStory[]),
   ...(timeline2021LateSummerBbqData as MiCometStory[]),
+  ...(timeline2021WinterBbqData as MiCometStory[]),
   ...(timeline2022PttBbqData as MiCometStory[]),
   ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
