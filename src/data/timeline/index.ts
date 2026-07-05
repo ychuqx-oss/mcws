@@ -5,6 +5,8 @@ import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
 import timeline2021SpringBbqData from './timeline-2021-spring-bbq.json';
+import timeline2021MidBbqData from './timeline-2021-mid-bbq.json';
+import timeline2021LateSummerBbqData from './timeline-2021-late-summer-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
 import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
@@ -128,6 +130,8 @@ function translateCommonTerms(value: string) {
     .replace(/Ranch Simulator/gi, '牧場模擬器')
     .replace(/Nintendo Switch Sports/gi, '運動遊戲')
     .replace(/Super Bunny Man|スーパーバニーマン/gi, '超級兔人')
+    .replace(/7 Days to Die|7 days to die|七日殺/gi, '七日殺')
+    .replace(/Monster Hunter|モンハン|魔物獵人/gi, '魔物獵人')
     .replace(/Surgeon Simulator 2?/gi, '醫療模擬')
     .replace(/Grand Theft Auto|GTA/gi, '俠盜獵車手')
     .replace(/AmongUs|Among Us/gi, '太空狼人殺')
@@ -362,6 +366,8 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2020AutumnBbqData as MiCometStory[]),
   ...(timeline2021EarlyBbqData as MiCometStory[]),
   ...(timeline2021SpringBbqData as MiCometStory[]),
+  ...(timeline2021MidBbqData as MiCometStory[]),
+  ...(timeline2021LateSummerBbqData as MiCometStory[]),
   ...(timeline2022PttBbqData as MiCometStory[]),
   ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
