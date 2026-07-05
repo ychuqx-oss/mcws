@@ -4,6 +4,7 @@ import timeline2022PttBbqData from './timeline-2022-ptt-bbq.json';
 import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
+import timeline2021SpringBbqData from './timeline-2021-spring-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
 import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
@@ -164,6 +165,16 @@ function cleanUiText(value?: string) {
   return stripForeignNoise(normalizeTaiwanUsage(translateCommonTerms(normalizeMemberNames(value)))).trim();
 }
 
+function compactTitle(value: string) {
+  return value
+    .replace(/[|｜]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/、{2,}/g, '、')
+    .replace(/，{2,}/g, '，')
+    .replace(/^[、，。]+|[、，。]+$/g, '')
+    .trim();
+}
+
 function firstUsefulSentence(value?: string) {
   const cleaned = cleanUiText(value)
     .replace(/^來源待補[。:：]?/g, '')
@@ -173,13 +184,13 @@ function firstUsefulSentence(value?: string) {
 }
 
 function genericTitle(story: MiCometStory) {
-  if (story.side === 'miko') return 'Miko 與星街的互動故事';
-  if (story.side === 'suisei') return '星街與 Miko 的互動故事';
-  if (story.side === 'others') return '其他成員提及或助攻 miComet';
-  if (story.type === 'Music') return 'miComet 音樂相關故事';
-  if (story.type === 'Stream') return 'miComet 聯動直播故事';
-  if (story.type === 'Clip') return 'miComet 互動剪輯故事';
-  return 'miComet 共同故事';
+  if (story.side === 'miko') return 'Miko與星街的互動故事';
+  if (story.side === 'suisei') return '星街與Miko的互動故事';
+  if (story.side === 'others') return '其他Hololive成員提及或助攻miComet';
+  if (story.type === 'Music') return 'miComet音樂相關故事';
+  if (story.type === 'Stream') return 'miComet連動直播故事';
+  if (story.type === 'Clip') return 'miComet互動剪輯故事';
+  return 'miComet共同故事';
 }
 
 function isBadTitle(value: string) {
@@ -199,17 +210,17 @@ function subjectForSide(side: Side) {
   if (side === 'miko') return 'Miko';
   if (side === 'suisei') return '星街';
   if (side === 'shared') return 'miComet';
-  return '其他 Hololive 成員';
+  return '其他Hololive成員';
 }
 
 function fixSelfWatchingTitle(value: string) {
   return value
-    .replace(/星街看(了)?星街/g, '星街看了 Miko 相關內容')
-    .replace(/Miko看(了)?Miko/g, 'Miko 看了星街相關內容')
-    .replace(/星街玩(了)?星街/g, '星街玩了 Miko 相關內容')
-    .replace(/Miko玩(了)?Miko/g, 'Miko 玩了星街相關內容')
-    .replace(/星街稱讚星街/g, '星街稱讚 Miko')
-    .replace(/Miko稱讚Miko/g, 'Miko 稱讚星街');
+    .replace(/星街看(了)?星街/g, '星街看了Miko相關內容')
+    .replace(/Miko看(了)?Miko/g, 'Miko看了星街相關內容')
+    .replace(/星街玩(了)?星街/g, '星街玩了Miko相關內容')
+    .replace(/Miko玩(了)?Miko/g, 'Miko玩了星街相關內容')
+    .replace(/星街稱讚星街/g, '星街稱讚Miko')
+    .replace(/Miko稱讚Miko/g, 'Miko稱讚星街');
 }
 
 function needsSubject(value: string) {
@@ -224,14 +235,14 @@ function resolveTitle(story: MiCometStory) {
   title = fixSelfWatchingTitle(title);
 
   if (needsSubject(title)) {
-    title = `${subjectForSide(story.side)} ${title}`;
+    title = `${subjectForSide(story.side)}${title}`;
   }
 
   if (/^(看到|聽到|發現|玩|看|唱|跳|談|聊|說|提到|表示|幫忙|稱讚|吐槽|回覆|轉推|分享|參加|加入|祝賀)/.test(title)) {
-    title = `${subjectForSide(story.side)} ${title}`;
+    title = `${subjectForSide(story.side)}${title}`;
   }
 
-  return title;
+  return compactTitle(title);
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
@@ -350,6 +361,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timelineData as MiCometStory[]),
   ...(timeline2020AutumnBbqData as MiCometStory[]),
   ...(timeline2021EarlyBbqData as MiCometStory[]),
+  ...(timeline2021SpringBbqData as MiCometStory[]),
   ...(timeline2022PttBbqData as MiCometStory[]),
   ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
