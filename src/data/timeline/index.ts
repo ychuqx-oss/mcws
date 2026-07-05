@@ -1,6 +1,7 @@
 import timelineData from './timeline.json';
 import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
 import timeline2022PttBbqData from './timeline-2022-ptt-bbq.json';
+import timeline2022Q1ClipsData from './timeline-2022-q1-clips.json';
 import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
@@ -48,10 +49,6 @@ type Side = MiCometStory['side'];
 
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
-}
-
-function storyYear(story: MiCometStory) {
-  return Number(story.date.slice(0, 4));
 }
 
 function extractUrls(value: string) {
@@ -184,6 +181,7 @@ function firstUsefulSentence(value?: string) {
   const cleaned = cleanUiText(value)
     .replace(/^來源待補[。:：]?/g, '')
     .replace(/^外部來源已保留[，。]?/g, '')
+    .replace(/來源：編年史。?/g, '')
     .trim();
   return cleaned.split(/[。\n]/).map((item) => item.trim()).find((item) => item.length >= 8 && !isBadTitle(item));
 }
@@ -192,10 +190,10 @@ function genericTitle(story: MiCometStory) {
   if (story.side === 'miko') return 'Miko與星街的互動故事';
   if (story.side === 'suisei') return '星街與Miko的互動故事';
   if (story.side === 'others') return '其他Hololive成員提及或助攻miComet';
-  if (story.type === 'Music') return 'Miko與星街音樂相關故事';
-  if (story.type === 'Stream') return 'Miko與星街連動直播故事';
-  if (story.type === 'Clip') return 'Miko與星街互動剪輯故事';
-  return 'Miko與星街共同故事';
+  if (story.type === 'Music') return 'miComet音樂相關故事';
+  if (story.type === 'Stream') return 'miComet連動直播故事';
+  if (story.type === 'Clip') return 'miComet互動剪輯故事';
+  return 'miComet共同故事';
 }
 
 function isBadTitle(value: string) {
@@ -208,7 +206,7 @@ function isBadTitle(value: string) {
 }
 
 function titleHasSubject(value: string) {
-  return /(Miko與星街|Miko|星街|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|Hololive|火建|不知火建設|其他Hololive成員)/.test(value);
+  return /(Miko|星街|miComet|iNNK|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
 }
 
 function subjectForSide(side: Side) {
@@ -216,20 +214,6 @@ function subjectForSide(side: Side) {
   if (side === 'suisei') return '星街';
   if (side === 'shared') return 'Miko與星街';
   return '其他Hololive成員';
-}
-
-function removeLeadingSubject(value: string) {
-  return value
-    .replace(/^(Miko與星街|miComet|Miko|星街|其他Hololive成員|火建|不知火建設|Hololive)/, '')
-    .replace(/^(、|，|：|:|-)+/, '')
-    .trim();
-}
-
-function subjectFirstTitle(value: string, side: Side) {
-  const title = compactTitle(removeLeadingSubject(value));
-  const subject = subjectForSide(side);
-  if (!title) return subject;
-  return compactTitle(`${subject}${title}`);
 }
 
 function fixSelfWatchingTitle(value: string) {
@@ -242,14 +226,43 @@ function fixSelfWatchingTitle(value: string) {
     .replace(/Miko稱讚Miko/g, 'Miko稱讚星街');
 }
 
+function needsSubject(value: string) {
+  if (titleHasSubject(value)) return false;
+  return /^(玩|看|唱|聊|談|說|問|送|拿|做|幫|救|追|開|參加|加入|回覆|轉推|稱讚|吐槽|發現|聽到|準備|介紹|挑戰|搶劫|約會|破產|成立|祝賀|回顧|告知|練習|模仿|提到|演唱|展示|邀請|說明|進行)/.test(value);
+}
+
 function resolveTitle(story: MiCometStory) {
   const preferred = fixSelfWatchingTitle(cleanUiText(story.titleZh || story.title));
   const fallback = firstUsefulSentence(story.ctxZh || story.ctx);
-  const baseTitle = fixSelfWatchingTitle(isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred);
-  return subjectFirstTitle(baseTitle, story.side);
+  let title = isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred;
+  title = fixSelfWatchingTitle(title);
+
+  if (needsSubject(title)) {
+    title = `${subjectForSide(story.side)}${title}`;
+  }
+
+  return compactTitle(title);
+}
+
+function chronologySourceText(story: MiCometStory) {
+  return /(PTT\s*編年史來源|PTT chronology source|編年史來源|來源：編年史)/i.test(rawText(story));
+}
+
+function appendChronologySource(value: string, useChronologySource: boolean) {
+  const text = value
+    .replace(/PTT\s*編年史來源[。:：]?/g, '')
+    .replace(/PTT chronology source\.?/gi, '')
+    .replace(/編年史來源[。:：]?/g, '')
+    .replace(/來源：編年史。?/g, '')
+    .replace(/。{2,}/g, '。')
+    .replace(/^。+|。+$/g, '')
+    .trim();
+  const base = text ? `${text}。` : '';
+  return useChronologySource ? `${base}來源：編年史。` : base;
 }
 
 function resolveContext(story: MiCometStory, titleZh: string) {
+  const useChronologySource = chronologySourceText(story);
   const cleaned = cleanUiText(story.ctxZh || story.ctx || '')
     .replace(/^來源待補[。:：]?/g, '')
     .replace(/^來源[為是]?[：:]?/g, '')
@@ -262,11 +275,11 @@ function resolveContext(story: MiCometStory, titleZh: string) {
 
   if (!hasExternalSource(story)) {
     const body = cleaned.length >= 8 ? cleaned : titleZh;
-    return `${body}。來源待補。`;
+    return appendChronologySource(`${body}。來源待補。`, useChronologySource);
   }
 
-  if (!cleaned || cleaned.length < 8) return `${titleZh}。外部來源已保留，重複故事已合併。`;
-  return cleaned.endsWith('。') ? cleaned : `${cleaned}。`;
+  if (!cleaned || cleaned.length < 8) return appendChronologySource(`${titleZh}。外部來源已保留，重複故事已合併。`, useChronologySource);
+  return appendChronologySource(cleaned, useChronologySource);
 }
 
 function hasMiko(text: string) {
@@ -332,10 +345,9 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 }
 
 function duplicateKey(story: MiCometStory) {
-  const year = storyYear(story);
-  if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
-  return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
+  if (firstUrl) return `url:${firstUrl}`;
+  return story.displayId ? `display:${story.displayId}` : `id:${story.id}`;
 }
 
 function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
@@ -375,6 +387,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2021LateSummerBbqData as MiCometStory[]),
   ...(timeline2021WinterBbqData as MiCometStory[]),
   ...(timeline2022PttBbqData as MiCometStory[]),
+  ...(timeline2022Q1ClipsData as MiCometStory[]),
   ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
   ...(timeline2023EarlyBbqData as MiCometStory[]),
