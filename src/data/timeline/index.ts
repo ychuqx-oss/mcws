@@ -3,6 +3,7 @@ import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
 import timeline2022PttBbqData from './timeline-2022-ptt-bbq.json';
 import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
+import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
 import timeline2022BbqData from './timeline-2022-bbq.json';
 import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
 import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
@@ -119,6 +120,7 @@ function normalizeTaiwanUsage(value: string) {
 
 function translateCommonTerms(value: string) {
   return value
+    .replace(/Mario Party|マリオパーティ|馬派/g, '瑪利歐派對')
     .replace(/Minecraft|マインクラフト|麥塊/gi, '麥塊')
     .replace(/Mario Kart|マリオカート/gi, '瑪利歐賽車')
     .replace(/WarioWare|メイドインワリオ|ワリオ/gi, '瓦利歐製造')
@@ -189,23 +191,46 @@ function isBadTitle(value: string) {
   return latinChars > chineseChars && chineseChars < 4;
 }
 
+function titleHasSubject(value: string) {
+  return /(Miko|星街|miComet|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|Hololive|火建|不知火建設)/.test(value);
+}
+
+function subjectForSide(side: Side) {
+  if (side === 'miko') return 'Miko';
+  if (side === 'suisei') return '星街';
+  if (side === 'shared') return 'miComet';
+  return '其他 Hololive 成員';
+}
+
 function fixSelfWatchingTitle(value: string) {
   return value
     .replace(/星街看(了)?星街/g, '星街看了 Miko 相關內容')
     .replace(/Miko看(了)?Miko/g, 'Miko 看了星街相關內容')
+    .replace(/星街玩(了)?星街/g, '星街玩了 Miko 相關內容')
+    .replace(/Miko玩(了)?Miko/g, 'Miko 玩了星街相關內容')
     .replace(/星街稱讚星街/g, '星街稱讚 Miko')
     .replace(/Miko稱讚Miko/g, 'Miko 稱讚星街');
+}
+
+function needsSubject(value: string) {
+  if (titleHasSubject(value)) return false;
+  return /^(玩|看|唱|聊|談|說|問|送|拿|做|幫|救|追|開|參加|加入|回覆|轉推|稱讚|吐槽|發現|聽到|準備|介紹|挑戰|搶劫|約會|破產|成立|祝賀)/.test(value);
 }
 
 function resolveTitle(story: MiCometStory) {
   const preferred = fixSelfWatchingTitle(cleanUiText(story.titleZh || story.title));
   const fallback = firstUsefulSentence(story.ctxZh || story.ctx);
-  const title = isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred;
-  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示|幫忙|稱讚|吐槽|回覆|轉推|分享)/.test(title)) {
-    if (story.side === 'miko') return `Miko ${title}`;
-    if (story.side === 'suisei') return `星街 ${title}`;
-    return `miComet ${title}`;
+  let title = isBadTitle(preferred) ? fallback ?? genericTitle(story) : preferred;
+  title = fixSelfWatchingTitle(title);
+
+  if (needsSubject(title)) {
+    title = `${subjectForSide(story.side)} ${title}`;
   }
+
+  if (/^(看到|聽到|發現|玩|看|唱|跳|談|聊|說|提到|表示|幫忙|稱讚|吐槽|回覆|轉推|分享|參加|加入|祝賀)/.test(title)) {
+    title = `${subjectForSide(story.side)} ${title}`;
+  }
+
   return title;
 }
 
@@ -255,8 +280,8 @@ function isJointStory(text: string) {
 function activeBySubject(text: string): Side | null {
   if (/^(Miko|櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女)/i.test(text)) return 'miko';
   if (/^(星街|星街彗星|星街すいせい|星町|小水|すいちゃん|彗星|彗醬|Suisei)/i.test(text)) return 'suisei';
-  if (/Miko.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享)/i.test(text)) return 'miko';
-  if (/星街.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享)/i.test(text)) return 'suisei';
+  if (/Miko.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享|參加|加入|祝賀)/i.test(text)) return 'miko';
+  if (/星街.{0,16}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播|轉推|分享|參加|加入|祝賀)/i.test(text)) return 'suisei';
   return null;
 }
 
@@ -322,10 +347,11 @@ function normalizeAndMergeStories(stories: MiCometStory[]) {
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2020PttBbqData as MiCometStory[]),
-  ...(timeline2022PttBbqData as MiCometStory[]),
-  ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timelineData as MiCometStory[]),
   ...(timeline2020AutumnBbqData as MiCometStory[]),
+  ...(timeline2021EarlyBbqData as MiCometStory[]),
+  ...(timeline2022PttBbqData as MiCometStory[]),
+  ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
   ...(timeline2023EarlyBbqData as MiCometStory[]),
   ...(timeline2023SpringBbqData as MiCometStory[]),
