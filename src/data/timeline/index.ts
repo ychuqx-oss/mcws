@@ -55,13 +55,8 @@ function hasExternalSource(story: MiCometStory) {
   return SOURCE_RE.test(sourceText);
 }
 
-function isTimelineYear(story: MiCometStory) {
-  const year = storyYear(story);
-  return year >= 2019 && year <= 2026;
-}
-
-function shouldShowStory(story: MiCometStory) {
-  return isTimelineYear(story) || hasExternalSource(story);
+function shouldShowStory() {
+  return true;
 }
 
 function normalizeNames(value?: string) {
@@ -146,7 +141,7 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/。?補充來源.*$/g, '')
     .trim();
 
-  if (!hasExternalSource(story) && isTimelineYear(story)) {
+  if (!hasExternalSource(story)) {
     const body = cleaned.length >= 8 ? cleaned : titleZh;
     return `${body}。來源待補。`;
   }
