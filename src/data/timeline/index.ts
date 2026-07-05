@@ -4,6 +4,7 @@ import timeline2022PttBbqData from './timeline-2022-ptt-bbq.json';
 import timeline2022Q1ClipsData from './timeline-2022-q1-clips.json';
 import timeline2022Q2ClipsData from './timeline-2022-q2-clips.json';
 import timeline2022Q3ClipsData from './timeline-2022-q3-clips.json';
+import timeline2022Q4ClipsData from './timeline-2022-q4-clips.json';
 import timeline2022OctoberBbqData from './timeline-2022-october-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
@@ -360,20 +361,8 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   return { ...story, side, titleZh, ctxZh };
 }
 
-function storyTopicKey(story: MiCometStory) {
-  const cleaned = compactTitle(
-    stripSourceNotes(cleanUiText(`${story.titleZh ?? story.title} ${story.ctxZh ?? story.ctx}`))
-      .replace(/^(Miko與星街|Miko|星街|miComet|其他Hololive成員)/g, '')
-      .replace(/(剪輯|烤肉|精華|中文字幕|中文翻譯|來源|原直播|待複查)/g, '')
-      .replace(/[0-9A-Za-z_\-]/g, ''),
-  );
-  return cleaned.slice(0, 28);
-}
-
 function duplicateKey(story: MiCometStory) {
   const year = storyYear(story);
-  const topic = storyTopicKey(story);
-  if (year >= 2019 && year <= 2026 && topic.length >= 8) return `${story.date}:topic:${topic}`;
   if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
   return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
@@ -428,7 +417,6 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
   const titleZh = compactTitle(removeClipWordsFromTitle(pickBetterTitle(base, extra)));
   return {
     ...base,
-    side: base.side === extra.side ? base.side : base.side,
     titleZh,
     ctx: uniqueUrls.length ? `${base.ctx} 補充來源：${uniqueUrls.join(' / ')}` : base.ctx,
     ctxZh: mergeContextText(base, extra),
@@ -462,6 +450,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2022Q1ClipsData as MiCometStory[]),
   ...(timeline2022Q2ClipsData as MiCometStory[]),
   ...(timeline2022Q3ClipsData as MiCometStory[]),
+  ...(timeline2022Q4ClipsData as MiCometStory[]),
   ...(timeline2022OctoberBbqData as MiCometStory[]),
   ...(timeline2022BbqData as MiCometStory[]),
   ...(timeline2023EarlyBbqData as MiCometStory[]),
