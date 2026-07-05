@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "s1521",
+    "displayId": "23-10-BBQ-1",
+    "date": "2023-10-10",
+    "phase": 4,
+    "side": "shared",
+    "emoji": "💛",
+    "title": "miComet play Ranch Simulator together",
+    "titleZh": "miComet《牧場模擬器》雙人連動：務農變成拆家與商業相聲",
+    "titleJa": "【Ranch Simulator】我々、農業はじめようとおもいます。",
+    "ctx": "Source pending. Original stream URL has not been added yet.",
+    "ctxZh": "來源待補。miComet 於 2023 年 10 月進行《牧場模擬器》雙人連動；目前尚未補上原直播網址。",
+    "ctxJa": "ソース未補完。",
+    "type": "Stream"
+  },
+  {
+    "id": "s1522",
+    "displayId": "23-10-BBQ-2",
+    "date": "2023-10-31",
+    "phase": 4,
+    "side": "shared",
+    "emoji": "💛",
+    "title": "miComet prepare for Sugar Rush and Weiss Schwarz anniversary live",
+    "titleZh": "miComet 準備《Sugar Rush》與 Weiß Schwarz 15 週年紀念 Live",
+    "titleJa": "Sugar RushとWeiß Schwarz 15周年記念ライブ前夜",
+    "ctx": "Source pending. This background item needs an official event or song URL before it can be treated as verified.",
+    "ctxZh": "來源待補。此筆是 2023 年 10 月幕後準備期背景紀錄，需要補上官方活動或歌曲網址後才能視為已驗證。",
+    "ctxJa": "ソース未補完。",
+    "type": "News"
+  }
+]
