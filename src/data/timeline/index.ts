@@ -37,6 +37,7 @@ export interface MiCometStory {
 }
 
 const SOURCE_RE = /(youtube\.com|youtu\.be|x\.com|twitter\.com|holodex\.net|ptt\.cc|pttweb\.cc|disp\.cc|moptt\.tw|fandom\.com|imgur\.com|meee\.com|note\.com|4gamers\.com|hololive|cover-corp|bushiroad|weiss|ws-tcg)/i;
+const HOLO_MEMBER_RE = /(白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|亞綺·羅森塔爾|常闇永遠|不知火芙蕾雅|尾丸波爾卡|鷹嶺琉依|火威青|音乃瀨奏|一條莉莉華|儒烏風亭螺鈿|轟一|輪堂千速|角卷綿芽|姬森璐娜|雪花菈米|桃鈴音音|獅白牡丹|拉普拉斯·暗黑|博衣小夜璃|沙花叉克蘿耶|風真伊呂波|AZKi|Aqua|Subaru|Fubuki|Mio|Marine|Kanata|Haachama|Haato|Pekora|Noel|Sora|Roboco|Aki|Towa|Flare|Polka|Lui|Ao|Kanade|Ririka|Raden|Hajime|Chihaya)/i;
 
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.titleJa ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.ctxJa ?? ''} ${story.link ?? ''}`;
@@ -59,14 +60,36 @@ function shouldShowStory() {
   return true;
 }
 
-function normalizeNames(value?: string) {
+function normalizeMemberNames(value?: string) {
   if (!value) return '';
   return value
     .replace(/星街彗星|星街すいせい|すいちゃん|スイセイ|彗醬|彗星|\bSuisei\b|\bsuisei\b/gi, '星街')
     .replace(/櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女|\bMikochi\b/gi, 'Miko')
     .replace(/\b35\b/g, 'Miko')
     .replace(/みこめっと|ミコメット/gi, 'miComet')
-    .replace(/MiComet/g, 'miComet');
+    .replace(/MiComet/g, 'miComet')
+    .replace(/白上フブキ|Shirakami Fubuki|\bFubuki\b/gi, '白上吹雪')
+    .replace(/大空スバル|Oozora Subaru|\bSubaru\b/gi, '大空昴')
+    .replace(/大神ミオ|Ookami Mio|\bMio\b/gi, '大神澪')
+    .replace(/宝鐘マリン|寶鐘マリン|Houshou Marine|\bMarine\b/gi, '寶鐘瑪琳')
+    .replace(/天音かなた|Amane Kanata|\bKanata\b/gi, '天音彼方')
+    .replace(/赤井はあと|Haachama|Akai Haato|\bHaato\b/gi, '赤井心')
+    .replace(/兎田ぺこら|兔田佩可拉|Usada Pekora|\bPekora\b/gi, '兔田佩克拉')
+    .replace(/湊あくあ|Minato Aqua|\bAqua\b/gi, '湊阿庫婭')
+    .replace(/白銀ノエル|Shirogane Noel|\bNoel\b/gi, '白銀諾艾爾')
+    .replace(/ときのそら|Tokino Sora|\bSora\b/gi, '時乃空')
+    .replace(/ロボ子さん|Roboco-san|\bRoboco\b/gi, '蘿蔔子')
+    .replace(/アキ・ローゼンタール|Aki Rosenthal|\bAki\b/gi, '亞綺·羅森塔爾')
+    .replace(/常闇トワ|Tokoyami Towa|\bTowa\b/gi, '常闇永遠')
+    .replace(/不知火フレア|Shiranui Flare|\bFlare\b/gi, '不知火芙蕾雅')
+    .replace(/尾丸ポルカ|Omaru Polka|\bPolka\b/gi, '尾丸波爾卡')
+    .replace(/鷹嶺ルイ|Takane Lui|\bLui\b/gi, '鷹嶺琉依')
+    .replace(/火威青|Hiodoshi Ao|\bAo\b/gi, '火威青')
+    .replace(/音乃瀬奏|Otonose Kanade|\bKanade\b/gi, '音乃瀨奏')
+    .replace(/一条莉々華|Ichijou Ririka|\bRirika\b/gi, '一條莉莉華')
+    .replace(/儒烏風亭らでん|Juufuutei Raden|\bRaden\b/gi, '儒烏風亭螺鈿')
+    .replace(/轟はじめ|Todoroki Hajime|\bHajime\b/gi, '轟一')
+    .replace(/輪堂千速|Rindo Chihaya|\bChihaya\b/gi, '輪堂千速');
 }
 
 function translateCommonTerms(value: string) {
@@ -105,7 +128,7 @@ function stripForeignNoise(value: string) {
 }
 
 function cleanUiText(value?: string) {
-  return stripForeignNoise(translateCommonTerms(normalizeNames(value))).trim();
+  return stripForeignNoise(translateCommonTerms(normalizeMemberNames(value))).trim();
 }
 
 function genericTitle(story: MiCometStory) {
@@ -125,7 +148,7 @@ function isBadTitle(value: string) {
 function resolveTitle(story: MiCometStory) {
   const preferred = cleanUiText(story.titleZh || story.title || story.ctxZh || story.ctx);
   const title = isBadTitle(preferred) ? genericTitle(story) : preferred;
-  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示)/.test(title)) {
+  if (/^(看到|聽到|發現|玩|唱|跳|談|提到|表示|幫忙|稱讚|吐槽)/.test(title)) {
     if (story.side === 'miko') return `Miko ${title}`;
     if (story.side === 'suisei') return `星街 ${title}`;
     return `miComet ${title}`;
@@ -150,10 +173,48 @@ function resolveContext(story: MiCometStory, titleZh: string) {
   return cleaned.endsWith('。') ? cleaned : `${cleaned}。`;
 }
 
+function hasMiko(text: string) {
+  return /Miko|櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女|\b35\b/i.test(text);
+}
+
+function hasSuisei(text: string) {
+  return /星街|星街彗星|星街すいせい|すいちゃん|彗星|彗醬|Suisei/i.test(text);
+}
+
+function isJointStory(text: string) {
+  return /miComet|Miko.*星街|星街.*Miko|雙人|一起|一同|共同|同時|連動|合作|合唱|同場|同接|凸待|fubumiComet|火建|不知火建設|Shiraken|VILLS|大運動會|運動會|ReGLOSS.*視聽/i.test(text);
+}
+
+function activeBySubject(text: string): MiCometStory['side'] | null {
+  if (/^(Miko|櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女)/i.test(text)) return 'miko';
+  if (/^(星街|星街彗星|星街すいせい|すいちゃん|彗星|彗醬|Suisei)/i.test(text)) return 'suisei';
+  if (/Miko.{0,12}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播)/i.test(text)) return 'miko';
+  if (/星街.{0,12}(送|問|說|談|聊|唱|邀|幫|吐槽|回覆|感謝|稱讚|發|宣布|介紹|準備|開台|直播)/i.test(text)) return 'suisei';
+  return null;
+}
+
+function resolveSide(story: MiCometStory, titleZh: string, ctxZh: string): MiCometStory['side'] {
+  const text = `${titleZh} ${ctxZh} ${rawText(story)}`;
+  const miko = hasMiko(text);
+  const suisei = hasSuisei(text);
+  const otherMember = HOLO_MEMBER_RE.test(text);
+  const active = activeBySubject(text);
+
+  if (miko && suisei && isJointStory(text)) return 'shared';
+  if (active) return active;
+  if (!miko && !suisei && otherMember) return 'others';
+  if (story.side === 'others' && (miko || suisei)) return active ?? (miko && !suisei ? 'miko' : suisei && !miko ? 'suisei' : story.side);
+  if (miko && !suisei) return 'miko';
+  if (suisei && !miko) return 'suisei';
+  if (miko && suisei) return 'shared';
+  return story.side;
+}
+
 function normalizeStory(story: MiCometStory): MiCometStory {
   const titleZh = resolveTitle(story);
   const ctxZh = resolveContext(story, titleZh);
-  return { ...story, titleZh, ctxZh };
+  const side = resolveSide(story, titleZh, ctxZh);
+  return { ...story, side, titleZh, ctxZh };
 }
 
 function duplicateKey(story: MiCometStory) {
