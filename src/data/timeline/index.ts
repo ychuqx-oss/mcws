@@ -280,6 +280,29 @@ function appendChronologySource(value: string, useChronologySource: boolean) {
   return useChronologySource ? `${base}來源：編年史。` : base;
 }
 
+function hasAwkwardTranslation(story: MiCometStory, titleZh: string, ctxZh: string) {
+  const rawTitle = story.titleZh || story.title || '';
+  const rawContext = story.ctxZh || story.ctx || '';
+  const userFacingRaw = `${rawTitle} ${rawContext}`.replace(/https?:\/\/\S+/g, '');
+  const rendered = `${titleZh} ${ctxZh}`;
+  const latinChars = userFacingRaw.match(/[A-Za-z]/g)?.length ?? 0;
+  const chineseChars = userFacingRaw.match(/[\u4e00-\u9fff]/g)?.length ?? 0;
+  const hasJapaneseResidue = /[ぁ-ゖァ-ヺー]/.test(userFacingRaw);
+  const hasReviewMarker = /(標題待複查|日期待複查|待複查|待逐片確認|需逐片核對|未能完全確認|公開搜尋不到|不硬補標題)/.test(userFacingRaw);
+  const hasMainlandTerms = /(视频|链接|质量|后台|账号|点击|发布|通过|以后|里面|转发|回复|实现|联动|游戏|直播间|信息|资讯)/.test(userFacingRaw);
+  const hasWeirdSeparators = /[|｜]|\s--+\s|\s{3,}/.test(userFacingRaw);
+  const titleHasSourceWords = /(剪輯|烤肉|精華|中文字幕|中文翻譯|Holodex|YouTube|PTTWeb|來源頁|來源備註|來源\/備註)/i.test(rawTitle);
+  const englishDominant = latinChars > chineseChars && chineseChars < 8;
+  const renderedStillSuspicious = /(Japanese|English|source|summary|moment|hilarious|funny|original|clip|stream|視頻|视频|链接|联动|回复|转发|发布|里面|以后|標題待複查|日期待複查)/i.test(rendered);
+  return hasJapaneseResidue || hasReviewMarker || hasMainlandTerms || hasWeirdSeparators || titleHasSourceWords || englishDominant || renderedStillSuspicious;
+}
+
+function markTextReview(value: string, shouldMark: boolean) {
+  const base = value.endsWith('。') ? value : `${value}。`;
+  if (!shouldMark || /文本待修。?$/.test(base) || /文本待修/.test(base)) return base;
+  return `${base}文本待修。`;
+}
+
 function resolveContext(story: MiCometStory, titleZh: string) {
   const useChronologySource = chronologySourceText(story);
   const cleaned = stripSourceNotes(cleanUiText(story.ctxZh || story.ctx || ''))
@@ -290,13 +313,17 @@ function resolveContext(story: MiCometStory, titleZh: string) {
     .replace(/此筆[^。]*(分類歸|歸)(Miko|星街|miComet|共同|其他Hololive成員)[^。]*。?/g, '')
     .trim();
 
+  let ctxZh: string;
   if (!hasExternalSource(story)) {
     const body = cleaned.length >= 8 ? cleaned : titleZh;
-    return appendChronologySource(`${body}。來源待補。`, useChronologySource);
+    ctxZh = appendChronologySource(`${body}。來源待補。`, useChronologySource);
+  } else if (!cleaned || cleaned.length < 8) {
+    ctxZh = appendChronologySource(`${titleZh}。外部來源已保留，重複故事已合併。`, useChronologySource);
+  } else {
+    ctxZh = appendChronologySource(cleaned, useChronologySource);
   }
 
-  if (!cleaned || cleaned.length < 8) return appendChronologySource(`${titleZh}。外部來源已保留，重複故事已合併。`, useChronologySource);
-  return appendChronologySource(cleaned, useChronologySource);
+  return markTextReview(ctxZh, hasAwkwardTranslation(story, titleZh, ctxZh));
 }
 
 function hasMiko(text: string) {
@@ -405,7 +432,10 @@ function mergeContextText(base: MiCometStory, extra: MiCometStory) {
   const merged = unique.join('。');
   const useChronologySource = chronologySourceText(base) || chronologySourceText(extra);
   const hasPending = /來源待補/.test(`${base.ctxZh ?? ''}${extra.ctxZh ?? ''}`) || !hasExternalSource(base) || !hasExternalSource(extra);
-  return appendChronologySource(`${merged || base.titleZh || base.title}${hasPending ? '。來源待補' : ''}`, useChronologySource);
+  return markTextReview(
+    appendChronologySource(`${merged || base.titleZh || base.title}${hasPending ? '。來源待補' : ''}`, useChronologySource),
+    hasAwkwardTranslation(base, base.titleZh ?? base.title, merged) || hasAwkwardTranslation(extra, extra.titleZh ?? extra.title, merged),
+  );
 }
 
 function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
