@@ -35,6 +35,7 @@ const TYPE_LABELS: Record<string, string> = {
   News: '綜合',
   Text: '文字',
   Audio: '音訊',
+  Music: '音樂',
 };
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
@@ -46,6 +47,42 @@ function formatDate(dateISO: string) {
 
 function monthKey(dateISO: string) {
   return dateISO.slice(0, 7);
+}
+
+function cleanText(value = '') {
+  return value
+    .replace(/文本待修。?/g, '')
+    .replace(/User-provided source list:.*$/gi, '')
+    .replace(/ユーザー提供メモ.*$/g, '')
+    .replace(/使用者提供來源[：:].*$/g, '')
+    .replace(/未提供完整網址[^。]*。?/g, '')
+    .replace(/避免壞連結。?/g, '')
+    .replace(/[ぁ-ゖァ-ヺー]+/g, '')
+    .replace(/\b(?:Japanese|English|source|summary|moment|hilarious|funny|original|clip|stream|shorts)\b/gi, '')
+    .replace(/视频|視頻/g, '影片')
+    .replace(/链接|連結/g, '連結')
+    .replace(/回复|回復/g, '回覆')
+    .replace(/转发|轉發/g, '轉推')
+    .replace(/发布/g, '發布')
+    .replace(/里面/g, '裡面')
+    .replace(/以后/g, '之後')
+    .replace(/联动|聯動/g, '連動')
+    .replace(/\s*[|｜]\s*/g, '、')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/。{2,}/g, '。')
+    .replace(/^[、，。\s]+|[、，。\s]+$/g, '')
+    .trim();
+}
+
+function storyTitle(story: MiCometStory) {
+  const title = cleanText(story.titleZh || story.title);
+  return title || 'miComet故事';
+}
+
+function storyContext(story: MiCometStory) {
+  const ctx = cleanText(story.ctxZh || story.ctx);
+  if (ctx) return ctx.endsWith('。') ? ctx : `${ctx}。`;
+  return `${storyTitle(story)}。`;
 }
 
 function storySort(a: MiCometStory, b: MiCometStory) {
@@ -61,14 +98,6 @@ function normalizeStories(stories: MiCometStory[]) {
     seen.add(story.id);
     return true;
   });
-}
-
-function storyTitle(story: MiCometStory) {
-  return story.titleZh || story.titleJa || story.title;
-}
-
-function storyContext(story: MiCometStory) {
-  return story.ctxZh || story.ctxJa || story.ctx;
 }
 
 function timelineYearStart(stories: MiCometStory[]) {
@@ -89,9 +118,7 @@ function summarizeTimeline(stories: MiCometStory[]) {
     },
     { miko: 0, suisei: 0, shared: 0, others: 0 },
   );
-  const years = [...new Set(timeline.map((story) => Number(story.date.slice(0, 4))))].sort(
-    (a, b) => a - b,
-  );
+  const years = [...new Set(timeline.map((story) => Number(story.date.slice(0, 4))))].sort((a, b) => a - b);
 
   return {
     timeline,
@@ -117,11 +144,9 @@ function buildTypeCounts(stories: MiCometStory[]) {
 
 function buildMonthlyCounts(stories: MiCometStory[]) {
   const monthly = new Map<string, Record<Side, number>>();
-
   stories.forEach((story) => {
     const key = monthKey(story.date);
     const current = monthly.get(key) ?? { miko: 0, suisei: 0, shared: 0, others: 0 };
-
     if (story.side === 'miko') current.miko += 1;
     if (story.side === 'suisei') current.suisei += 1;
     if (story.side === 'shared') {
@@ -130,10 +155,8 @@ function buildMonthlyCounts(stories: MiCometStory[]) {
       current.suisei += 1;
     }
     if (story.side === 'others') current.others += 1;
-
     monthly.set(key, current);
   });
-
   return monthly;
 }
 
@@ -173,7 +196,6 @@ function buildCountPoints(mode: ChartMode, stories: MiCometStory[]) {
       points.push({ label: `${year}/${String(month).padStart(2, '0')}`, ...value });
     }
   }
-
   return points;
 }
 
@@ -182,7 +204,6 @@ function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
   let suisei = 0;
   let shared = 0;
   let others = 0;
-
   return buildCountPoints(mode, stories).map((point) => {
     miko += point.miko;
     suisei += point.suisei;
@@ -194,21 +215,15 @@ function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
 
 function extractLinks(item: MiCometStory) {
   const text = `${item.link ?? ''} ${item.ctx ?? ''} ${item.ctxZh ?? ''}`;
-  const ytUrls = Array.from(
-    new Set(text.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/\S+|youtu\.be\/\S+)/g) || []),
-  ).slice(0, 4);
-  const twUrls = Array.from(
-    new Set(text.match(/https?:\/\/(?:twitter\.com|x\.com)\/\S+/g) || []),
-  ).slice(0, 4);
-  const otherUrls = Array.from(
-    new Set(text.match(/https?:\/\/\S+/g) || []),
-  ).filter((url) => !ytUrls.includes(url) && !twUrls.includes(url)).slice(0, 4);
+  const ytUrls = Array.from(new Set(text.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/\S+|youtu\.be\/\S+)/g) || [])).slice(0, 4);
+  const twUrls = Array.from(new Set(text.match(/https?:\/\/(?:twitter\.com|x\.com)\/\S+/g) || [])).slice(0, 4);
+  const otherUrls = Array.from(new Set(text.match(/https?:\/\/\S+/g) || [])).filter((url) => !ytUrls.includes(url) && !twUrls.includes(url)).slice(0, 4);
   return { ytUrls, twUrls, otherUrls };
 }
 
 function sideLabel(side: Side) {
   if (side === 'miko') return 'Miko';
-  if (side === 'suisei') return 'Suisei';
+  if (side === 'suisei') return '星街';
   if (side === 'shared') return '共同故事';
   return '助攻';
 }
@@ -252,8 +267,8 @@ function ChartShell({ title, subtitle, stories, cumulative = false, defaultMode 
 
       {!cumulative ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 16 }}>
-          <ChartStatCard label="Miko 累計" value={summary.totals.miko} accent={COLORS.miko} tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))" />
-          <ChartStatCard label="Suisei 累計" value={summary.totals.suisei} accent={COLORS.suisei} tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))" />
+          <ChartStatCard label="Miko累計" value={summary.totals.miko} accent={COLORS.miko} tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))" />
+          <ChartStatCard label="星街累計" value={summary.totals.suisei} accent={COLORS.suisei} tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))" />
           <ChartStatCard label="共同故事" value={summary.totals.shared} accent={COLORS.shared} tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))" />
           <ChartStatCard label="助攻" value={summary.counts.others} accent="#ffffff" tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))" />
           <ChartStatCard label="總計" value={summary.totals.total} accent={COLORS.total} tint="linear-gradient(180deg, rgba(126,226,168,0.12), rgba(126,226,168,0.04))" />
@@ -268,8 +283,8 @@ function ChartShell({ title, subtitle, stories, cumulative = false, defaultMode 
             <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} label={{ value: cumulative ? '累計故事數' : '故事數量', angle: -90, position: 'insideLeft', fill: '#9aa2b2' }} />
             <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
             <Legend wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }} formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>} />
-            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko 累計' : 'Miko 數量'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="suisei" name={cumulative ? 'Suisei 累計' : 'Suisei 數量'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko累計' : 'Miko數量'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name={cumulative ? '星街累計' : '星街數量'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
             <Line type="monotone" dataKey="shared" name={cumulative ? '共同故事累計' : '共同故事數量'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
             <Line type="monotone" dataKey="others" name={cumulative ? '助攻累計' : '助攻數量'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
@@ -282,14 +297,12 @@ function ChartShell({ title, subtitle, stories, cumulative = false, defaultMode 
 function LinkButtons({ item }: { item: MiCometStory }) {
   const { ytUrls, twUrls, otherUrls } = extractLinks(item);
   if (!ytUrls.length && !twUrls.length && !otherUrls.length) return null;
-
   const btnStyle = (color: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 999, border: `1px solid ${color}44`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer', textDecoration: 'none', letterSpacing: '0.04em' });
-
   return (
     <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {ytUrls.map((url, i) => <a key={`yt${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#ff4444')} onClick={(e) => e.stopPropagation()}>▶ YouTube{ytUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
       {twUrls.map((url, i) => <a key={`tw${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#1d9bf0')} onClick={(e) => e.stopPropagation()}>𝕏 Twitter{twUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
-      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ Source{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
+      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ 來源{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
     </div>
   );
 }
@@ -374,7 +387,7 @@ export default function Index() {
         if (yearFilter !== 0 && Number(story.date.slice(0, 4)) !== yearFilter) return false;
         if (monthFilter !== 0 && Number(story.date.slice(5, 7)) !== monthFilter) return false;
         if (!q) return true;
-        return [story.date, storyTitle(story), storyContext(story), story.title, story.titleZh ?? '', story.titleJa ?? '', story.ctx, story.ctxZh ?? '', story.ctxJa ?? '']
+        return [story.date, storyTitle(story), storyContext(story), story.title, story.titleZh ?? '', story.ctx, story.ctxZh ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q);
@@ -391,7 +404,7 @@ export default function Index() {
 
   const sideStats = [
     { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
-    { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
+    { label: '星街', value: summary.counts.suisei, color: COLORS.suisei },
     { label: '共同', value: summary.counts.shared, color: COLORS.shared },
     { label: '助攻', value: summary.counts.others, color: '#ffffff' },
   ];
@@ -412,10 +425,10 @@ export default function Index() {
           <div style={{ color: '#f6d77d', fontSize: 12, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase' }}>2019 - {summary.years[summary.years.length - 1] ?? 2026} / BLACK EDITION</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 14, alignItems: 'center' }}>
             <div style={{ flex: '1 1 280px', minWidth: 0 }}>
-              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>Live timeline • synced from GitHub</div>
+              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>繁中時間線 • GitHub同步</div>
               <h1 style={{ margin: 0, fontSize: 'clamp(3.4rem, 8vw, 5.8rem)', lineHeight: 0.95, letterSpacing: '0.02em', fontWeight: 900, background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>miComet<br />Compendium</h1>
-              <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>星街彗星 × 櫻巫女 | Business & Beyond</div>
-              <div style={{ marginTop: 18, maxWidth: 680, borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid #ff8cc8', padding: '16px 18px', color: '#f2f4fa', lineHeight: 1.8 }}>黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與 Suisei，篩選器支援年份與月份。</div>
+              <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>星街 × Miko | Business & Beyond</div>
+              <div style={{ marginTop: 18, maxWidth: 680, borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid #ff8cc8', padding: '16px 18px', color: '#f2f4fa', lineHeight: 1.8 }}>黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與星街，篩選器支援年份與月份。</div>
             </div>
             <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 260, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
@@ -437,8 +450,8 @@ export default function Index() {
           <CompactStatRow title="type counts" items={typeStats} />
         </section>
 
-        <ChartShell title="miComet 累計故事成長圖" subtitle="粉色是 Miko 累計，藍色是 Suisei 累計，黃色是共同故事累計。" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
-        <ChartShell title="故事數量折線圖" subtitle="共同故事會同時計入 Miko 與 Suisei" stories={MICOMET_TIMELINE} defaultMode="month" />
+        <ChartShell title="miComet累計故事成長圖" subtitle="粉色是Miko累計，藍色是星街累計，黃色是共同故事累計。" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
+        <ChartShell title="故事數量折線圖" subtitle="共同故事會同時計入Miko與星街。" stories={MICOMET_TIMELINE} defaultMode="month" />
 
         <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -470,7 +483,7 @@ export default function Index() {
           ))}
         </main>
 
-        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一人只算一筆；共同故事同時計入 Miko 與 Suisei。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
+        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一人只算一筆；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
       </div>
 
       {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
