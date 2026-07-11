@@ -4,12 +4,7 @@ import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
 import timeline2021CleanData from './timeline-2021-clean.json';
 import timeline2022CleanData from './timeline-2022-clean.json';
 import timeline2023CleanData from './timeline-2023-clean.json';
-import timeline2024BbqData from './timeline-2024-bbq.json';
-import timeline2024SpringBbqData from './timeline-2024-spring-bbq.json';
-import timeline2024EarlySummerBbqData from './timeline-2024-early-summer-bbq.json';
-import timeline2024LateSummerBbqData from './timeline-2024-late-summer-bbq.json';
-import timeline2024AutumnBbqData from './timeline-2024-autumn-bbq.json';
-import timeline2024WinterBbqData from './timeline-2024-winter-bbq.json';
+import timeline2024CleanData from './timeline-2024-clean.json';
 import timeline2026EarlySummerBbqData from './timeline-2026-early-summer-bbq.json';
 
 export interface MiCometStory {
@@ -229,12 +224,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2021CleanData as MiCometStory[]),
   ...(timeline2022CleanData as MiCometStory[]),
   ...(timeline2023CleanData as MiCometStory[]),
-  ...(timeline2024BbqData as MiCometStory[]),
-  ...(timeline2024SpringBbqData as MiCometStory[]),
-  ...(timeline2024EarlySummerBbqData as MiCometStory[]),
-  ...(timeline2024LateSummerBbqData as MiCometStory[]),
-  ...(timeline2024AutumnBbqData as MiCometStory[]),
-  ...(timeline2024WinterBbqData as MiCometStory[]),
+  ...(timeline2024CleanData as MiCometStory[]),
   ...(timeline2026EarlySummerBbqData as MiCometStory[]),
 ]).sort((a, b) => {
   const dateCompare = a.date.localeCompare(b.date);
