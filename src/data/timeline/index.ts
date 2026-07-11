@@ -7,13 +7,7 @@ import timeline2021MidBbqData from './timeline-2021-mid-bbq.json';
 import timeline2021LateSummerBbqData from './timeline-2021-late-summer-bbq.json';
 import timeline2021WinterBbqData from './timeline-2021-winter-bbq.json';
 import timeline2022CleanData from './timeline-2022-clean.json';
-import timeline2023EarlyBbqData from './timeline-2023-early-bbq.json';
-import timeline2023SpringBbqData from './timeline-2023-spring-bbq.json';
-import timeline2023EarlySummerBbqData from './timeline-2023-early-summer-bbq.json';
-import timeline2023LateSummerBbqData from './timeline-2023-late-summer-bbq.json';
-import timeline2023AutumnBbqData from './timeline-2023-autumn-bbq.json';
-import timeline2023OctoberBbqData from './timeline-2023-october-bbq.json';
-import timeline2023WinterBbqData from './timeline-2023-winter-bbq.json';
+import timeline2023CleanData from './timeline-2023-clean.json';
 import timeline2024BbqData from './timeline-2024-bbq.json';
 import timeline2024SpringBbqData from './timeline-2024-spring-bbq.json';
 import timeline2024EarlySummerBbqData from './timeline-2024-early-summer-bbq.json';
@@ -243,13 +237,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2021LateSummerBbqData as MiCometStory[]),
   ...(timeline2021WinterBbqData as MiCometStory[]),
   ...(timeline2022CleanData as MiCometStory[]),
-  ...(timeline2023EarlyBbqData as MiCometStory[]),
-  ...(timeline2023SpringBbqData as MiCometStory[]),
-  ...(timeline2023EarlySummerBbqData as MiCometStory[]),
-  ...(timeline2023LateSummerBbqData as MiCometStory[]),
-  ...(timeline2023AutumnBbqData as MiCometStory[]),
-  ...(timeline2023OctoberBbqData as MiCometStory[]),
-  ...(timeline2023WinterBbqData as MiCometStory[]),
+  ...(timeline2023CleanData as MiCometStory[]),
   ...(timeline2024BbqData as MiCometStory[]),
   ...(timeline2024SpringBbqData as MiCometStory[]),
   ...(timeline2024EarlySummerBbqData as MiCometStory[]),
