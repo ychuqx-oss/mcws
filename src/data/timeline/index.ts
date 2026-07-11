@@ -1,11 +1,7 @@
 import timelineData from './timeline.json';
 import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
 import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
-import timeline2021EarlyBbqData from './timeline-2021-early-bbq.json';
-import timeline2021SpringBbqData from './timeline-2021-spring-bbq.json';
-import timeline2021MidBbqData from './timeline-2021-mid-bbq.json';
-import timeline2021LateSummerBbqData from './timeline-2021-late-summer-bbq.json';
-import timeline2021WinterBbqData from './timeline-2021-winter-bbq.json';
+import timeline2021CleanData from './timeline-2021-clean.json';
 import timeline2022CleanData from './timeline-2022-clean.json';
 import timeline2023CleanData from './timeline-2023-clean.json';
 import timeline2024BbqData from './timeline-2024-bbq.json';
@@ -136,7 +132,6 @@ function stripSourceNotes(value: string) {
     .replace(/PTT\s*編年史來源[。:：]?/g, '')
     .replace(/PTT chronology source\.?/gi, '')
     .replace(/編年史來源[。:：]?/g, '')
-    .replace(/來源待補。?/g, '來源待補。')
     .replace(/外部來源已保留，?重複故事已合併。?/g, '')
     .replace(/補充來源已合併。?/g, '')
     .replace(/文本待修。?/g, '')
@@ -231,11 +226,7 @@ export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
   ...(timeline2020PttBbqData as MiCometStory[]),
   ...(timelineData as MiCometStory[]),
   ...(timeline2020AutumnBbqData as MiCometStory[]),
-  ...(timeline2021EarlyBbqData as MiCometStory[]),
-  ...(timeline2021SpringBbqData as MiCometStory[]),
-  ...(timeline2021MidBbqData as MiCometStory[]),
-  ...(timeline2021LateSummerBbqData as MiCometStory[]),
-  ...(timeline2021WinterBbqData as MiCometStory[]),
+  ...(timeline2021CleanData as MiCometStory[]),
   ...(timeline2022CleanData as MiCometStory[]),
   ...(timeline2023CleanData as MiCometStory[]),
   ...(timeline2024BbqData as MiCometStory[]),
