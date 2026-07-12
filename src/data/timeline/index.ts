@@ -1,6 +1,5 @@
 import timelineData from './timeline.json';
-import timeline2020PttBbqData from './timeline-2020-ptt-bbq.json';
-import timeline2020AutumnBbqData from './timeline-2020-autumn-bbq.json';
+import timeline2020CleanData from './timeline-2020-clean.json';
 import timeline2021CleanData from './timeline-2021-clean.json';
 import timeline2022CleanData from './timeline-2022-clean.json';
 import timeline2023CleanData from './timeline-2023-clean.json';
@@ -218,9 +217,8 @@ function normalizeAndMergeStories(stories: MiCometStory[]) {
 }
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
-  ...(timeline2020PttBbqData as MiCometStory[]),
   ...(timelineData as MiCometStory[]),
-  ...(timeline2020AutumnBbqData as MiCometStory[]),
+  ...(timeline2020CleanData as MiCometStory[]),
   ...(timeline2021CleanData as MiCometStory[]),
   ...(timeline2022CleanData as MiCometStory[]),
   ...(timeline2023CleanData as MiCometStory[]),
