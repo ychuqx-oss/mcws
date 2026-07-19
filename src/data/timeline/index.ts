@@ -165,12 +165,22 @@ function subjectForSide(side: Side) {
   return '其他Hololive成員';
 }
 
+function isChronologyStory(story: MiCometStory) {
+  return story.date >= '2019-01-01' && story.date <= '2020-08-31';
+}
+
+function normalizeSourceNote(story: MiCometStory, value: string) {
+  if (!isChronologyStory(story)) return value;
+  if (value.includes('來源：編年史。')) return value.replace(/來源待補。?/g, '');
+  return value.replace(/來源待補。?/g, '來源：編年史。');
+}
+
 function normalizeStory(story: MiCometStory): MiCometStory {
   let titleZh = cleanText(story.titleZh || story.title);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(story.side)}${titleZh}`;
   let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
-  ctxZh = ensureSentence(ctxZh);
+  ctxZh = ensureSentence(normalizeSourceNote(story, ctxZh));
   return {
     ...story,
     title: titleZh,
@@ -195,7 +205,7 @@ function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometSt
   const extraCtx = cleanText(extra.ctxZh || extra.ctx);
   const ctxParts = [baseCtx, extraCtx].filter(Boolean);
   const uniqueParts = Array.from(new Set(ctxParts.map((part) => part.replace(/。+$/g, ''))));
-  const ctxZh = ensureSentence(uniqueParts.join('。'));
+  const ctxZh = ensureSentence(normalizeSourceNote(base, uniqueParts.join('。')));
   return {
     ...base,
     ctx: mergedUrls.length ? `${ctxZh} 補充來源：${mergedUrls.join(' / ')}` : ctxZh,
