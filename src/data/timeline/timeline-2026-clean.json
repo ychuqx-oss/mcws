@@ -136,10 +136,10 @@
     "phase": 6,
     "side": "miko",
     "emoji": "🌸",
-    "title": "Miko轉推miComet相關圖片",
-    "titleZh": "Miko轉推miComet相關圖片",
-    "ctx": "Miko轉推miComet相關圖片，作為7月初推文互動紀錄。來源待補。",
-    "ctxZh": "Miko轉推miComet相關圖片，作為7月初推文互動紀錄。來源待補。",
+    "title": "Miko轉推miComet相關圖",
+    "titleZh": "Miko轉推miComet相關圖",
+    "ctx": "Miko在推特轉推miComet相關圖，作為7月初的推文互動紀錄。來源待補。",
+    "ctxZh": "Miko在推特轉推miComet相關圖，作為7月初的推文互動紀錄。來源待補。",
     "type": "Text"
   },
   {
@@ -151,8 +151,8 @@
     "emoji": "☄️",
     "title": "星街抱怨Miko來家裡吃咖哩遲到",
     "titleZh": "星街抱怨Miko來家裡吃咖哩遲到",
-    "ctx": "星街提到Miko要來家裡吃咖哩卻遲到，成為miComet日常互動。來源待補。",
-    "ctxZh": "星街提到Miko要來家裡吃咖哩卻遲到，成為miComet日常互動。來源待補。",
+    "ctx": "星街在直播中抱怨Miko來家裡吃咖哩時遲到，相關片段也被整理成miComet日常互動。來源待補。",
+    "ctxZh": "星街在直播中抱怨Miko來家裡吃咖哩時遲到，相關片段也被整理成miComet日常互動。來源待補。",
     "type": "Stream"
   },
   {
@@ -164,8 +164,8 @@
     "emoji": "🌸",
     "title": "Miko滿腦子都是miComet",
     "titleZh": "Miko滿腦子都是miComet",
-    "ctx": "Miko在直播中出現滿腦子都是miComet的狀態，相關片段也被整理。來源待補。",
-    "ctxZh": "Miko在直播中出現滿腦子都是miComet的狀態，相關片段也被整理。來源待補。",
+    "ctx": "Miko在直播中展現滿腦子都是miComet的狀態，相關片段也被整理成剪輯。來源待補。",
+    "ctxZh": "Miko在直播中展現滿腦子都是miComet的狀態，相關片段也被整理成剪輯。來源待補。",
     "type": "Stream"
   },
   {
@@ -177,8 +177,8 @@
     "emoji": "🌸",
     "title": "Miko發布miComet短片",
     "titleZh": "Miko發布miComet短片",
-    "ctx": "Miko發布miComet短片，作為7月初miComet短片紀錄。來源待補。",
-    "ctxZh": "Miko發布miComet短片，作為7月初miComet短片紀錄。來源待補。",
+    "ctx": "Miko發布miComet短片，作為7月初miComet影片紀錄。來源待補。",
+    "ctxZh": "Miko發布miComet短片，作為7月初miComet影片紀錄。來源待補。",
     "type": "Clip"
   },
   {
@@ -190,8 +190,8 @@
     "emoji": "🌸",
     "title": "Miko哄星街吃紅蘿蔔",
     "titleZh": "Miko哄星街吃紅蘿蔔",
-    "ctx": "Miko在直播互動中哄星街吃紅蘿蔔，成為miComet日常互動。來源待補。",
-    "ctxZh": "Miko在直播互動中哄星街吃紅蘿蔔，成為miComet日常互動。來源待補。",
+    "ctx": "Miko在直播互動中哄星街吃紅蘿蔔，相關片段也被整理成miComet日常互動。來源待補。",
+    "ctxZh": "Miko在直播互動中哄星街吃紅蘿蔔，相關片段也被整理成miComet日常互動。來源待補。",
     "type": "Stream"
   },
   {
@@ -203,8 +203,34 @@
     "emoji": "💛",
     "title": "Miko等待她的彥星星街",
     "titleZh": "Miko等待她的彥星星街",
-    "ctx": "七夕連動中，Miko等待她的彥星星街；Miko的推文也被列為來源。來源待補。",
-    "ctxZh": "七夕連動中，Miko等待她的彥星星街；Miko的推文也被列為來源。來源待補。",
+    "ctx": "七夕連動中，Miko等待她的彥星星街；Miko的推文也列入這次事件來源。來源待補。",
+    "ctxZh": "七夕連動中，Miko等待她的彥星星街；Miko的推文也列入這次事件來源。來源待補。",
     "type": "Stream"
+  },
+  {
+    "id": "s1435",
+    "displayId": "26-7-BBQ-7",
+    "date": "2026-07-13",
+    "phase": 6,
+    "side": "miko",
+    "emoji": "🌸",
+    "title": "Miko轉推睡著的miComet圖",
+    "titleZh": "Miko轉推睡著的miComet圖",
+    "ctx": "Miko在推特轉推睡著的miComet圖，並有截圖作為紀錄。來源待補。",
+    "ctxZh": "Miko在推特轉推睡著的miComet圖，並有截圖作為紀錄。來源待補。",
+    "type": "Text"
+  },
+  {
+    "id": "s1436",
+    "displayId": "26-7-BBQ-8",
+    "date": "2026-07-19",
+    "phase": 6,
+    "side": "shared",
+    "emoji": "💛",
+    "title": "Miko宣布miComet六周年直播將於7月21日舉行",
+    "titleZh": "Miko宣布miComet六周年直播將於7月21日舉行",
+    "ctx": "Miko宣布miComet六周年直播將於7月21日舉行，Miko與星街之後也透過多則推文延伸這次告知。來源待補。",
+    "ctxZh": "Miko宣布miComet六周年直播將於7月21日舉行，Miko與星街之後也透過多則推文延伸這次告知。來源待補。",
+    "type": "Text"
   }
 ]
