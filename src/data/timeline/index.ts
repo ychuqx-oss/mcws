@@ -192,7 +192,8 @@ function normalizeStory(story: MiCometStory): MiCometStory {
 
 function duplicateKey(story: MiCometStory) {
   const year = storyYear(story);
-  if (year >= 2019 && year <= 2026) return `${story.date}:${story.side}`;
+  if (year >= 2025) return `id:${story.id}`;
+  if (year >= 2019 && year <= 2024) return `${story.date}:${story.side}`;
   const firstUrl = story.link || extractUrls(rawText(story))[0];
   return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
 }
