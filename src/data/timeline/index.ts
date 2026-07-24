@@ -66,7 +66,11 @@ function normalizeTaiwanUsage(value: string) {
     .replace(/转发|轉發/g, '轉推')
     .replace(/回复|回復/g, '回覆')
     .replace(/联动|聯動/g, '連動')
-    .replace(/直播间/g, '聊天室');
+    .replace(/直播间/g, '聊天室')
+    .replace(/朋友收藏集/g, '朋友收藏集')
+    .replace(/merch/gi, '周邊')
+    .replace(/about/gi, '談到')
+    .replace(/unhinged/gi, '失控');
 }
 
 function stripSourceNotes(value: string) {
@@ -85,7 +89,7 @@ function cleanText(value?: string) {
   if (!value) return '';
   return stripSourceNotes(normalizeTaiwanUsage(normalizeMemberNames(value)))
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
-    .replace(/\b(?:Japanese|English|source|summary|moment|hilarious|funny|original|compilation|with|from|and|the|too|very|before|after|together|during|behind|scenes|remote|interaction)\b/gi, '')
+    .replace(/\b(?:Japanese|English|source|summary|moment|hilarious|funny|original|compilation|with|from|and|the|too|very|before|after|together|during|behind|scenes|remote|interaction|makes)\b/gi, '')
     .replace(/\s*[|｜]\s*/g, '、')
     .replace(/\s*[•·]\s*/g, '、')
     .replace(/\s*--+\s*/g, '，')
@@ -124,6 +128,78 @@ function normalizeSourceNote(story: MiCometStory, value: string) {
   return value.replace(/來源待補。?/g, '來源：編年史。');
 }
 
+function hasBadGeneratedTitle(value: string) {
+  return /相關紀錄|Miko\s*makes|\bmakes\b|\babout\b|\bmerch\b|\w+'s|unhinged|條目/.test(value);
+}
+
+function betterGeneratedTitle(story: MiCometStory, side: Side, title: string) {
+  const date = story.date;
+  const text = rawText(story);
+  if (!hasBadGeneratedTitle(title)) return title;
+
+  if (date === '2026-05-26') return 'Miko談到上次露營、星街的行動力，以及即將再和姊街、星街去露營';
+  if (date === '2026-05-24' && side === 'others') return '白上吹雪談到與姊街、大神澪、miComet的旅行';
+  if (date === '2026-05-18' && text.includes('旅行')) return 'Miko覺得星街比一條莉莉華更容易在旅行中出包';
+  if (date === '2026-05-18') return 'Miko寫給佃煮海苔男，說能在星街家看到犬山玉姬';
+  if (date === '2026-05-17') return 'Miko注意到遊戲服裝像星街的衣服';
+  if (date === '2026-05-15' && side === 'suisei') return text.includes('休') ? '星街教Miko安排休息日' : '星街不想有任何事輸給Miko';
+  if (date === '2026-05-14') return '不知火建設R.E.P.O.連動';
+  if (date === '2026-05-13' && side === 'miko') return 'Miko在R.E.P.O.又把大空昴叫成星街，還請星街陪她去廁所';
+  if (date === '2026-05-13') return 'Reine遊戲中出現miComet告白情節';
+  if (date === '2026-05-12') return 'Miko談章魚燒派對、做咖哩，以及星街和別人玩Shadowverse';
+  if (date === '2026-05-11' && text.includes('一條莉莉華')) return '一條莉莉華分享星街罵Miko吃完就睡在沙發上的故事';
+  if (date === '2026-05-11') return 'Reine遊戲中miComet也墜入愛河';
+  if (date === '2026-05-09') return 'Miko在姊街不在時煮咖哩給鷹嶺琉依與星街';
+  if (date === '2026-05-08') return '大空昴提到Miko在星街沙發上睡著的章魚燒派對故事';
+  if (date === '2026-05-03') return 'miComet等人參加Cursed Companions連動';
+  if (date === '2026-04-29') return 'Miko遊玩朋友收藏集';
+  if (date === '2026-04-25') return '白上吹雪的朋友收藏集中miComet開始交往';
+  if (date === '2026-04-23') return 'miComet也在博衣小夜璃的島上配對';
+  if (date === '2026-04-21' && side === 'miko') return 'Miko在朋友收藏集中教星街什麼是商業違規';
+  if (date === '2026-04-21') return '白上吹雪的朋友收藏集miComet直播';
+  if (date === '2026-04-19' && side === 'miko') return 'Miko為星街家做燉菜';
+  if (date === '2026-04-17') return '白上吹雪談到miComet露營';
+  if (date === '2026-04-15') return 'Hololive Dreams裡miComet同框';
+  if (date === '2026-04-12' && story.type === 'Clip') return 'Miko製作miComet短片';
+  if (date === '2026-04-12') return 'Miko發推談露營';
+  if (date === '2026-04-11') return '大神澪談到露營、miComet、姊街與犬山玉姬';
+  if (date === '2026-04-10') return 'Miko製作miComet短片';
+  if (date === '2026-04-08' && side === 'suisei') return '星街談到miComet互動';
+  if (date === '2026-04-08') return 'Miko發推miComet互動';
+  if (date === '2026-04-05' && side === 'suisei') return '星街發ARK相關推文';
+  if (date === '2026-04-05') return 'Miko的miComet互動剪輯';
+  if (date === '2026-03-29') return 'Hololive成員談到miComet互動';
+  if (date === '2026-03-26') return 'Hololive成員談到miComet互動';
+  if (date === '2026-03-24') return 'miComet同場連動';
+  if (date === '2026-03-22' && side === 'miko') return story.type === 'Text' ? 'Miko發推miComet互動' : 'Miko談到miComet互動';
+  if (date === '2026-03-22') return '星街的miComet互動剪輯';
+  if (date === '2026-03-21' && story.type === 'Audio') return '星街在廣播中談到miComet';
+  if (date === '2026-03-21') return '星街談到miComet互動';
+  if (date === '2026-03-20') return '鷹嶺琉依談到miComet互動';
+  if (date === '2026-03-16') return side === 'miko' ? 'Miko談到miComet互動' : '星街談到miComet互動';
+  if (date === '2026-03-14') return side === 'miko' ? 'Miko談到miComet互動' : '星街談到miComet互動';
+  if (date === '2026-03-11') return '夏色祭談到miComet互動';
+  if (date === '2026-03-10') return 'Miko發推miComet互動';
+  if (date === '2026-03-09') return '星街祝賀Miko生日';
+  if (date === '2026-03-08') return '星街談到HoloFes沒有miComet';
+  if (date === '2026-03-05' && side === 'miko') return 'Miko談到miComet互動';
+  if (date === '2026-03-05') return 'miComet周邊消息';
+  if (date === '2026-02-21' && side === 'shared') return 'miComet出現在角卷綿芽直播';
+  if (date === '2026-02-17' && side === 'suisei') return '星街發表miComet互動';
+  if (date === '2026-02-14') return 'miComet情人節同場互動';
+  if (date === '2026-01-24') return 'miComet同場連動';
+  if (date === '2026-01-22') return 'miComet同場連動';
+  if (date === '2026-01-20') return 'Miko談到星街推文互動';
+  if (date === '2026-01-17') return '星街談到miComet互動';
+  if (date === '2026-01-12') return 'miComet消息';
+  if (date === '2026-01-03') return 'Miko談到miComet互動';
+
+  if (side === 'miko') return 'Miko談到miComet互動';
+  if (side === 'suisei') return '星街談到miComet互動';
+  if (side === 'shared') return 'miComet同場連動';
+  return 'Hololive成員談到miComet互動';
+}
+
 function isTwoPersonLiveCollab(story: MiCometStory) {
   const text = rawText(story);
   if (story.side !== 'shared') return false;
@@ -150,6 +226,7 @@ function emojiForSide(side: Side) {
 function normalizeStory(story: MiCometStory): MiCometStory {
   const side = splitNonCollabShared(story);
   let titleZh = cleanText(story.titleZh || story.title);
+  titleZh = betterGeneratedTitle(story, side, titleZh);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
   let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
