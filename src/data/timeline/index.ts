@@ -127,8 +127,8 @@ function normalizeSourceNote(story: MiCometStory, value: string) {
 function isTwoPersonLiveCollab(story: MiCometStory) {
   const text = rawText(story);
   if (story.side !== 'shared') return false;
-  if (/轉推|推文|宣布|截圖|花籃|圖|剪輯補充|談到|提到|抱怨|回覆|Source/.test(text)) return false;
-  return /(連動|同時|合唱|VARK|VILLS|六周年|MIMESIS|麥塊|Raft|GTA|醫療模擬|瓦利歐|USJ|約會|直播|周年|gomoku|五子棋)/i.test(text);
+  if (/轉推|推文|宣布|截圖|花籃|圖|剪輯補充|談到|提到|抱怨|回覆|觀看|看Miko|看星街|看.*直播|去.*家|到.*家|Source/.test(text)) return false;
+  return /(Miko與星街|星街與Miko|miComet).*(連動|同時|合唱|周年|活動|商業連動|VARK|VILLS|MIMESIS|Raft|GTA|醫療模擬|瓦利歐|USJ|五子棋|麥塊連動)|(?:連動|同時|合唱|周年|活動|商業連動).*(Miko與星街|星街與Miko|miComet)/i.test(text);
 }
 
 function splitNonCollabShared(story: MiCometStory): Side {
