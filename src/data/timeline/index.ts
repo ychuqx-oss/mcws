@@ -4,7 +4,8 @@ import timeline2021CleanData from './timeline-2021-clean.json';
 import timeline2022CleanData from './timeline-2022-clean.json';
 import timeline2023CleanData from './timeline-2023-clean.json';
 import timeline2024CleanData from './timeline-2024-clean.json';
-import timeline2026CleanData from './timeline-2026-clean.json';
+import timeline2025CleanData from './timeline-2025-compendium';
+import timeline2026CleanData from './timeline-2026-compendium';
 
 export interface MiCometStory {
   id: string;
@@ -25,16 +26,8 @@ export interface MiCometStory {
 
 type Side = MiCometStory['side'];
 
-function storyYear(story: MiCometStory) {
-  return Number(story.date.slice(0, 4));
-}
-
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.link ?? ''}`;
-}
-
-function extractUrls(value: string) {
-  return Array.from(new Set(value.match(/https?:\/\/\S+/g) ?? []));
 }
 
 function normalizeMemberNames(value: string) {
@@ -68,73 +61,29 @@ function normalizeTaiwanUsage(value: string) {
   return value
     .replace(/全息/g, 'Hololive')
     .replace(/视频|視頻/g, '影片')
-    .replace(/信息|资讯|資訊/g, '資訊')
     .replace(/链接|連結/g, '連結')
-    .replace(/质量|品質/g, '品質')
-    .replace(/粉丝/g, '粉絲')
-    .replace(/后台/g, '後台')
-    .replace(/账号/g, '帳號')
-    .replace(/点击/g, '點擊')
     .replace(/发布/g, '發布')
-    .replace(/通过/g, '透過')
-    .replace(/以后/g, '之後')
-    .replace(/里面/g, '裡面')
     .replace(/转发|轉發/g, '轉推')
     .replace(/回复|回復/g, '回覆')
-    .replace(/实现|實裝/g, '上線')
     .replace(/联动|聯動/g, '連動')
-    .replace(/游戏|遊戲/g, '遊戲')
     .replace(/直播间/g, '聊天室');
-}
-
-function translateCommonTerms(value: string) {
-  return value
-    .replace(/Mario Party|マリオパーティ|馬派/g, '瑪利歐派對')
-    .replace(/Minecraft|マインクラフト|麥塊/gi, '麥塊')
-    .replace(/Mario Kart|マリオカート/gi, '瑪利歐賽車')
-    .replace(/WarioWare|メイドインワリオ|ワリオ/gi, '瓦利歐製造')
-    .replace(/Ranch Simulator/gi, '牧場模擬器')
-    .replace(/Nintendo Switch Sports/gi, '運動遊戲')
-    .replace(/Super Bunny Man|スーパーバニーマン/gi, '超級兔人')
-    .replace(/7 Days to Die|7 days to die|七日殺/gi, '七日殺')
-    .replace(/Monster Hunter|モンハン|魔物獵人/gi, '魔物獵人')
-    .replace(/Surgeon Simulator 2?/gi, '醫療模擬')
-    .replace(/Grand Theft Auto|GTA/gi, '俠盜獵車手')
-    .replace(/AmongUs|Among Us/gi, '太空狼人殺')
-    .replace(/Animal|アニマル/g, '動物')
-    .replace(/Business/gi, '商業')
-    .replace(/Holomem|holomem/gi, 'Hololive成員')
-    .replace(/Tweet/gi, '推文')
-    .replace(/Video/gi, '影片')
-    .replace(/Shorts?/gi, '短片')
-    .replace(/original stream/gi, '原直播')
-    .replace(/stream/gi, '直播')
-    .replace(/clip/gi, '剪輯')
-    .replace(/English-subtitled/gi, '')
-    .replace(/Japanese/gi, '')
-    .replace(/hand-drawn|手描き/gi, '手繪')
-    .replace(/mocopi/gi, '動作捕捉')
-    .replace(/Hololive|hololive/g, 'Hololive');
 }
 
 function stripSourceNotes(value: string) {
   return value
-    .replace(/https?:\/\/\S+/g, '')
     .replace(/User-provided source list:.*$/gi, '')
     .replace(/Sources?:.*$/gi, '')
     .replace(/YouTube[:：]?|YT[:：]?|Twitter[:：]?|X[:：]?/gi, '')
     .replace(/PTT\s*編年史來源[。:：]?/g, '')
     .replace(/PTT chronology source\.?/gi, '')
     .replace(/編年史來源[。:：]?/g, '')
-    .replace(/外部來源已保留，?重複故事已合併。?/g, '')
-    .replace(/補充來源已合併。?/g, '')
     .replace(/文本待修。?/g, '')
     .trim();
 }
 
 function cleanText(value?: string) {
   if (!value) return '';
-  return stripSourceNotes(normalizeTaiwanUsage(translateCommonTerms(normalizeMemberNames(value))))
+  return stripSourceNotes(normalizeTaiwanUsage(normalizeMemberNames(value)))
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
     .replace(/\b(?:Japanese|English|source|summary|moment|hilarious|funny|original|compilation|with|from|and|the|too|very|before|after|together|during|behind|scenes|remote|interaction)\b/gi, '')
     .replace(/\s*[|｜]\s*/g, '、')
@@ -155,7 +104,7 @@ function ensureSentence(value: string) {
 }
 
 function titleHasSubject(value: string) {
-  return /(Miko|星街|miComet|iNNK|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
+  return /(Miko|星街|miComet|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
 }
 
 function subjectForSide(side: Side) {
@@ -175,14 +124,40 @@ function normalizeSourceNote(story: MiCometStory, value: string) {
   return value.replace(/來源待補。?/g, '來源：編年史。');
 }
 
+function isTwoPersonLiveCollab(story: MiCometStory) {
+  const text = rawText(story);
+  if (story.side !== 'shared') return false;
+  if (/轉推|推文|宣布|截圖|花籃|圖|剪輯補充|談到|提到|抱怨|回覆|Source/.test(text)) return false;
+  return /(連動|同時|合唱|VARK|VILLS|六周年|MIMESIS|麥塊|Raft|GTA|醫療模擬|瓦利歐|USJ|約會|直播|周年|gomoku|五子棋)/i.test(text);
+}
+
+function splitNonCollabShared(story: MiCometStory): Side {
+  if (story.side !== 'shared') return story.side;
+  if (isTwoPersonLiveCollab(story)) return 'shared';
+  const text = rawText(story);
+  if (/^星街|星街/.test(text) && !/^Miko/.test(text)) return 'suisei';
+  if (/^Miko|Miko/.test(text)) return 'miko';
+  return 'others';
+}
+
+function emojiForSide(side: Side) {
+  if (side === 'miko') return '🌸';
+  if (side === 'suisei') return '☄️';
+  if (side === 'shared') return '💛';
+  return '⭐';
+}
+
 function normalizeStory(story: MiCometStory): MiCometStory {
+  const side = splitNonCollabShared(story);
   let titleZh = cleanText(story.titleZh || story.title);
-  if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(story.side)}${titleZh}`;
+  if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
   let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
   ctxZh = ensureSentence(normalizeSourceNote(story, ctxZh));
   return {
     ...story,
+    side,
+    emoji: emojiForSide(side),
     title: titleZh,
     titleZh,
     ctx: ctxZh,
@@ -190,50 +165,24 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   };
 }
 
-function duplicateKey(story: MiCometStory) {
-  const year = storyYear(story);
-  if (year >= 2025) return `id:${story.id}`;
-  if (year >= 2019 && year <= 2024) return `${story.date}:${story.side}`;
-  const firstUrl = story.link || extractUrls(rawText(story))[0];
-  return firstUrl ? `url:${firstUrl}` : `id:${story.id}`;
+function normalizeStories(stories: MiCometStory[]) {
+  const seen = new Set<string>();
+  return stories.map(normalizeStory).filter((story) => {
+    const key = story.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
-function mergeDuplicateStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
-  const baseUrls = extractUrls(rawText(base));
-  const extraUrls = [extra.link, ...extractUrls(rawText(extra))].filter((url): url is string => Boolean(url));
-  const mergedUrls = Array.from(new Set([...baseUrls, ...extraUrls])).slice(0, 12);
-  const baseCtx = cleanText(base.ctxZh || base.ctx);
-  const extraCtx = cleanText(extra.ctxZh || extra.ctx);
-  const ctxParts = [baseCtx, extraCtx].filter(Boolean);
-  const uniqueParts = Array.from(new Set(ctxParts.map((part) => part.replace(/。+$/g, ''))));
-  const ctxZh = ensureSentence(normalizeSourceNote(base, uniqueParts.join('。')));
-  return {
-    ...base,
-    ctx: mergedUrls.length ? `${ctxZh} 補充來源：${mergedUrls.join(' / ')}` : ctxZh,
-    ctxZh,
-    link: base.link || extra.link,
-  };
-}
-
-function normalizeAndMergeStories(stories: MiCometStory[]) {
-  const map = new Map<string, MiCometStory>();
-  stories
-    .map(normalizeStory)
-    .forEach((story) => {
-      const key = duplicateKey(story);
-      const current = map.get(key);
-      map.set(key, current ? mergeDuplicateStory(current, story) : story);
-    });
-  return [...map.values()];
-}
-
-export const MICOMET_TIMELINE: MiCometStory[] = normalizeAndMergeStories([
+export const MICOMET_TIMELINE: MiCometStory[] = normalizeStories([
   ...(timelineData as MiCometStory[]),
   ...(timeline2020CleanData as MiCometStory[]),
   ...(timeline2021CleanData as MiCometStory[]),
   ...(timeline2022CleanData as MiCometStory[]),
   ...(timeline2023CleanData as MiCometStory[]),
   ...(timeline2024CleanData as MiCometStory[]),
+  ...(timeline2025CleanData as MiCometStory[]),
   ...(timeline2026CleanData as MiCometStory[]),
 ]).sort((a, b) => {
   const dateCompare = a.date.localeCompare(b.date);
