@@ -106,7 +106,12 @@ function timelineYearStart(stories: MiCometStory[]) {
 
 function timelineYearEnd(stories: MiCometStory[]) {
   const currentYear = new Date().getUTCFullYear();
-  return Math.max(currentYear, ...stories.map((story) => Number(story.date.slice(0, 4))).filter(Number.isFinite));
+  return Math.max(currentYear, 2026, ...stories.map((story) => Number(story.date.slice(0, 4))).filter(Number.isFinite));
+}
+
+function yearRange(start: number, end: number) {
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return [];
+  return Array.from({ length: Math.max(0, end - start + 1) }, (_, index) => start + index);
 }
 
 function summarizeTimeline(stories: MiCometStory[]) {
@@ -118,7 +123,7 @@ function summarizeTimeline(stories: MiCometStory[]) {
     },
     { miko: 0, suisei: 0, shared: 0, others: 0 },
   );
-  const years = [...new Set(timeline.map((story) => Number(story.date.slice(0, 4))))].sort((a, b) => a - b);
+  const years = yearRange(timelineYearStart(timeline), timelineYearEnd(timeline));
 
   return {
     timeline,
