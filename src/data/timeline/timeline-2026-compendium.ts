@@ -22,13 +22,13 @@ c2-2026-020|26-C2-20|2026-06-07|6|miko|🌸|Stream|Miko拿走星街手機並用�
 c2-2026-021|26-C2-21|2026-06-07|6|miko|🌸|Text|Miko的幸運Hololive成員是星街
 c2-2026-022|26-C2-22|2026-06-05|6|shared|💛|Stream|miComet麥塊連動
 c2-2026-023|26-C2-23|2026-06-05|6|others|⭐|News|miComet JOYSOUND聯名
-c2-2026-024|26-C2-24|2026-06-04|6|shared|💛|Stream|miComet麥塊連動
+c2-2026-024|26-C2-24|2026-06-04|6|shared|💛|Stream|miComet麥塊連動，星街因Miko和夏色祭通話而吃味
 c2-2026-025|26-C2-25|2026-06-03|6|others|⭐|Stream|白上吹雪在Hololive通話中對miComet貼貼發狂
 c2-2026-026|26-C2-26|2026-05-31|6|miko|🌸|Stream|Miko談到Biji Camp
 c2-2026-027|26-C2-27|2026-05-29|6|miko|🌸|Text|miComet去露營
 c2-2026-028|26-C2-28|2026-05-26|6|miko|🌸|Stream|Miko談到上次露營、星街的行動力，以及即將再和姊街、星街去露營
 c2-2026-029|26-C2-29|2026-05-24|6|suisei|☄️|Stream|星街談到與FubuMio、Miko和姊街的旅行
-c2-2026-030|26-C2-30|2026-05-24|6|others|⭐|Stream|白上吹雪談到與姊街、大神澪、miComet的旅行
+c2-2026-030|26-C2-30|2026-05-24|6|others|⭐|Stream|白上吹雪談到旅行回程時星街因寂寞改坐FubuMio車，Miko和犬山坐在後座
 c2-2026-031|26-C2-31|2026-05-23|6|miko|🌸|Stream|Miko談到和姊街、FubuMio、星街旅行，以及姊街幫她吹頭髮
 c2-2026-032|26-C2-32|2026-05-23|6|others|⭐|Text|大神澪對miComet推文打情罵俏作出反應
 c2-2026-033|26-C2-33|2026-05-18|6|miko|🌸|Stream|Miko覺得星街比一條莉莉華更容易在旅行中出包
@@ -76,7 +76,7 @@ c2-2026-074|26-C2-74|2026-03-16|6|miko|🌸|Stream|Miko讓睡著的星街代打�
 c2-2026-075|26-C2-75|2026-03-16|6|suisei|☄️|Stream|星街睡著後被Miko叫醒代打遊戲
 c2-2026-076|26-C2-76|2026-03-14|6|miko|🌸|Stream|Miko在遊戲輸掉時跑去叫醒星街幫忙
 c2-2026-077|26-C2-77|2026-03-14|6|suisei|☄️|Stream|星街被Miko叫醒後幫她代打但仍然失敗
-c2-2026-078|26-C2-78|2026-03-11|6|others|⭐|Stream|夏色祭談到miComet互動
+c2-2026-078|26-C2-78|2026-03-11|6|others|⭐|Stream|風真伊呂波不想介入miComet之間
 c2-2026-079|26-C2-79|2026-03-10|6|miko|🌸|Text|Miko在副帳號上與星街互動
 c2-2026-080|26-C2-80|2026-03-09|6|suisei|☄️|Stream|星街祝賀Miko生日
 c2-2026-081|26-C2-81|2026-03-08|6|suisei|☄️|Stream|星街談到HoloFes沒有miComet
@@ -93,17 +93,17 @@ c2-2026-091|26-C2-91|2026-02-16|6|others|⭐|Clip|miComet〈Lollipop〉短片
 c2-2026-092|26-C2-92|2026-02-14|6|shared|💛|Stream|miComet情人節同場互動
 c2-2026-093|26-C2-93|2026-02-13|6|miko|🌸|Text|Miko宣傳miComet情人節直播
 c2-2026-094|26-C2-94|2026-02-12|6|others|⭐|Stream|Hololive成員提到miComet情人節連動
-c2-2026-095|26-C2-95|2026-02-09|6|miko|🌸|Stream|Miko談到星街相關話題
-c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko提到星街相關話題
-c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko提到星街相關話題
+c2-2026-095|26-C2-95|2026-02-09|6|miko|🌸|Stream|Miko在情人節連動前談到星街與miComet安排
+c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko直播中提到星街近況
+c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko直播中提到星街近況
 c2-2026-098|26-C2-98|2026-01-28|6|miko|🌸|Text|Miko發推miComet圖
 c2-2026-099|26-C2-99|2026-01-24|6|shared|💛|Stream|miComet同場連動
 c2-2026-100|26-C2-100|2026-01-23|6|miko|🌸|Text|Miko轉推miComet圖
 c2-2026-101|26-C2-101|2026-01-22|6|shared|💛|Stream|miComet同場連動
 c2-2026-102|26-C2-102|2026-01-20|6|miko|🌸|Stream|Miko談到星街推文互動
-c2-2026-103|26-C2-103|2026-01-17|6|suisei|☄️|Stream|星街談到miComet相關話題
+c2-2026-103|26-C2-103|2026-01-17|6|suisei|☄️|Stream|星街直播中提到miComet近況
 c2-2026-104|26-C2-104|2026-01-12|6|others|⭐|News|miComet消息
-c2-2026-105|26-C2-105|2026-01-03|6|miko|🌸|Stream|Miko提到星街相關話題
+c2-2026-105|26-C2-105|2026-01-03|6|miko|🌸|Stream|Miko直播中提到星街近況
 c2-2026-106|26-C2-106|2026-01-02|6|miko|🌸|Text|Miko發推miComet圖
 c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet同場連動
 `.trim();
