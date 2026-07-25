@@ -64,7 +64,7 @@ const data = rows.split('\n').map((row) => {
   const [id, displayId, date, phase, sideRaw, emoji, type, rawTitle] = row.split('|');
   const side = sideRaw as Side;
   const title = normalizeTitle(date, side, type, rawTitle);
-  const ctx = `${title}。來源：MiComet Compendium II。`;
+  const ctx = `${title}。`;
   return {
     id,
     displayId,
@@ -78,6 +78,7 @@ const data = rows.split('\n').map((row) => {
     ctxZh: ctx,
     type,
     link: '',
+    source: 'MiComet Compendium II',
   };
 });
 
