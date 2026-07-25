@@ -110,7 +110,7 @@ c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet同場連動
 
 const data = rows.split('\n').map((row) => {
   const [id, displayId, date, phase, side, emoji, type, title] = row.split('|');
-  const ctx = `${title}。來源：MiComet Compendium II。`;
+  const ctx = `${title}。`;
   return {
     id,
     displayId,
@@ -124,6 +124,7 @@ const data = rows.split('\n').map((row) => {
     ctxZh: ctx,
     type,
     link: '',
+    source: 'MiComet Compendium II',
   };
 });
 
