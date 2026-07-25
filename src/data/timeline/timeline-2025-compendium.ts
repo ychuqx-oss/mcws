@@ -33,7 +33,7 @@ function cleanTitle(title: string) {
     .replace(/星街的/g, '星街')
     .replace(/AZKi的/g, 'AZKi')
     .replace(/白上吹雪的/g, '白上吹雪')
-    .replace(/互動相關紀錄/g, '談到miComet互動')
+    .replace(/互動相關紀錄/g, '提到星街相關話題')
     .replace(/旅行相關紀錄/g, '談到旅行話題')
     .replace(/睡覺相關紀錄/g, '談到睡覺話題')
     .replace(/打情罵俏相關紀錄/g, '談到miComet打情罵俏')
@@ -48,10 +48,11 @@ function cleanTitle(title: string) {
 }
 
 function fallbackTitle(date: string, side: Side, type: string) {
-  if (side === 'miko') return type === 'Text' ? 'Miko發推或轉推miComet互動' : 'Miko談到miComet互動';
-  if (side === 'suisei') return type === 'Text' ? '星街發推談miComet互動' : '星街談到miComet互動';
-  if (side === 'shared') return 'Miko與星街同場連動';
-  return 'Hololive成員談到miComet互動';
+  const d = date.replace(/-/g, '/');
+  if (side === 'miko') return type === 'Text' ? `Miko在${d}發推或轉推星街相關內容` : `Miko在${d}直播提到星街相關話題`;
+  if (side === 'suisei') return type === 'Text' ? `星街在${d}發推談Miko相關內容` : `星街在${d}直播提到Miko相關話題`;
+  if (side === 'shared') return `Miko與星街在${d}同場連動`;
+  return `Hololive成員在${d}提到miComet相關話題`;
 }
 
 function normalizeTitle(date: string, side: Side, type: string, rawTitle: string) {
