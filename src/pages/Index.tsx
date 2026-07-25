@@ -57,6 +57,17 @@ function cleanText(value = '') {
     .replace(/使用者提供來源[：:].*$/g, '')
     .replace(/未提供完整網址[^。]*。?/g, '')
     .replace(/避免壞連結。?/g, '')
+    .replace(/來源[:：][^。]*。?/g, '')
+    .replace(/來源待補。?/g, '')
+    .replace(/補充資料[^。]*。?/g, '')
+    .replace(/保留[^。]*來源脈絡[^。]*。?/g, '')
+    .replace(/不再使用機翻標題。?/g, '')
+    .replace(/(?:留下|成為|作為)[^。]*(?:紀錄|記錄|片段|笑點|故事|之一)[^。]*。?/g, '')
+    .replace(/(?:早期推文互動|早期互動|推文互動之一|miComet互動片段)[^。]*。?/g, '')
+    .replace(/(?:延伸出|延伸為|整理成|被整理成|補成|收作|收為)[^。]*(?:笑點|補充故事|補充|故事|片段)[^。]*。?/g, '')
+    .replace(/(?:相關片段|當天多支剪輯|多支剪輯|這段互動|此段互動)[^。]*(?:整理|合併整理|補充)[^。]*。?/g, '')
+    .replace(/(?:三人互動|物資使用|多人合作互動)[^。]*(?:笑點|補充故事|片段)[^。]*。?/g, '')
+    .replace(/這筆[^。]*(?:補充|來源脈絡|機翻|整理|故事)[^。]*。?/g, '')
     .replace(/[ぁ-ゖァ-ヺー]+/g, '')
     .replace(/\b(?:Japanese|English|source|summary|moment|hilarious|funny|original|clip|stream|shorts)\b/gi, '')
     .replace(/视频|視頻/g, '影片')
@@ -240,6 +251,16 @@ function sideColor(side: Side) {
   return '#ffffff';
 }
 
+function StoryImageSlot({ item, large = false }: { item: MiCometStory; large?: boolean }) {
+  const image = (item as MiCometStory & { image?: string }).image;
+  const height = large ? 230 : 120;
+  return (
+    <div style={{ marginTop: large ? 16 : 12, height, borderRadius: large ? 18 : 14, overflow: 'hidden', background: 'linear-gradient(135deg, rgba(255,125,183,0.12), rgba(102,169,255,0.12))', border: '1px dashed rgba(255,255,255,0.16)', display: 'grid', placeItems: 'center' }}>
+      {image ? <img src={image} alt={storyTitle(item)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ color: '#7f8594', fontSize: large ? 13 : 11, letterSpacing: '0.12em', fontWeight: 800 }}>IMAGE SLOT</div>}
+    </div>
+  );
+}
+
 function ChartStatCard({ label, value, accent, tint }: { label: string; value: string | number; accent: string; tint: string }) {
   return (
     <div style={{ borderRadius: 18, padding: '16px 18px', background: tint, border: '1px solid rgba(255,255,255,0.08)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16)' }}>
@@ -320,6 +341,7 @@ function StoryCard({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCome
         <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
         <div style={{ color: sideColor(item.side), fontSize: 12, fontWeight: 700 }}>{sideLabel(item.side)}</div>
       </div>
+      <StoryImageSlot item={item} />
       <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>{storyTitle(item)}</div>
       <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{storyContext(item)}</div>
       <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
@@ -347,6 +369,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
           </div>
           <button onClick={onClose} style={{ background: '#0d0f15', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 999, width: 36, height: 36, fontSize: 18, cursor: 'pointer' }}>×</button>
         </div>
+        <StoryImageSlot item={item} large />
         <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{storyContext(item)}</div>
         <LinkButtons item={item} />
       </div>
@@ -488,7 +511,7 @@ export default function Index() {
           ))}
         </main>
 
-        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一人只算一筆；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
+        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一標題合併成一張卡；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
       </div>
 
       {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
