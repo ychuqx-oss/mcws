@@ -23,6 +23,7 @@ export interface MiCometStory {
   type: string;
   link?: string;
   source?: string;
+  image?: string;
 }
 
 type Side = MiCometStory['side'];
@@ -58,11 +59,13 @@ function stripEditorialNotes(value: string) {
     .replace(/保留[^。]*來源脈絡[^。]*。?/g, '')
     .replace(/不再使用機翻標題。?/g, '')
     .replace(/舊資料中的英文剪輯標題與殘缺連結已整理為正常繁中描述[；;]?/g, '')
-    .replace(/(?:留下|成為|作為)[^。]*(?:紀錄|記錄)[^。]*。?/g, '')
+    .replace(/(?:留下|成為|作為)[^。]*(?:紀錄|記錄|片段|笑點|故事|之一)[^。]*。?/g, '')
     .replace(/成為[^。]*之一。?/g, '')
-    .replace(/(?:早期推文互動|早期互動|推文互動之一)[^。]*。?/g, '')
-    .replace(/(?:相關片段|當天多支剪輯|多支剪輯)[^。]*(?:整理|合併整理)[^。]*。?/g, '')
-    .replace(/這筆[^。]*(?:補充|來源脈絡|機翻)[^。]*。?/g, '')
+    .replace(/(?:早期推文互動|早期互動|推文互動之一|miComet互動片段)[^。]*。?/g, '')
+    .replace(/(?:延伸出|延伸為|整理成|被整理成|補成|收作|收為)[^。]*(?:笑點|補充故事|補充|故事|片段)[^。]*。?/g, '')
+    .replace(/(?:相關片段|當天多支剪輯|多支剪輯|這段互動|此段互動)[^。]*(?:整理|合併整理|補充)[^。]*。?/g, '')
+    .replace(/(?:三人互動|物資使用|多人合作互動)[^。]*(?:笑點|補充故事|片段)[^。]*。?/g, '')
+    .replace(/這筆[^。]*(?:補充|來源脈絡|機翻|整理|故事)[^。]*。?/g, '')
     .replace(/文本待修。?/g, '')
     .trim();
 }
@@ -170,6 +173,7 @@ function mergeStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
     type: base.type === extra.type ? base.type : 'News',
     link: links,
     source: sources || undefined,
+    image: base.image || extra.image,
     ctx: mergedCtx,
     ctxZh: mergedCtx,
   };
