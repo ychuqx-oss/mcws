@@ -149,14 +149,42 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   };
 }
 
+function mergeText(a = '', b = '') {
+  const parts = [a, b]
+    .map((part) => cleanText(part).replace(/。+$/g, '').trim())
+    .filter(Boolean);
+  return Array.from(new Set(parts)).join('。');
+}
+
+function mergeStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
+  const mergedCtx = ensureSentence(mergeText(base.ctxZh || base.ctx, extra.ctxZh || extra.ctx));
+  const links = Array.from(new Set([base.link, extra.link].filter(Boolean))).join(' ');
+  const sources = Array.from(new Set([base.source, extra.source].filter(Boolean))).join('、');
+  return {
+    ...base,
+    id: base.id,
+    displayId: base.displayId || extra.displayId,
+    phase: Math.min(base.phase, extra.phase),
+    type: base.type === extra.type ? base.type : 'News',
+    link: links,
+    source: sources || undefined,
+    ctx: mergedCtx,
+    ctxZh: mergedCtx,
+  };
+}
+
+function duplicateKey(story: MiCometStory) {
+  return `${story.date}:${story.titleZh || story.title}`;
+}
+
 function normalizeStories(stories: MiCometStory[]) {
-  const seen = new Set<string>();
-  return stories.map(normalizeStory).filter((story) => {
-    const key = story.id;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
+  const byKey = new Map<string, MiCometStory>();
+  stories.map(normalizeStory).forEach((story) => {
+    const key = duplicateKey(story);
+    const existing = byKey.get(key);
+    byKey.set(key, existing ? mergeStory(existing, story) : story);
   });
+  return Array.from(byKey.values());
 }
 
 export const MICOMET_TIMELINE: MiCometStory[] = normalizeStories([
