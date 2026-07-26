@@ -93,19 +93,19 @@ c2-2026-091|26-C2-91|2026-02-16|6|others|⭐|Clip|miComet〈Lollipop〉短片
 c2-2026-092|26-C2-92|2026-02-14|6|shared|💛|Stream|miComet情人節同場互動
 c2-2026-093|26-C2-93|2026-02-13|6|miko|🌸|Text|Miko宣傳miComet情人節直播
 c2-2026-094|26-C2-94|2026-02-12|6|others|⭐|Stream|Hololive成員提到miComet情人節連動
-c2-2026-095|26-C2-95|2026-02-09|6|miko|🌸|Stream|Miko在情人節連動前談到星街與miComet安排
-c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko在新年第一個月談到星街與情人節連動準備
-c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko談到星街相關近況與miComet後續行程
+c2-2026-095|26-C2-95|2026-02-09|6|miko|🌸|Stream|Miko在情人節連動前談到星街與miComet準備
+c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko在一月直播談星街與情人節連動準備
+c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko在一月底直播談星街與miComet後續行程
 c2-2026-098|26-C2-98|2026-01-28|6|miko|🌸|Text|Miko發推miComet圖
-c2-2026-099|26-C2-99|2026-01-24|6|shared|💛|Stream|miComet在一月下旬同場連動
+c2-2026-099|26-C2-99|2026-01-24|6|shared|💛|Stream|miComet一月下旬直播連動
 c2-2026-100|26-C2-100|2026-01-23|6|miko|🌸|Text|Miko轉推miComet圖
-c2-2026-101|26-C2-101|2026-01-22|6|shared|💛|Stream|miComet在一月麥塊連動中同場互動
+c2-2026-101|26-C2-101|2026-01-22|6|shared|💛|Stream|miComet一月麥塊直播連動
 c2-2026-102|26-C2-102|2026-01-20|6|miko|🌸|Stream|Miko談到星街推文互動
 c2-2026-103|26-C2-103|2026-01-17|6|suisei|☄️|Stream|星街在直播中談到miComet互動
-c2-2026-104|26-C2-104|2026-01-12|6|others|⭐|News|miComet一月企劃公告
+c2-2026-104|26-C2-104|2026-01-12|6|others|⭐|News|miComet一月企劃預告
 c2-2026-105|26-C2-105|2026-01-03|6|miko|🌸|Stream|Miko新年直播中談星街
 c2-2026-106|26-C2-106|2026-01-02|6|miko|🌸|Text|Miko發推miComet圖
-c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet新年同場連動
+c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet新年直播連動
 `.trim();
 
 const data = rows.split('\n').map((row) => {
