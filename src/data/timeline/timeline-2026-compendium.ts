@@ -1,6 +1,6 @@
 const rows = `
 c2-2026-001|26-C2-1|2026-07-23|6|others|⭐|Text|白上吹雪在Hololive Dreams偷看miComet
-c2-2026-002|26-C2-2|2026-07-21|6|miko|🌸|Text|miComet六周年會議紀錄
+c2-2026-002|26-C2-2|2026-07-21|6|miko|🌸|Text|Miko發布miComet六周年會議相關推文
 c2-2026-003|26-C2-3|2026-07-21|6|shared|💛|Stream|miComet六周年直播
 c2-2026-004|26-C2-4|2026-07-19|6|miko|🌸|Text|Miko宣布miComet六周年直播將於7月21日舉行
 c2-2026-005|26-C2-5|2026-07-13|6|miko|🌸|Text|Miko轉推睡著的miComet圖
@@ -94,15 +94,15 @@ c2-2026-092|26-C2-92|2026-02-14|6|shared|💛|Stream|miComet情人節同場互�
 c2-2026-093|26-C2-93|2026-02-13|6|miko|🌸|Text|Miko宣傳miComet情人節直播
 c2-2026-094|26-C2-94|2026-02-12|6|others|⭐|Stream|Hololive成員提到miComet情人節連動
 c2-2026-095|26-C2-95|2026-02-09|6|miko|🌸|Stream|Miko在情人節連動前談到星街與miComet安排
-c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko直播中談星街與miComet安排
-c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko直播中談星街相關事件
+c2-2026-096|26-C2-96|2026-01-30|6|miko|🌸|Stream|Miko在新年第一個月談到星街與情人節連動準備
+c2-2026-097|26-C2-97|2026-01-29|6|miko|🌸|Stream|Miko談到星街相關近況與miComet後續行程
 c2-2026-098|26-C2-98|2026-01-28|6|miko|🌸|Text|Miko發推miComet圖
-c2-2026-099|26-C2-99|2026-01-24|6|shared|💛|Stream|miComet一月下旬同場連動
+c2-2026-099|26-C2-99|2026-01-24|6|shared|💛|Stream|miComet在一月下旬同場連動
 c2-2026-100|26-C2-100|2026-01-23|6|miko|🌸|Text|Miko轉推miComet圖
-c2-2026-101|26-C2-101|2026-01-22|6|shared|💛|Stream|miComet一月麥塊同場互動
+c2-2026-101|26-C2-101|2026-01-22|6|shared|💛|Stream|miComet在一月麥塊連動中同場互動
 c2-2026-102|26-C2-102|2026-01-20|6|miko|🌸|Stream|Miko談到星街推文互動
-c2-2026-103|26-C2-103|2026-01-17|6|suisei|☄️|Stream|星街直播中談miComet話題
-c2-2026-104|26-C2-104|2026-01-12|6|others|⭐|News|miComet一月相關公告
+c2-2026-103|26-C2-103|2026-01-17|6|suisei|☄️|Stream|星街在直播中談到miComet互動
+c2-2026-104|26-C2-104|2026-01-12|6|others|⭐|News|miComet一月企劃公告
 c2-2026-105|26-C2-105|2026-01-03|6|miko|🌸|Stream|Miko新年直播中談星街
 c2-2026-106|26-C2-106|2026-01-02|6|miko|🌸|Text|Miko發推miComet圖
 c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet新年同場連動
