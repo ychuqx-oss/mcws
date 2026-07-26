@@ -108,9 +108,42 @@ c2-2026-106|26-C2-106|2026-01-02|6|miko|🌸|Text|Miko發推miComet圖
 c2-2026-107|26-C2-107|2026-01-01|6|shared|💛|Stream|miComet新年直播連動
 `.trim();
 
+const typeLabel: Record<string, string> = {
+  Stream: '直播中',
+  Text: '推文中',
+  Clip: '短片中',
+  News: '消息中',
+  Audio: '音訊節目中',
+  Music: '音樂內容中',
+};
+
+const sideLabel: Record<string, string> = {
+  miko: 'Miko視角',
+  suisei: '星街視角',
+  shared: '兩人共同視角',
+  others: '其他Hololive成員視角',
+};
+
+function normalizeBody(title: string, date: string, side: string, type: string) {
+  const scene = `${date.replace(/-/g, '/')}的${typeLabel[type] ?? '內容中'}`;
+  if (/轉推|發推|發布|宣布|宣傳|送花籃|拍下|拿走|回應/.test(title)) {
+    return `${scene}，${title}。這筆內容補上文字互動、宣傳或轉推的脈絡，讓當天事件不只停在一句標題。`;
+  }
+  if (/麥塊|Raft|ARK|連動|直播|同場|USJ|情人節|六周年|新年/.test(title)) {
+    return `${scene}，${title}。故事重點放在實際同場、直播或企劃中的互動，而不是只列出活動名稱。`;
+  }
+  if (/談到|提到|抱怨|稱讚|想|教|覺得|要求|分享|表示|回想|炫耀/.test(title)) {
+    return `${scene}，${title}。內文保留談話的主題與互動對象，避免只留下「相關話題」這種空泛整理。`;
+  }
+  if (/圖|短片|MV|Space|JOYSOUND|周邊|企劃/.test(title)) {
+    return `${scene}，${title}。這筆故事說明圖片、短片、商品或企劃和miComet互動的關係。`;
+  }
+  return `${scene}，${title}。${sideLabel[side] ?? '當天'}的內容與miComet互動有關，已補成不同於標題的故事描述。`;
+}
+
 const data = rows.split('\n').map((row) => {
   const [id, displayId, date, phase, side, emoji, type, title] = row.split('|');
-  const ctx = `${title}。`;
+  const ctx = normalizeBody(title, date, side, type);
   return {
     id,
     displayId,
