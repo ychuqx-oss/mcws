@@ -151,13 +151,6 @@ function summarizeTimeline(stories: MiCometStory[]) {
   };
 }
 
-function buildTypeCounts(stories: MiCometStory[]) {
-  return stories.reduce<Record<string, number>>((acc, story) => {
-    acc[story.type] = (acc[story.type] ?? 0) + 1;
-    return acc;
-  }, {});
-}
-
 function buildMonthlyCounts(stories: MiCometStory[]) {
   const monthly = new Map<string, Record<Side, number>>();
   stories.forEach((story) => {
@@ -405,7 +398,6 @@ export default function Index() {
   const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
 
   const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
-  const typeCounts = useMemo(() => buildTypeCounts(summary.timeline), [summary.timeline]);
   const years = useMemo(() => summary.years, [summary.years]);
 
   const filtered = useMemo(() => {
@@ -435,13 +427,6 @@ export default function Index() {
     { label: '星街', value: summary.counts.suisei, color: COLORS.suisei },
     { label: '共同', value: summary.counts.shared, color: COLORS.shared },
     { label: '助攻', value: summary.counts.others, color: '#ffffff' },
-  ];
-
-  const typeStats = [
-    { label: '剪輯', value: typeCounts.Clip ?? 0, color: COLORS.shared },
-    { label: '直播', value: typeCounts.Stream ?? 0, color: COLORS.miko },
-    { label: '綜合', value: typeCounts.News ?? 0, color: COLORS.total },
-    { label: '文字', value: typeCounts.Text ?? 0, color: COLORS.suisei },
   ];
 
   const filterButtonStyle = (active: boolean): React.CSSProperties => ({ padding: '10px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: active ? '#232838' : '#0d0f15', color: '#fff', cursor: 'pointer' });
@@ -475,7 +460,6 @@ export default function Index() {
             <StatCard label="最新紀錄" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
           </div>
           <CompactStatRow title="side counts" items={sideStats} />
-          <CompactStatRow title="type counts" items={typeStats} />
         </section>
 
         <ChartShell title="miComet累計故事成長圖" subtitle="粉色是Miko累計，藍色是星街累計，黃色是共同故事累計。" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
@@ -511,7 +495,7 @@ export default function Index() {
           ))}
         </main>
 
-        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一標題合併成一張卡；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
+        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一人只算一筆；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
       </div>
 
       {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
