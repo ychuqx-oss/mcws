@@ -116,8 +116,7 @@ function timelineYearStart(stories: MiCometStory[]) {
 }
 
 function timelineYearEnd(stories: MiCometStory[]) {
-  const currentYear = new Date().getUTCFullYear();
-  return Math.max(currentYear, 2026, ...stories.map((story) => Number(story.date.slice(0, 4))).filter(Number.isFinite));
+  return Math.max(...stories.map((story) => Number(story.date.slice(0, 4))).filter(Number.isFinite));
 }
 
 function yearRange(start: number, end: number) {
@@ -233,7 +232,7 @@ function extractLinks(item: MiCometStory) {
 function sideLabel(side: Side) {
   if (side === 'miko') return 'Miko';
   if (side === 'suisei') return '星街';
-  if (side === 'shared') return '共同故事';
+  if (side === 'shared') return '共同';
   return '助攻';
 }
 
@@ -245,7 +244,10 @@ function sideColor(side: Side) {
 }
 
 function StoryImageSlot({ item, large = false }: { item: MiCometStory; large?: boolean }) {
-  const image = (item as MiCometStory & { image?: string }).image;
+  const image = (item as MiCometStory & { image?: string; imageUrl?: string; thumbnail?: string; thumbnailUrl?: string }).image ||
+    (item as MiCometStory & { imageUrl?: string }).imageUrl ||
+    (item as MiCometStory & { thumbnail?: string }).thumbnail ||
+    (item as MiCometStory & { thumbnailUrl?: string }).thumbnailUrl;
   const height = large ? 230 : 120;
   return (
     <div style={{ marginTop: large ? 16 : 12, height, borderRadius: large ? 18 : 14, overflow: 'hidden', background: 'linear-gradient(135deg, rgba(255,125,183,0.12), rgba(102,169,255,0.12))', border: '1px dashed rgba(255,255,255,0.16)', display: 'grid', placeItems: 'center' }}>
@@ -254,27 +256,15 @@ function StoryImageSlot({ item, large = false }: { item: MiCometStory; large?: b
   );
 }
 
-function ChartStatCard({ label, value, accent, tint }: { label: string; value: string | number; accent: string; tint: string }) {
-  return (
-    <div style={{ borderRadius: 18, padding: '16px 18px', background: tint, border: '1px solid rgba(255,255,255,0.08)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16)' }}>
-      <div style={{ color: '#9aa2b2', fontSize: 13, fontWeight: 700 }}>{label}</div>
-      <div style={{ color: accent, fontSize: 28, fontWeight: 900, lineHeight: 1.05, marginTop: 8 }}>{value}</div>
-    </div>
-  );
-}
-
-function ChartShell({ title, subtitle, stories, cumulative = false, defaultMode = 'month' }: { title: string; subtitle: string; stories: MiCometStory[]; cumulative?: boolean; defaultMode?: ChartMode }) {
+function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' }: { title: string; stories: MiCometStory[]; cumulative?: boolean; defaultMode?: ChartMode }) {
   const [mode, setMode] = useState<ChartMode>(defaultMode);
   const summary = useMemo(() => summarizeTimeline(stories), [stories]);
   const data = useMemo(() => (cumulative ? buildCumulativePoints(mode, summary.timeline) : buildCountPoints(mode, summary.timeline)), [cumulative, mode, summary.timeline]);
 
   return (
     <section style={{ marginTop: 20, borderRadius: 26, background: 'radial-gradient(1200px 480px at 18% 0%, rgba(255,125,183,0.08), transparent 45%), radial-gradient(800px 420px at 88% 12%, rgba(102,169,255,0.08), transparent 42%), #070910', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 28px 70px rgba(0,0,0,0.42)', padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: '#edf0f8' }}>{title}</div>
-          <div style={{ color: '#9aa2b2', marginTop: 5, fontSize: 13 }}>{subtitle}</div>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: '#edf0f8' }}>{title}</div>
         <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
           {(['year', 'month'] as ChartMode[]).map((item) => (
             <button key={item} onClick={() => setMode(item)} style={{ background: mode === item ? '#1f2432' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' }}>
@@ -284,27 +274,17 @@ function ChartShell({ title, subtitle, stories, cumulative = false, defaultMode 
         </div>
       </div>
 
-      {!cumulative ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12, marginBottom: 16 }}>
-          <ChartStatCard label="Miko累計" value={summary.totals.miko} accent={COLORS.miko} tint="linear-gradient(180deg, rgba(255,125,183,0.12), rgba(255,125,183,0.04))" />
-          <ChartStatCard label="星街累計" value={summary.totals.suisei} accent={COLORS.suisei} tint="linear-gradient(180deg, rgba(102,169,255,0.12), rgba(102,169,255,0.04))" />
-          <ChartStatCard label="共同故事" value={summary.totals.shared} accent={COLORS.shared} tint="linear-gradient(180deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04))" />
-          <ChartStatCard label="助攻" value={summary.counts.others} accent="#ffffff" tint="linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))" />
-          <ChartStatCard label="總計" value={summary.totals.total} accent={COLORS.total} tint="linear-gradient(180deg, rgba(126,226,168,0.12), rgba(126,226,168,0.04))" />
-        </div>
-      ) : null}
-
       <div style={{ height: cumulative ? 420 : 380 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 22, left: 0, bottom: 38 }}>
             <CartesianGrid stroke="rgba(255,255,255,0.11)" strokeDasharray="4 6" />
             <XAxis dataKey="label" tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} interval={mode === 'year' ? 0 : 2} angle={-45} textAnchor="end" height={48} />
-            <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} label={{ value: cumulative ? '累計故事數' : '故事數量', angle: -90, position: 'insideLeft', fill: '#9aa2b2' }} />
+            <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} />
             <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
             <Legend wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }} formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>} />
             <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko累計' : 'Miko數量'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
             <Line type="monotone" dataKey="suisei" name={cumulative ? '星街累計' : '星街數量'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="shared" name={cumulative ? '共同故事累計' : '共同故事數量'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Line type="monotone" dataKey="shared" name={cumulative ? '共同累計' : '共同數量'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
             <Line type="monotone" dataKey="others" name={cumulative ? '助攻累計' : '助攻數量'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -380,13 +360,10 @@ function StatCard({ label, value, note, accent }: { label: string; value: string
   );
 }
 
-function CompactStatRow({ title, items }: { title: string; items: Array<{ label: string; value: number; color: string }> }) {
+function CompactStatRow({ items }: { items: Array<{ label: string; value: number; color: string }> }) {
   return (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 10 }}>{title}</div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 22 }}>
-        {items.map((item) => <div key={item.label} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontWeight: 800 }}><span style={{ color: '#a8afbf' }}>{item.label}</span><span style={{ color: item.color }}>{item.value}</span></div>)}
-      </div>
+    <div style={{ marginTop: 16, display: 'flex', flexWrap: 'wrap', gap: 22 }}>
+      {items.map((item) => <div key={item.label} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontWeight: 800 }}><span style={{ color: '#a8afbf' }}>{item.label}</span><span style={{ color: item.color }}>{item.value}</span></div>)}
     </div>
   );
 }
@@ -435,15 +412,11 @@ export default function Index() {
     <div style={{ minHeight: '100vh', color: '#fff', padding: '16px 12px 40px', background: 'radial-gradient(1200px 600px at 18% -8%, rgba(255,125,183,0.12), transparent 60%), radial-gradient(900px 500px at 84% 6%, rgba(102,169,255,0.10), transparent 55%), #000' }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         <section style={{ borderRadius: 30, border: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(16,18,26,0.98), rgba(10,11,16,0.98))', boxShadow: '0 30px 80px rgba(0,0,0,0.52)', padding: 28 }}>
-          <div style={{ color: '#f6d77d', fontSize: 12, fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase' }}>2019 - {summary.years[summary.years.length - 1] ?? 2026} / BLACK EDITION</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 14, alignItems: 'center' }}>
             <div style={{ flex: '1 1 280px', minWidth: 0 }}>
-              <div style={{ color: '#d5d8e3', fontSize: 14, marginBottom: 14 }}>繁中時間線 • GitHub同步</div>
               <h1 style={{ margin: 0, fontSize: 'clamp(3.4rem, 8vw, 5.8rem)', lineHeight: 0.95, letterSpacing: '0.02em', fontWeight: 900, background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>miComet<br />Compendium</h1>
-              <div style={{ color: '#a8afbf', fontSize: 16, marginTop: 14 }}>星街 × Miko | Business & Beyond</div>
-              <div style={{ marginTop: 18, maxWidth: 680, borderRadius: 18, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderLeft: '4px solid #ff8cc8', padding: '16px 18px', color: '#f2f4fa', lineHeight: 1.8 }}>黑底、粉藍高光、年 / 月雙模式折線圖。共同故事會同時計入 Miko 與星街，篩選器支援年份與月份。</div>
             </div>
-            <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 260, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
               <div><div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div><div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>個故事已收錄</div></div>
               <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>{summary.first ? `${formatDate(summary.first.date)} 起` : '—'}<br />{summary.last ? `${formatDate(summary.last.date)} 迄` : '—'}</div>
@@ -455,15 +428,15 @@ export default function Index() {
           <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>統計總覽</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
             <StatCard label="總故事數" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
-            <StatCard label="故事區間" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="年 / 月雙模式統計" accent="#ffb7de" />
+            <StatCard label="故事區間" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="年 / 月" accent="#ffb7de" />
             <StatCard label="最早紀錄" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
             <StatCard label="最新紀錄" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
           </div>
-          <CompactStatRow title="side counts" items={sideStats} />
+          <CompactStatRow items={sideStats} />
         </section>
 
-        <ChartShell title="miComet累計故事成長圖" subtitle="粉色是Miko累計，藍色是星街累計，黃色是共同故事累計。" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
-        <ChartShell title="故事數量折線圖" subtitle="共同故事會同時計入Miko與星街。" stories={MICOMET_TIMELINE} defaultMode="month" />
+        <ChartShell title="miComet累計故事成長圖" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
+        <ChartShell title="故事數量折線圖" stories={MICOMET_TIMELINE} defaultMode="month" />
 
         <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -494,8 +467,6 @@ export default function Index() {
             </section>
           ))}
         </main>
-
-        <section style={{ marginTop: 22, borderRadius: 18, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, color: '#9aa2b2', fontSize: 13, lineHeight: 1.7 }}>分析規則：同一天同一人只算一筆；共同故事同時計入Miko與星街。篩選器支援年份與月份，月份可單獨使用，也可搭配年份縮小範圍。</section>
       </div>
 
       {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
