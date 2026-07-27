@@ -49,6 +49,7 @@ function normalizeMemberNames(value: string) {
     .replace(/星街彗星|星街すいせい|星町|小水|すいちゃん|スイセイ|彗醬|彗星|\bSuisei\b|\bsuisei\b/gi, '星街')
     .replace(/櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女|\bMikochi\b/gi, 'Miko')
     .replace(/みこめっと|ミコメット|MiComet/g, 'miComet')
+    .replace(/犬山玉姬|犬山たまき|犬山|Inuyama Tamaki|\bTamaki\b/gi, '狗狗親')
     .replace(/白上フブキ|Shirakami Fubuki|\bFubuki\b/g, '白上吹雪')
     .replace(/大空スバル|Oozora Subaru|\bSubaru\b/gi, '大空昴')
     .replace(/大神ミオ|Ookami Mio|\bMio\b/gi, '大神澪')
@@ -110,7 +111,7 @@ function ensureSentence(value: string) {
 }
 
 function titleHasSubject(value: string) {
-  return /(Miko|星街|miComet|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
+  return /(Miko|星街|miComet|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|狗狗親|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
 }
 
 function subjectForSide(side: Side) {
