@@ -28,18 +28,6 @@ export interface MiCometStory {
 
 type Side = MiCometStory['side'];
 
-const specificStoryBodies: Record<string, string> = {
-  'c2-2026-096': 'Miko在一月底的直播中提到情人節miComet連動的準備狀況，談話重點放在即將與星街一起進行的企劃，而不是單純帶過一月近況。',
-  'c2-2026-097': 'Miko在直播中整理一月底前後與星街相關的行程，提到miComet接下來會出現的安排，補上當天談話的脈絡。',
-  'c2-2026-099': 'Miko與星街在一月下旬同場直播，這筆記錄作為當月兩人共同出現在直播企劃中的事件，而不是只寫成同場連動。',
-  'c2-2026-101': 'Miko與星街在一月的麥塊直播裡同場互動，重點是兩人一起參與麥塊內容並留下直播中的互動。',
-  'c2-2026-102': 'Miko在直播中談到星街相關推文，內容聚焦在兩人透過推文延伸出的互動，而不是只標成推文話題。',
-  'c2-2026-103': '星街在自己的直播中談到miComet互動，從星街視角補上她對兩人關係與當時互動的描述。',
-  'c2-2026-104': 'miComet在一月有企劃相關預告，這筆記錄補上企劃消息與兩人後續活動安排的連結。',
-  'c2-2026-105': 'Miko在新年直播中提到星街，作為年初第一批miComet相關談話，補上她在新年直播裡帶到星街的內容。',
-  'c2-2026-107': 'Miko與星街在新年直播企劃中同場出現，這筆記錄作為2026年開頭的miComet共同直播事件。',
-};
-
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.link ?? ''}`;
 }
@@ -49,7 +37,7 @@ function normalizeMemberNames(value: string) {
     .replace(/星街彗星|星街すいせい|星町|小水|すいちゃん|スイセイ|彗醬|彗星|\bSuisei\b|\bsuisei\b/gi, '星街')
     .replace(/櫻巫女|さくらみこ|みこち|咪口|美子|米子|巫女|\bMikochi\b/gi, 'Miko')
     .replace(/みこめっと|ミコメット|MiComet/g, 'miComet')
-    .replace(/犬山玉姬|犬山たまき|犬山|Inuyama Tamaki|\bTamaki\b/gi, '狗狗親')
+    .replace(/犬山玉姬|犬山たまき|犬山|Inuyama Tamaki|Inuchi|\bTamaki\b/gi, '狗狗親')
     .replace(/白上フブキ|Shirakami Fubuki|\bFubuki\b/g, '白上吹雪')
     .replace(/大空スバル|Oozora Subaru|\bSubaru\b/gi, '大空昴')
     .replace(/大神ミオ|Ookami Mio|\bMio\b/gi, '大神澪')
@@ -111,7 +99,7 @@ function ensureSentence(value: string) {
 }
 
 function titleHasSubject(value: string) {
-  return /(Miko|星街|miComet|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|狗狗親|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
+  return /(Miko|星街|miComet|INNK|白上吹雪|大空昴|大神澪|寶鐘瑪琳|天音彼方|赤井心|兔田佩克拉|湊阿庫婭|白銀諾艾爾|時乃空|蘿蔔子|阿火|尾丸波爾卡|雪花菈米|姬森璐娜|角卷綿芽|Hololive|火建|不知火建設|VILLS|VARK|EXPO)/.test(value);
 }
 
 function subjectForSide(side: Side) {
@@ -152,7 +140,7 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   const side = splitNonCollabShared(story);
   let titleZh = cleanText(story.titleZh || story.title);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
-  let ctxZh = specificStoryBodies[story.id] || cleanText(story.ctxZh || story.ctx || titleZh);
+  let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
   ctxZh = ensureSentence(ctxZh);
   return {
