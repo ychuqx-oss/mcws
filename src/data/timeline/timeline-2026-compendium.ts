@@ -69,28 +69,28 @@ c2-2026-067|26-C2-67|2026-03-26|6|shared|💛|Stream|博衣小夜璃發現miCome
 c2-2026-068|26-C2-68|2026-03-24|6|shared|💛|Stream|miComet開台商量星街新公司相關問題
 c2-2026-069|26-C2-69|2026-03-22|6|miko|🌸|Text|miComet宣布要開台回答星街新公司相關問題
 c2-2026-070|26-C2-70|2026-03-22|6|miko|🌸|Stream|Miko炫耀自己的Biji派對
-c2-2026-071|26-C2-71|2026-03-22|6|suisei|☄️|Clip|星街〈Prima Donna〉MV出現scene 35
+c2-2026-071|26-C2-71|2026-03-22|6|suisei|☄️|Clip|星街《Prima Donna》MV出現scene 35
 c2-2026-072|26-C2-72|2026-03-21|6|suisei|☄️|Stream|星街傳訊息問Miko薯條喜好
-c2-2026-073|26-C2-73|2026-03-21|6|suisei|☄️|Audio|星街在廣播中和35P父親互動
-c2-2026-074|26-C2-74|2026-03-20|6|others|⭐|Stream|鷹嶺琉依家離Miko與星街很近
-c2-2026-075|26-C2-75|2026-03-16|6|miko|🌸|Stream|Miko提到星街很會用面紙
-c2-2026-076|26-C2-76|2026-03-16|6|others|⭐|Stream|星街直播中Huggy Wuggy與Kissy Missy相遇
-c2-2026-077|26-C2-77|2026-03-14|6|miko|🌸|Stream|Miko在寶可夢Pokopia展示與星街的合照
-c2-2026-078|26-C2-78|2026-03-14|6|suisei|☄️|Stream|星街低估Miko在寶可夢Pokopia的進度
-c2-2026-079|26-C2-79|2026-03-11|6|others|⭐|Stream|夏色祭轉推星街2019年稱讚Miko可愛的推文
-c2-2026-080|26-C2-80|2026-03-10|6|miko|🌸|Text|Miko轉推Miko娃娃被星街娃娃包圍的貼文
+c2-2026-073|26-C2-73|2026-03-21|6|suisei|☄️|Audio|星街在廣播中與35P父親互動
+c2-2026-074|26-C2-74|2026-03-20|6|others|⭐|Stream|鷹嶺琉依家離Miko和星街很近
+c2-2026-075|26-C2-75|2026-03-16|6|miko|🌸|Stream|Miko提到星街很常用衛生紙
+c2-2026-076|26-C2-76|2026-03-16|6|suisei|☄️|Stream|Huggy Wuggy和Kissy Missy在星街直播中相遇
+c2-2026-077|26-C2-77|2026-03-14|6|miko|🌸|Stream|Miko展示與星街在Pokemon Pokopia中的合照
+c2-2026-078|26-C2-78|2026-03-14|6|suisei|☄️|Stream|星街低估Miko在Pokemon Pokopia中的進度
+c2-2026-079|26-C2-79|2026-03-11|6|others|⭐|Text|夏色祭轉推星街2019年稱Miko可愛的推文
+c2-2026-080|26-C2-80|2026-03-10|6|miko|🌸|Text|Miko轉推被星街娃娃包圍的Miko娃娃圖
 c2-2026-081|26-C2-81|2026-03-09|6|suisei|☄️|Stream|星街祝賀Miko生日
-c2-2026-082|26-C2-82|2026-03-08|6|suisei|☄️|Stream|星街談到HoloFes沒有miComet
+c2-2026-082|26-C2-82|2026-03-08|6|suisei|☄️|Stream|星街談HoloFes沒有miComet
 c2-2026-083|26-C2-83|2026-03-05|6|miko|🌸|Stream|Miko逆凸待
 c2-2026-084|26-C2-84|2026-03-05|6|others|⭐|News|miComet周邊
-c2-2026-085|26-C2-85|2026-03-01|6|others|⭐|Clip|另一支miComet〈Lollipop〉短片
-c2-2026-086|26-C2-86|2026-02-22|6|others|⭐|Clip|另一支miComet〈Lollipop〉短片
+c2-2026-085|26-C2-85|2026-03-01|6|others|⭐|Clip|另一支miComet Lollipop短片
+c2-2026-086|26-C2-86|2026-02-22|6|others|⭐|Clip|另一支miComet Lollipop短片
 c2-2026-087|26-C2-87|2026-02-21|6|shared|💛|Stream|miComet出現在角卷綿芽直播
 c2-2026-088|26-C2-88|2026-02-21|6|miko|🌸|Text|Miko送花籃給星街演唱會
 c2-2026-089|26-C2-89|2026-02-17|6|suisei|☄️|Text|星街拍下Miko屁股照
 c2-2026-090|26-C2-90|2026-02-17|6|miko|🌸|Text|Miko轉推miComet圖
 c2-2026-091|26-C2-91|2026-02-17|6|others|⭐|Stream|蘿蔔子見到miComet
-c2-2026-092|26-C2-92|2026-02-16|6|shared|💛|Clip|miComet〈Lollipop〉短片
+c2-2026-092|26-C2-92|2026-02-16|6|others|⭐|Clip|miComet Lollipop短片
 c2-2026-093|26-C2-93|2026-02-14|6|shared|💛|Stream|miComet情人節直播
 c2-2026-094|26-C2-94|2026-02-13|6|miko|🌸|Text|Miko宣傳miComet情人節直播
 c2-2026-095|26-C2-95|2026-02-12|6|shared|💛|Stream|miComet將舉行情人節連動
@@ -109,19 +109,13 @@ c2-2026-107|26-C2-107|2026-01-02|6|miko|🌸|Text|Miko發推miComet圖
 c2-2026-108|26-C2-108|2026-01-01|6|shared|💛|Stream|miComet五子棋對決
 `.trim();
 
-function bodyFor(title: string, type: string, side: string) {
-  if (type === 'Text') return `${title}。這天以推文、轉推或圖文方式留下miComet互動，重點是文字與圖片帶出的兩人關係。`;
-  if (type === 'Clip') return `${title}。短片或影片把當天的miComet畫面獨立呈現，補上影像中能看到的互動情境。`;
-  if (type === 'News') return `${title}。企劃、商品或公告把miComet放進官方內容，時間線保留的是兩人被放入宣傳脈絡的事件。`;
-  if (type === 'Audio') return `${title}。廣播或音訊節目從談話角度補上miComet相關交流，不只是直播畫面中的互動。`;
-  if (side === 'others') return `${title}。其他Hololive成員在直播中提到或旁觀兩人互動，讓事件多了第三方視角。`;
-  if (side === 'shared') return `${title}。兩人同場或共同參與企劃，故事重點放在實際直播、連動或活動中的互動。`;
-  return `${title}。直播中談到或發生miComet相關內容，內文補上當天對話、反應與互動脈絡。`;
+function bodyFor(title: string, date: string) {
+  return `${date.replace(/-/g, '/')}，${title}。`;
 }
 
 const data = rows.split('\n').map((row) => {
   const [id, displayId, date, phase, side, emoji, type, title] = row.split('|');
-  const ctx = bodyFor(title, type, side);
+  const ctx = bodyFor(title, date);
   return {
     id,
     displayId,
