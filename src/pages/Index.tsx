@@ -13,6 +13,7 @@ import { MICOMET_TIMELINE, type MiCometStory } from '@/data/timeline';
 
 type Side = 'miko' | 'suisei' | 'shared' | 'others';
 type ChartMode = 'year' | 'month';
+type UiLang = 'en' | 'zh';
 
 type CountPoint = {
   label: string;
@@ -29,14 +30,73 @@ const COLORS = {
   total: '#7ee2a8',
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  Clip: 'Clip',
-  Stream: 'Stream',
-  News: 'News',
-  Text: 'Text',
-  Audio: 'Audio',
-  Music: 'Music',
+const TYPE_LABELS: Record<UiLang, Record<string, string>> = {
+  en: { Clip: 'Clip', Stream: 'Stream', News: 'News', Text: 'Text', Audio: 'Audio', Music: 'Music' },
+  zh: { Clip: '剪輯', Stream: '直播', News: '綜合', Text: '文字', Audio: '音訊', Music: '音樂' },
 };
+
+const UI_LABELS = {
+  en: {
+    totalCard: 'stories collected',
+    start: 'start',
+    latest: 'latest',
+    overview: 'Overview',
+    totalStories: 'Total Stories',
+    timelineRange: 'Timeline Range',
+    yearMonth: 'Year / Month',
+    firstEntry: 'First Entry',
+    latestEntry: 'Latest Entry',
+    cumulativeChart: 'Cumulative Story Growth',
+    countChart: 'Story Count Trend',
+    year: 'Year',
+    month: 'Month',
+    all: 'All',
+    search: 'Search stories, keywords, dates...',
+    found: 'stories found',
+    empty: 'No matching stories',
+    mikoTotal: 'Miko Total',
+    suiseiTotal: 'Suisei Total',
+    sharedTotal: 'Shared Total',
+    supportTotal: 'Support Total',
+    miko: 'Miko',
+    suisei: 'Suisei',
+    shared: 'Shared',
+    support: 'Support',
+    source: 'Source',
+    toggleEnglish: 'English',
+    toggleChinese: '繁中',
+  },
+  zh: {
+    totalCard: '個故事已收錄',
+    start: '起',
+    latest: '迄',
+    overview: '統計總覽',
+    totalStories: '總故事數',
+    timelineRange: '故事區間',
+    yearMonth: '年 / 月',
+    firstEntry: '最早紀錄',
+    latestEntry: '最新紀錄',
+    cumulativeChart: 'miComet累計故事成長圖',
+    countChart: '故事數量折線圖',
+    year: '年份',
+    month: '月份',
+    all: '全部',
+    search: '搜尋故事、關鍵字、日期...',
+    found: '個故事',
+    empty: '沒有符合條件的故事',
+    mikoTotal: 'Miko累計',
+    suiseiTotal: '星街累計',
+    sharedTotal: '共同累計',
+    supportTotal: '助攻累計',
+    miko: 'Miko',
+    suisei: '星街',
+    shared: '共同',
+    support: '助攻',
+    source: '來源',
+    toggleEnglish: 'English',
+    toggleChinese: '繁中',
+  },
+} as const;
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 
@@ -229,11 +289,12 @@ function extractLinks(item: MiCometStory) {
   return { ytUrls, twUrls, otherUrls };
 }
 
-function sideLabel(side: Side) {
-  if (side === 'miko') return 'Miko';
-  if (side === 'suisei') return 'Suisei';
-  if (side === 'shared') return 'Shared';
-  return 'Support';
+function sideLabel(side: Side, lang: UiLang) {
+  const ui = UI_LABELS[lang];
+  if (side === 'miko') return ui.miko;
+  if (side === 'suisei') return ui.suisei;
+  if (side === 'shared') return ui.shared;
+  return ui.support;
 }
 
 function sideColor(side: Side) {
@@ -256,7 +317,7 @@ function StoryImageSlot({ item, large = false }: { item: MiCometStory; large?: b
   );
 }
 
-function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' }: { title: string; stories: MiCometStory[]; cumulative?: boolean; defaultMode?: ChartMode }) {
+function ChartShell({ title, stories, labels, cumulative = false, defaultMode = 'month' }: { title: string; stories: MiCometStory[]; labels: typeof UI_LABELS[UiLang]; cumulative?: boolean; defaultMode?: ChartMode }) {
   const [mode, setMode] = useState<ChartMode>(defaultMode);
   const summary = useMemo(() => summarizeTimeline(stories), [stories]);
   const data = useMemo(() => (cumulative ? buildCumulativePoints(mode, summary.timeline) : buildCountPoints(mode, summary.timeline)), [cumulative, mode, summary.timeline]);
@@ -268,7 +329,7 @@ function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' 
         <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
           {(['year', 'month'] as ChartMode[]).map((item) => (
             <button key={item} onClick={() => setMode(item)} style={{ background: mode === item ? '#1f2432' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' }}>
-              {item === 'year' ? 'Year' : 'Month'}
+              {item === 'year' ? labels.year : labels.month}
             </button>
           ))}
         </div>
@@ -282,10 +343,10 @@ function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' 
             <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} />
             <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
             <Legend wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }} formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>} />
-            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko Total' : 'Miko'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="suisei" name={cumulative ? 'Suisei Total' : 'Suisei'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="shared" name={cumulative ? 'Shared Total' : 'Shared'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
-            <Line type="monotone" dataKey="others" name={cumulative ? 'Support Total' : 'Support'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
+            <Line type="monotone" dataKey="miko" name={cumulative ? labels.mikoTotal : labels.miko} stroke={COLORS.miko} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name={cumulative ? labels.suiseiTotal : labels.suisei} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="shared" name={cumulative ? labels.sharedTotal : labels.shared} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Line type="monotone" dataKey="others" name={cumulative ? labels.supportTotal : labels.support} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -293,7 +354,7 @@ function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' 
   );
 }
 
-function LinkButtons({ item }: { item: MiCometStory }) {
+function LinkButtons({ item, labels }: { item: MiCometStory; labels: typeof UI_LABELS[UiLang] }) {
   const { ytUrls, twUrls, otherUrls } = extractLinks(item);
   if (!ytUrls.length && !twUrls.length && !otherUrls.length) return null;
   const btnStyle = (color: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 999, border: `1px solid ${color}44`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer', textDecoration: 'none', letterSpacing: '0.04em' });
@@ -301,18 +362,18 @@ function LinkButtons({ item }: { item: MiCometStory }) {
     <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {ytUrls.map((url, i) => <a key={`yt${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#ff4444')} onClick={(e) => e.stopPropagation()}>▶ YouTube{ytUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
       {twUrls.map((url, i) => <a key={`tw${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#1d9bf0')} onClick={(e) => e.stopPropagation()}>𝕏 Twitter{twUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
-      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ Source{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
+      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ {labels.source}{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
     </div>
   );
 }
 
-function StoryCard({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCometStory) => void }) {
+function StoryCard({ item, lang, labels, onOpen }: { item: MiCometStory; lang: UiLang; labels: typeof UI_LABELS[UiLang]; onOpen: (item: MiCometStory) => void }) {
   const { ytUrls, twUrls, otherUrls } = extractLinks(item);
   return (
     <article onClick={() => onOpen(item)} style={{ borderRadius: 16, padding: 16, background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 28px rgba(0,0,0,0.28)', cursor: 'pointer' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
         <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
-        <div style={{ color: sideColor(item.side), fontSize: 12, fontWeight: 700 }}>{sideLabel(item.side)}</div>
+        <div style={{ color: sideColor(item.side), fontSize: 12, fontWeight: 700 }}>{sideLabel(item.side, lang)}</div>
       </div>
       <StoryImageSlot item={item} />
       <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>{storyTitle(item)}</div>
@@ -324,14 +385,14 @@ function StoryCard({ item, onOpen }: { item: MiCometStory; onOpen: (item: MiCome
           {ytUrls.length > 0 && <span style={{ color: '#ff4444', fontSize: 11 }}>▶</span>}
           {twUrls.length > 0 && <span style={{ color: '#1d9bf0', fontSize: 11 }}>𝕏</span>}
           {otherUrls.length > 0 && <span style={{ color: '#cfd4de', fontSize: 11 }}>↗</span>}
-          <div style={{ color: '#cfd4de', fontSize: 12 }}>{TYPE_LABELS[item.type] ?? item.type}</div>
+          <div style={{ color: '#cfd4de', fontSize: 12 }}>{TYPE_LABELS[lang][item.type] ?? item.type}</div>
         </div>
       </div>
     </article>
   );
 }
 
-function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
+function Modal({ item, labels, onClose }: { item: MiCometStory; labels: typeof UI_LABELS[UiLang]; onClose: () => void }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)', display: 'grid', placeItems: 'center', padding: 16, zIndex: 40 }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(720px, 100%)', borderRadius: 20, background: '#111420', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)', padding: 20 }}>
@@ -344,7 +405,7 @@ function Modal({ item, onClose }: { item: MiCometStory; onClose: () => void }) {
         </div>
         <StoryImageSlot item={item} large />
         <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{storyContext(item)}</div>
-        <LinkButtons item={item} />
+        <LinkButtons item={item} labels={labels} />
       </div>
     </div>
   );
@@ -368,11 +429,25 @@ function CompactStatRow({ items }: { items: Array<{ label: string; value: number
   );
 }
 
+function LangToggle({ lang, onChange }: { lang: UiLang; onChange: (lang: UiLang) => void }) {
+  return (
+    <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
+      {(['en', 'zh'] as UiLang[]).map((item) => (
+        <button key={item} onClick={() => onChange(item)} style={{ background: lang === item ? '#1f2432' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 800, cursor: 'pointer' }}>
+          {item === 'en' ? 'English' : '繁中'}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function Index() {
   const [search, setSearch] = useState('');
   const [yearFilter, setYearFilter] = useState(0);
   const [monthFilter, setMonthFilter] = useState(0);
+  const [uiLang, setUiLang] = useState<UiLang>('en');
   const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
+  const ui = UI_LABELS[uiLang];
 
   const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
   const years = useMemo(() => summary.years, [summary.years]);
@@ -400,10 +475,10 @@ export default function Index() {
   }, []), [filtered]);
 
   const sideStats = [
-    { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
-    { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
-    { label: 'Shared', value: summary.counts.shared, color: COLORS.shared },
-    { label: 'Support', value: summary.counts.others, color: '#ffffff' },
+    { label: ui.miko, value: summary.counts.miko, color: COLORS.miko },
+    { label: ui.suisei, value: summary.counts.suisei, color: COLORS.suisei },
+    { label: ui.shared, value: summary.counts.shared, color: COLORS.shared },
+    { label: ui.support, value: summary.counts.others, color: '#ffffff' },
   ];
 
   const filterButtonStyle = (active: boolean): React.CSSProperties => ({ padding: '10px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: active ? '#232838' : '#0d0f15', color: '#fff', cursor: 'pointer' });
@@ -412,64 +487,65 @@ export default function Index() {
     <div style={{ minHeight: '100vh', color: '#fff', padding: '16px 12px 40px', background: 'radial-gradient(1200px 600px at 18% -8%, rgba(255,125,183,0.12), transparent 60%), radial-gradient(900px 500px at 84% 6%, rgba(102,169,255,0.10), transparent 55%), #000' }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         <section style={{ borderRadius: 30, border: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(180deg, rgba(16,18,26,0.98), rgba(10,11,16,0.98))', boxShadow: '0 30px 80px rgba(0,0,0,0.52)', padding: 28 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 18 }}><LangToggle lang={uiLang} onChange={setUiLang} /></div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 14, alignItems: 'center' }}>
             <div style={{ flex: '1 1 280px', minWidth: 0 }}>
               <h1 style={{ margin: 0, fontSize: 'clamp(3.4rem, 8vw, 5.8rem)', lineHeight: 0.95, letterSpacing: '0.02em', fontWeight: 900, background: 'linear-gradient(90deg, #ff9ccf 0%, #e6b7ff 52%, #9ed6ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>miComet<br />Compendium</h1>
             </div>
             <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
-              <div><div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div><div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>stories collected</div></div>
-              <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>{summary.first ? `${formatDate(summary.first.date)} start` : '—'}<br />{summary.last ? `${formatDate(summary.last.date)} latest` : '—'}</div>
+              <div><div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div><div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>{ui.totalCard}</div></div>
+              <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>{summary.first ? `${formatDate(summary.first.date)} ${ui.start}` : '—'}<br />{summary.last ? `${formatDate(summary.last.date)} ${ui.latest}` : '—'}</div>
             </div>
           </div>
         </section>
 
         <section style={{ marginTop: 18, borderRadius: 24, background: '#11141c', border: '1px solid rgba(255,255,255,0.06)', padding: 18, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
-          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>Overview</div>
+          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>{ui.overview}</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-            <StatCard label="Total Stories" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
-            <StatCard label="Timeline Range" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="Year / Month" accent="#ffb7de" />
-            <StatCard label="First Entry" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
-            <StatCard label="Latest Entry" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
+            <StatCard label={ui.totalStories} value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
+            <StatCard label={ui.timelineRange} value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note={ui.yearMonth} accent="#ffb7de" />
+            <StatCard label={ui.firstEntry} value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
+            <StatCard label={ui.latestEntry} value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
           </div>
           <CompactStatRow items={sideStats} />
         </section>
 
-        <ChartShell title="Cumulative Story Growth" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
-        <ChartShell title="Story Count Trend" stories={MICOMET_TIMELINE} defaultMode="month" />
+        <ChartShell title={ui.cumulativeChart} stories={MICOMET_TIMELINE} labels={ui} cumulative defaultMode="year" />
+        <ChartShell title={ui.countChart} stories={MICOMET_TIMELINE} labels={ui} defaultMode="month" />
 
         <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 320px', display: 'flex', alignItems: 'center', gap: 10, background: '#0d0f15', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '12px 14px' }}><span style={{ color: '#8f96a8' }}>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search stories, keywords, dates..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }} /></div>
+            <div style={{ flex: '1 1 320px', display: 'flex', alignItems: 'center', gap: 10, background: '#0d0f15', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '12px 14px' }}><span style={{ color: '#8f96a8' }}>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={ui.search} style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }} /></div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>Year:</span>
-              <button onClick={() => { setYearFilter(0); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === 0)}>All</button>
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>{ui.year}:</span>
+              <button onClick={() => { setYearFilter(0); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === 0)}>{ui.all}</button>
               {years.map((year) => <button key={year} onClick={() => { setYearFilter(yearFilter === year ? 0 : year); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === year)}>{year}</button>)}
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>Month:</span>
-              <button onClick={() => setMonthFilter(0)} style={filterButtonStyle(monthFilter === 0)}>All</button>
-              {MONTHS.map((month) => <button key={month} onClick={() => setMonthFilter(monthFilter === month ? 0 : month)} style={filterButtonStyle(monthFilter === month)}>{month}</button>)}
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>{ui.month}:</span>
+              <button onClick={() => setMonthFilter(0)} style={filterButtonStyle(monthFilter === 0)}>{ui.all}</button>
+              {MONTHS.map((month) => <button key={month} onClick={() => setMonthFilter(monthFilter === month ? 0 : month)} style={filterButtonStyle(monthFilter === month)}>{uiLang === 'zh' ? `${month}月` : month}</button>)}
             </div>
           </div>
         </section>
 
-        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>{filtered.length} stories found</section>
+        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>{uiLang === 'zh' ? `找到 ${filtered.length} ${ui.found}` : `${filtered.length} ${ui.found}`}</section>
 
         <main style={{ marginTop: 16, display: 'grid', gap: 18 }}>
-          {groups.length === 0 ? <div style={{ padding: 36, borderRadius: 18, background: '#151823', color: '#9aa2b2', textAlign: 'center' }}>No matching stories</div> : groups.map((group) => (
+          {groups.length === 0 ? <div style={{ padding: 36, borderRadius: 18, background: '#151823', color: '#9aa2b2', textAlign: 'center' }}>{ui.empty}</div> : groups.map((group) => (
             <section key={group.date} style={{ borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
                 <div><div style={{ color: '#8f96a8', fontSize: 12 }}>{group.date.slice(0, 7)}</div><h2 style={{ margin: '4px 0 0', fontSize: 20 }}>{formatDate(group.date)}</h2></div>
                 <div style={{ color: '#9aa2b2', fontSize: 13 }}>Phase {group.items[0]?.phase ?? '-'}</div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>{group.items.map((item) => <StoryCard key={item.id} item={item} onOpen={setOpenItem} />)}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>{group.items.map((item) => <StoryCard key={item.id} item={item} lang={uiLang} labels={ui} onOpen={setOpenItem} />)}</div>
             </section>
           ))}
         </main>
       </div>
 
-      {openItem ? <Modal item={openItem} onClose={() => setOpenItem(null)} /> : null}
+      {openItem ? <Modal item={openItem} labels={ui} onClose={() => setOpenItem(null)} /> : null}
     </div>
   );
 }
