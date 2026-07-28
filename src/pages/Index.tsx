@@ -14,6 +14,7 @@ import { MICOMET_TIMELINE, type MiCometStory } from '@/data/timeline';
 type Side = 'miko' | 'suisei' | 'shared' | 'others';
 type ChartMode = 'year' | 'month';
 type UiLang = 'en' | 'zh';
+type LocalStory = MiCometStory & { titleEn?: string; ctxEn?: string; imageUrl?: string; thumbnail?: string; thumbnailUrl?: string };
 
 type CountPoint = {
   label: string;
@@ -63,8 +64,6 @@ const UI_LABELS = {
     shared: 'Shared',
     support: 'Support',
     source: 'Source',
-    toggleEnglish: 'English',
-    toggleChinese: '繁中',
   },
   zh: {
     totalCard: '個故事已收錄',
@@ -93,8 +92,6 @@ const UI_LABELS = {
     shared: '共同',
     support: '助攻',
     source: '來源',
-    toggleEnglish: 'English',
-    toggleChinese: '繁中',
   },
 } as const;
 
@@ -145,15 +142,18 @@ function cleanText(value = '') {
     .trim();
 }
 
-function storyTitle(story: MiCometStory) {
-  const title = cleanText(story.titleZh || story.title);
+function storyTitle(story: LocalStory, lang: UiLang) {
+  const raw = lang === 'en' ? story.titleEn || story.title : story.titleZh || story.title;
+  const title = cleanText(raw);
   return title || 'miComet Story';
 }
 
-function storyContext(story: MiCometStory) {
-  const ctx = cleanText(story.ctxZh || story.ctx);
-  if (ctx) return ctx.endsWith('。') ? ctx : `${ctx}。`;
-  return `${storyTitle(story)}。`;
+function storyContext(story: LocalStory, lang: UiLang) {
+  const raw = lang === 'en' ? story.ctxEn || story.ctx : story.ctxZh || story.ctx;
+  const ctx = cleanText(raw);
+  if (ctx) return ctx.endsWith('。') || ctx.endsWith('.') ? ctx : lang === 'en' ? `${ctx}.` : `${ctx}。`;
+  const title = storyTitle(story, lang);
+  return lang === 'en' ? `${title}.` : `${title}。`;
 }
 
 function storySort(a: MiCometStory, b: MiCometStory) {
@@ -204,8 +204,8 @@ function summarizeTimeline(stories: MiCometStory[]) {
       shared: counts.shared,
       total: timeline.length,
     },
-    first: timeline[0],
-    last: timeline[timeline.length - 1],
+    first: timeline[0] as LocalStory | undefined,
+    last: timeline[timeline.length - 1] as LocalStory | undefined,
     years,
   };
 }
@@ -251,9 +251,7 @@ function buildCountPoints(mode: ChartMode, stories: MiCometStory[]) {
   const yearEnd = timelineYearEnd(timeline);
 
   if (mode === 'year') {
-    for (let year = yearStart; year <= yearEnd; year += 1) {
-      points.push({ label: String(year), ...sumYear(monthly, year) });
-    }
+    for (let year = yearStart; year <= yearEnd; year += 1) points.push({ label: String(year), ...sumYear(monthly, year) });
     return points;
   }
 
@@ -281,8 +279,8 @@ function buildCumulativePoints(mode: ChartMode, stories: MiCometStory[]) {
   });
 }
 
-function extractLinks(item: MiCometStory) {
-  const text = `${item.link ?? ''} ${item.ctx ?? ''} ${item.ctxZh ?? ''}`;
+function extractLinks(item: LocalStory) {
+  const text = `${item.link ?? ''} ${item.ctx ?? ''} ${item.ctxZh ?? ''} ${item.ctxEn ?? ''}`;
   const ytUrls = Array.from(new Set(text.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/\S+|youtu\.be\/\S+)/g) || [])).slice(0, 4);
   const twUrls = Array.from(new Set(text.match(/https?:\/\/(?:twitter\.com|x\.com)\/\S+/g) || [])).slice(0, 4);
   const otherUrls = Array.from(new Set(text.match(/https?:\/\/\S+/g) || [])).filter((url) => !ytUrls.includes(url) && !twUrls.includes(url)).slice(0, 4);
@@ -304,15 +302,12 @@ function sideColor(side: Side) {
   return '#ffffff';
 }
 
-function StoryImageSlot({ item, large = false }: { item: MiCometStory; large?: boolean }) {
-  const image = (item as MiCometStory & { image?: string; imageUrl?: string; thumbnail?: string; thumbnailUrl?: string }).image ||
-    (item as MiCometStory & { imageUrl?: string }).imageUrl ||
-    (item as MiCometStory & { thumbnail?: string }).thumbnail ||
-    (item as MiCometStory & { thumbnailUrl?: string }).thumbnailUrl;
+function StoryImageSlot({ item, lang, large = false }: { item: LocalStory; lang: UiLang; large?: boolean }) {
+  const image = item.image || item.imageUrl || item.thumbnail || item.thumbnailUrl;
   const height = large ? 230 : 120;
   return (
     <div style={{ marginTop: large ? 16 : 12, height, borderRadius: large ? 18 : 14, overflow: 'hidden', background: 'linear-gradient(135deg, rgba(255,125,183,0.12), rgba(102,169,255,0.12))', border: '1px dashed rgba(255,255,255,0.16)', display: 'grid', placeItems: 'center' }}>
-      {image ? <img src={image} alt={storyTitle(item)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ color: '#7f8594', fontSize: large ? 13 : 11, letterSpacing: '0.12em', fontWeight: 800 }}>IMAGE SLOT</div>}
+      {image ? <img src={image} alt={storyTitle(item, lang)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ color: '#7f8594', fontSize: large ? 13 : 11, letterSpacing: '0.12em', fontWeight: 800 }}>IMAGE SLOT</div>}
     </div>
   );
 }
@@ -334,7 +329,6 @@ function ChartShell({ title, stories, labels, cumulative = false, defaultMode = 
           ))}
         </div>
       </div>
-
       <div style={{ height: cumulative ? 420 : 380 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 12, right: 22, left: 0, bottom: 38 }}>
@@ -354,7 +348,7 @@ function ChartShell({ title, stories, labels, cumulative = false, defaultMode = 
   );
 }
 
-function LinkButtons({ item, labels }: { item: MiCometStory; labels: typeof UI_LABELS[UiLang] }) {
+function LinkButtons({ item, labels }: { item: LocalStory; labels: typeof UI_LABELS[UiLang] }) {
   const { ytUrls, twUrls, otherUrls } = extractLinks(item);
   if (!ytUrls.length && !twUrls.length && !otherUrls.length) return null;
   const btnStyle = (color: string): React.CSSProperties => ({ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 999, border: `1px solid ${color}44`, background: `${color}18`, color, fontSize: 12, fontWeight: 700, cursor: 'pointer', textDecoration: 'none', letterSpacing: '0.04em' });
@@ -367,7 +361,7 @@ function LinkButtons({ item, labels }: { item: MiCometStory; labels: typeof UI_L
   );
 }
 
-function StoryCard({ item, lang, labels, onOpen }: { item: MiCometStory; lang: UiLang; labels: typeof UI_LABELS[UiLang]; onOpen: (item: MiCometStory) => void }) {
+function StoryCard({ item, lang, labels, onOpen }: { item: LocalStory; lang: UiLang; labels: typeof UI_LABELS[UiLang]; onOpen: (item: LocalStory) => void }) {
   const { ytUrls, twUrls, otherUrls } = extractLinks(item);
   return (
     <article onClick={() => onOpen(item)} style={{ borderRadius: 16, padding: 16, background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 28px rgba(0,0,0,0.28)', cursor: 'pointer' }}>
@@ -375,9 +369,9 @@ function StoryCard({ item, lang, labels, onOpen }: { item: MiCometStory; lang: U
         <div style={{ color: '#c4c9d6', fontSize: 12 }}>{formatDate(item.date)}</div>
         <div style={{ color: sideColor(item.side), fontSize: 12, fontWeight: 700 }}>{sideLabel(item.side, lang)}</div>
       </div>
-      <StoryImageSlot item={item} />
-      <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>{storyTitle(item)}</div>
-      <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{storyContext(item)}</div>
+      <StoryImageSlot item={item} lang={lang} />
+      <div style={{ marginTop: 10, fontSize: 15, fontWeight: 800, lineHeight: 1.45, color: '#f6f7fb' }}>{storyTitle(item, lang)}</div>
+      <div style={{ marginTop: 8, color: '#a7adbb', fontSize: 13, lineHeight: 1.55 }}>{storyContext(item, lang)}</div>
       <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
         <div style={{ color: '#7f8594', fontSize: 12 }}>Phase {item.phase}</div>
         <div style={{ color: '#5c6070', fontSize: 11, fontFamily: 'monospace', letterSpacing: '0.04em' }}>#{item.displayId ?? item.id}</div>
@@ -392,19 +386,19 @@ function StoryCard({ item, lang, labels, onOpen }: { item: MiCometStory; lang: U
   );
 }
 
-function Modal({ item, labels, onClose }: { item: MiCometStory; labels: typeof UI_LABELS[UiLang]; onClose: () => void }) {
+function Modal({ item, lang, labels, onClose }: { item: LocalStory; lang: UiLang; labels: typeof UI_LABELS[UiLang]; onClose: () => void }) {
   return (
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.72)', display: 'grid', placeItems: 'center', padding: 16, zIndex: 40 }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: 'min(720px, 100%)', borderRadius: 20, background: '#111420', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 24px 60px rgba(0,0,0,0.5)', padding: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'start' }}>
           <div>
             <div style={{ color: '#8f96a8', fontSize: 12 }}>{formatDate(item.date)} <span style={{ color: '#4a5060', marginLeft: 6, fontFamily: 'monospace' }}>#{item.displayId ?? item.id}</span></div>
-            <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>{storyTitle(item)}</h3>
+            <h3 style={{ margin: '8px 0 0', fontSize: 22, lineHeight: 1.3 }}>{storyTitle(item, lang)}</h3>
           </div>
           <button onClick={onClose} style={{ background: '#0d0f15', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 999, width: 36, height: 36, fontSize: 18, cursor: 'pointer' }}>×</button>
         </div>
-        <StoryImageSlot item={item} large />
-        <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{storyContext(item)}</div>
+        <StoryImageSlot item={item} lang={lang} large />
+        <div style={{ marginTop: 14, color: '#cfd4de', lineHeight: 1.7 }}>{storyContext(item, lang)}</div>
         <LinkButtons item={item} labels={labels} />
       </div>
     </div>
@@ -446,7 +440,7 @@ export default function Index() {
   const [yearFilter, setYearFilter] = useState(0);
   const [monthFilter, setMonthFilter] = useState(0);
   const [uiLang, setUiLang] = useState<UiLang>('en');
-  const [openItem, setOpenItem] = useState<MiCometStory | null>(null);
+  const [openItem, setOpenItem] = useState<LocalStory | null>(null);
   const ui = UI_LABELS[uiLang];
 
   const summary = useMemo(() => summarizeTimeline(MICOMET_TIMELINE), []);
@@ -456,18 +450,19 @@ export default function Index() {
     const q = search.trim().toLowerCase();
     return summary.timeline
       .filter((story) => {
-        if (yearFilter !== 0 && Number(story.date.slice(0, 4)) !== yearFilter) return false;
-        if (monthFilter !== 0 && Number(story.date.slice(5, 7)) !== monthFilter) return false;
+        const item = story as LocalStory;
+        if (yearFilter !== 0 && Number(item.date.slice(0, 4)) !== yearFilter) return false;
+        if (monthFilter !== 0 && Number(item.date.slice(5, 7)) !== monthFilter) return false;
         if (!q) return true;
-        return [story.date, storyTitle(story), storyContext(story), story.title, story.titleZh ?? '', story.ctx, story.ctxZh ?? '']
+        return [item.date, item.title, item.titleZh ?? '', item.titleEn ?? '', item.ctx, item.ctxZh ?? '', item.ctxEn ?? '', storyTitle(item, uiLang), storyContext(item, uiLang)]
           .join(' ')
           .toLowerCase()
           .includes(q);
       })
-      .sort(storySort);
-  }, [search, summary.timeline, yearFilter, monthFilter]);
+      .sort(storySort) as LocalStory[];
+  }, [search, summary.timeline, yearFilter, monthFilter, uiLang]);
 
-  const groups = useMemo(() => filtered.reduce<Array<{ date: string; items: MiCometStory[] }>>((acc, story) => {
+  const groups = useMemo(() => filtered.reduce<Array<{ date: string; items: LocalStory[] }>>((acc, story) => {
     const last = acc[acc.length - 1];
     if (last && last.date === story.date) last.items.push(story);
     else acc.push({ date: story.date, items: [story] });
@@ -505,8 +500,8 @@ export default function Index() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
             <StatCard label={ui.totalStories} value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
             <StatCard label={ui.timelineRange} value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note={ui.yearMonth} accent="#ffb7de" />
-            <StatCard label={ui.firstEntry} value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
-            <StatCard label={ui.latestEntry} value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
+            <StatCard label={ui.firstEntry} value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first, uiLang) : '—'} accent="#9ed6ff" />
+            <StatCard label={ui.latestEntry} value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last, uiLang) : '—'} accent="#c58cff" />
           </div>
           <CompactStatRow items={sideStats} />
         </section>
@@ -545,7 +540,7 @@ export default function Index() {
         </main>
       </div>
 
-      {openItem ? <Modal item={openItem} labels={ui} onClose={() => setOpenItem(null)} /> : null}
+      {openItem ? <Modal item={openItem} lang={uiLang} labels={ui} onClose={() => setOpenItem(null)} /> : null}
     </div>
   );
 }
