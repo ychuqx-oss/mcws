@@ -30,19 +30,19 @@ const COLORS = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  Clip: '剪輯',
-  Stream: '直播',
-  News: '綜合',
-  Text: '文字',
-  Audio: '音訊',
-  Music: '音樂',
+  Clip: 'Clip',
+  Stream: 'Stream',
+  News: 'News',
+  Text: 'Text',
+  Audio: 'Audio',
+  Music: 'Music',
 };
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 
 function formatDate(dateISO: string) {
   const date = new Date(`${dateISO}T00:00:00Z`);
-  return `${date.getUTCFullYear()}年${date.getUTCMonth() + 1}月${date.getUTCDate()}日`;
+  return `${date.getUTCFullYear()}/${String(date.getUTCMonth() + 1).padStart(2, '0')}/${String(date.getUTCDate()).padStart(2, '0')}`;
 }
 
 function monthKey(dateISO: string) {
@@ -87,7 +87,7 @@ function cleanText(value = '') {
 
 function storyTitle(story: MiCometStory) {
   const title = cleanText(story.titleZh || story.title);
-  return title || 'miComet故事';
+  return title || 'miComet Story';
 }
 
 function storyContext(story: MiCometStory) {
@@ -231,9 +231,9 @@ function extractLinks(item: MiCometStory) {
 
 function sideLabel(side: Side) {
   if (side === 'miko') return 'Miko';
-  if (side === 'suisei') return '星街';
-  if (side === 'shared') return '共同';
-  return '助攻';
+  if (side === 'suisei') return 'Suisei';
+  if (side === 'shared') return 'Shared';
+  return 'Support';
 }
 
 function sideColor(side: Side) {
@@ -268,7 +268,7 @@ function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' 
         <div style={{ display: 'flex', gap: 8, background: '#0d0f15', borderRadius: 14, padding: 6, border: '1px solid rgba(255,255,255,0.08)' }}>
           {(['year', 'month'] as ChartMode[]).map((item) => (
             <button key={item} onClick={() => setMode(item)} style={{ background: mode === item ? '#1f2432' : 'transparent', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 14px', fontWeight: 700, cursor: 'pointer' }}>
-              {item === 'year' ? '年' : '月'}
+              {item === 'year' ? 'Year' : 'Month'}
             </button>
           ))}
         </div>
@@ -282,10 +282,10 @@ function ChartShell({ title, stories, cumulative = false, defaultMode = 'month' 
             <YAxis tick={{ fill: '#8f96a8', fontSize: 12 }} axisLine={{ stroke: 'rgba(255,255,255,0.14)' }} tickLine={{ stroke: 'rgba(255,255,255,0.14)' }} allowDecimals={false} />
             <Tooltip contentStyle={{ background: '#0a0c11', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12 }} labelStyle={{ color: '#fff' }} />
             <Legend wrapperStyle={{ paddingTop: 8, color: '#cfd4de', fontSize: 13 }} formatter={(value) => <span style={{ color: '#cfd4de' }}>{value}</span>} />
-            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko累計' : 'Miko數量'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="suisei" name={cumulative ? '星街累計' : '星街數量'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
-            <Line type="monotone" dataKey="shared" name={cumulative ? '共同累計' : '共同數量'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
-            <Line type="monotone" dataKey="others" name={cumulative ? '助攻累計' : '助攻數量'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
+            <Line type="monotone" dataKey="miko" name={cumulative ? 'Miko Total' : 'Miko'} stroke={COLORS.miko} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="suisei" name={cumulative ? 'Suisei Total' : 'Suisei'} stroke={COLORS.suisei} strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="shared" name={cumulative ? 'Shared Total' : 'Shared'} stroke={COLORS.shared} strokeWidth={2.5} strokeDasharray="6 6" dot={false} />
+            <Line type="monotone" dataKey="others" name={cumulative ? 'Support Total' : 'Support'} stroke="#ffffff" strokeWidth={2} strokeDasharray="3 3" dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -301,7 +301,7 @@ function LinkButtons({ item }: { item: MiCometStory }) {
     <div style={{ marginTop: 18, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
       {ytUrls.map((url, i) => <a key={`yt${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#ff4444')} onClick={(e) => e.stopPropagation()}>▶ YouTube{ytUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
       {twUrls.map((url, i) => <a key={`tw${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#1d9bf0')} onClick={(e) => e.stopPropagation()}>𝕏 Twitter{twUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
-      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ 來源{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
+      {otherUrls.map((url, i) => <a key={`link${i}`} href={url} target="_blank" rel="noopener noreferrer" style={btnStyle('#cfd4de')} onClick={(e) => e.stopPropagation()}>↗ Source{otherUrls.length > 1 ? ` ${i + 1}` : ''}</a>)}
     </div>
   );
 }
@@ -401,9 +401,9 @@ export default function Index() {
 
   const sideStats = [
     { label: 'Miko', value: summary.counts.miko, color: COLORS.miko },
-    { label: '星街', value: summary.counts.suisei, color: COLORS.suisei },
-    { label: '共同', value: summary.counts.shared, color: COLORS.shared },
-    { label: '助攻', value: summary.counts.others, color: '#ffffff' },
+    { label: 'Suisei', value: summary.counts.suisei, color: COLORS.suisei },
+    { label: 'Shared', value: summary.counts.shared, color: COLORS.shared },
+    { label: 'Support', value: summary.counts.others, color: '#ffffff' },
   ];
 
   const filterButtonStyle = (active: boolean): React.CSSProperties => ({ padding: '10px 14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: active ? '#232838' : '#0d0f15', color: '#fff', cursor: 'pointer' });
@@ -418,46 +418,46 @@ export default function Index() {
             </div>
             <div style={{ flex: '1 1 260px', minWidth: 0, borderRadius: 26, background: 'linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 18px 42px rgba(0,0,0,0.26)', padding: 24, minHeight: 220, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ color: '#a8afbf', fontSize: 12, letterSpacing: '0.16em', fontWeight: 900 }}>MI COMET</div>
-              <div><div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div><div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>個故事已收錄</div></div>
-              <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>{summary.first ? `${formatDate(summary.first.date)} 起` : '—'}<br />{summary.last ? `${formatDate(summary.last.date)} 迄` : '—'}</div>
+              <div><div style={{ fontSize: 'clamp(3.3rem, 8vw, 4.8rem)', lineHeight: 1, fontWeight: 900, color: '#f7f8fb' }}>{summary.totals.total}</div><div style={{ color: '#8f96a8', marginTop: 8, fontSize: 16 }}>stories collected</div></div>
+              <div style={{ color: '#c9cedb', fontSize: 14, lineHeight: 1.8 }}>{summary.first ? `${formatDate(summary.first.date)} start` : '—'}<br />{summary.last ? `${formatDate(summary.last.date)} latest` : '—'}</div>
             </div>
           </div>
         </section>
 
         <section style={{ marginTop: 18, borderRadius: 24, background: '#11141c', border: '1px solid rgba(255,255,255,0.06)', padding: 18, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
-          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>統計總覽</div>
+          <div style={{ color: '#8f96a8', fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 12 }}>Overview</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-            <StatCard label="總故事數" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
-            <StatCard label="故事區間" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="年 / 月" accent="#ffb7de" />
-            <StatCard label="最早紀錄" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
-            <StatCard label="最新紀錄" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
+            <StatCard label="Total Stories" value={summary.totals.total} note={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} accent="#f7f8fb" />
+            <StatCard label="Timeline Range" value={`${summary.years[0] ?? 2019} - ${summary.years[summary.years.length - 1] ?? 2026}`} note="Year / Month" accent="#ffb7de" />
+            <StatCard label="First Entry" value={summary.first ? formatDate(summary.first.date) : '—'} note={summary.first ? storyTitle(summary.first) : '—'} accent="#9ed6ff" />
+            <StatCard label="Latest Entry" value={summary.last ? formatDate(summary.last.date) : '—'} note={summary.last ? storyTitle(summary.last) : '—'} accent="#c58cff" />
           </div>
           <CompactStatRow items={sideStats} />
         </section>
 
-        <ChartShell title="miComet累計故事成長圖" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
-        <ChartShell title="故事數量折線圖" stories={MICOMET_TIMELINE} defaultMode="month" />
+        <ChartShell title="Cumulative Story Growth" stories={MICOMET_TIMELINE} cumulative defaultMode="year" />
+        <ChartShell title="Story Count Trend" stories={MICOMET_TIMELINE} defaultMode="month" />
 
         <section style={{ marginTop: 18, borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16, boxShadow: '0 18px 42px rgba(0,0,0,0.24)' }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 320px', display: 'flex', alignItems: 'center', gap: 10, background: '#0d0f15', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '12px 14px' }}><span style={{ color: '#8f96a8' }}>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜尋故事、關鍵字、日期..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }} /></div>
+            <div style={{ flex: '1 1 320px', display: 'flex', alignItems: 'center', gap: 10, background: '#0d0f15', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '12px 14px' }}><span style={{ color: '#8f96a8' }}>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search stories, keywords, dates..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }} /></div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>年份：</span>
-              <button onClick={() => { setYearFilter(0); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === 0)}>全部</button>
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>Year:</span>
+              <button onClick={() => { setYearFilter(0); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === 0)}>All</button>
               {years.map((year) => <button key={year} onClick={() => { setYearFilter(yearFilter === year ? 0 : year); setMonthFilter(0); }} style={filterButtonStyle(yearFilter === year)}>{year}</button>)}
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: '#9aa2b2', fontSize: 13 }}>月份：</span>
-              <button onClick={() => setMonthFilter(0)} style={filterButtonStyle(monthFilter === 0)}>全部</button>
-              {MONTHS.map((month) => <button key={month} onClick={() => setMonthFilter(monthFilter === month ? 0 : month)} style={filterButtonStyle(monthFilter === month)}>{month}月</button>)}
+              <span style={{ color: '#9aa2b2', fontSize: 13 }}>Month:</span>
+              <button onClick={() => setMonthFilter(0)} style={filterButtonStyle(monthFilter === 0)}>All</button>
+              {MONTHS.map((month) => <button key={month} onClick={() => setMonthFilter(monthFilter === month ? 0 : month)} style={filterButtonStyle(monthFilter === month)}>{month}</button>)}
             </div>
           </div>
         </section>
 
-        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>找到 {filtered.length} 個故事</section>
+        <section style={{ marginTop: 18, color: '#b5bbca', fontSize: 13 }}>{filtered.length} stories found</section>
 
         <main style={{ marginTop: 16, display: 'grid', gap: 18 }}>
-          {groups.length === 0 ? <div style={{ padding: 36, borderRadius: 18, background: '#151823', color: '#9aa2b2', textAlign: 'center' }}>沒有符合條件的故事</div> : groups.map((group) => (
+          {groups.length === 0 ? <div style={{ padding: 36, borderRadius: 18, background: '#151823', color: '#9aa2b2', textAlign: 'center' }}>No matching stories</div> : groups.map((group) => (
             <section key={group.date} style={{ borderRadius: 20, background: '#151823', border: '1px solid rgba(255,255,255,0.06)', padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
                 <div><div style={{ color: '#8f96a8', fontSize: 12 }}>{group.date.slice(0, 7)}</div><h2 style={{ margin: '4px 0 0', fontSize: 20 }}>{formatDate(group.date)}</h2></div>
