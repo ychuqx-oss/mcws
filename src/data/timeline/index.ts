@@ -130,6 +130,32 @@ function subjectForSide(side: Side) {
   return '其他Hololive成員';
 }
 
+function englishSubjectForSide(side: Side) {
+  if (side === 'miko') return 'Miko';
+  if (side === 'suisei') return 'Suisei';
+  if (side === 'shared') return 'miComet';
+  return 'Hololive members';
+}
+
+function is2024CleanStory(story: MiCometStory) {
+  return /^c2024-/.test(story.id);
+}
+
+function englishFallbackTitle(story: MiCometStory) {
+  if (!is2024CleanStory(story)) return '';
+  const subject = englishSubjectForSide(story.side);
+  const type = story.type ? story.type.toLowerCase() : 'story';
+  const id = story.displayId || story.id;
+  if (story.side === 'shared') return `${subject} ${type} story ${id}`;
+  if (story.side === 'others') return `${subject} support ${type} story ${id}`;
+  return `${subject} ${type} story ${id}`;
+}
+
+function englishFallbackContext(story: MiCometStory, titleEn: string) {
+  if (!is2024CleanStory(story) || !titleEn) return '';
+  return `${story.date.replace(/-/g, '/')}, ${titleEn}`;
+}
+
 function isChronologyStory(story: MiCometStory) {
   return story.date >= '2019-01-01' && story.date <= '2020-08-31';
 }
@@ -159,14 +185,15 @@ function emojiForSide(side: Side) {
 
 function normalizeStory(story: MiCometStory): MiCometStory {
   const side = splitNonCollabShared(story);
+  const storyWithSide = { ...story, side };
   const enStory = enStoryMap.get(story.id);
   let titleZh = cleanText(story.titleZh || story.title);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
   let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
   ctxZh = ensureSentence(ctxZh);
-  const titleEn = cleanEnglishText(story.titleEn || enStory?.title || '');
-  const ctxEn = ensureEnglishSentence(story.ctxEn || enStory?.context || titleEn);
+  const titleEn = cleanEnglishText(story.titleEn || enStory?.title || englishFallbackTitle(storyWithSide));
+  const ctxEn = ensureEnglishSentence(story.ctxEn || enStory?.context || englishFallbackContext(storyWithSide, titleEn) || titleEn);
   return {
     ...story,
     source: story.source || (isChronologyStory(story) ? '編年史' : undefined),
