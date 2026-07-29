@@ -34,8 +34,120 @@ type EnglishStory = { id: string; title?: string; context?: string };
 
 const enStoryMap = new Map((enStoriesData as EnglishStory[]).map((story) => [story.id, story]));
 
+const verified2024DateByYoutubeId: Record<string, string> = {
+  pfDd_whXL48: '2024-01-01',
+  PvTzU3LZFyE: '2024-01-17',
+  bYzxk4HlE7M: '2024-01-26',
+  I0x0mZeJWH8: '2024-02-03',
+  JxULK1scvlE: '2024-02-03',
+  fXpTEp5817E: '2024-02-17',
+  rZQPGM2oWBk: '2024-02-24',
+  'QkINY-M34JU': '2024-02-26',
+  iRr3PxLR_B8: '2024-03-29',
+  yqlGgxDIRGo: '2024-03-30',
+  nyo03r0hjaE: '2024-03-31',
+  QiKlvJDmzVA: '2024-04-03',
+  YrRxTtU3ijA: '2024-04-04',
+  wXUnG6y0qSI: '2024-04-07',
+  ez_WjXG2Iek: '2024-04-10',
+  vTfMdLEbkJ8: '2024-05-03',
+  WSbfEsK2wXU: '2024-05-07',
+  gOVw7AvnV9Y: '2024-05-10',
+  'TaqB-2-Gle4': '2024-05-12',
+  JX03g7qYhwA: '2024-05-12',
+  '5ks8fW-QdP4': '2024-05-12',
+  '9RkLxcWnTlw': '2024-05-12',
+  aC7tju4YrjU: '2024-05-13',
+  '0s_JnZAwtdk': '2024-05-14',
+  R8FuzCxTxyg: '2024-05-18',
+  'xDe6-HWouEY': '2024-05-20',
+  ev6K7VGDXI8: '2024-05-30',
+  U6bg2WjSgBw: '2024-05-30',
+  n7A8Dr1C8vs: '2024-05-30',
+  zOsbVQFhdak: '2024-06-01',
+  '74colXYYK48': '2024-06-01',
+  LHxfeXqjIVk: '2024-06-03',
+  'DwH8XHV-Cp4': '2024-06-16',
+  'In3v-Sfl6gw': '2024-06-26',
+  BEBtl6Y_o_I: '2024-06-29',
+  Px2EaKPU2UE: '2024-07-17',
+  '7zNJZgKCgGM': '2024-07-19',
+  YxZMo78hymA: '2024-07-19',
+  '2aZq792Pe4E': '2024-07-19',
+  vpyp7JpBLT8: '2024-07-19',
+  YJjqNFS6BVA: '2024-07-20',
+  fFG2Vm5KdWU: '2024-07-20',
+  'G-cNmtTqeY8': '2024-07-20',
+  MRzgtUqUm6w: '2024-07-20',
+  Pd0TlgiU2Wk: '2024-07-20',
+  '5pkjpx08Qb4': '2024-07-21',
+  _cL4KU017b0: '2024-07-22',
+  eTk43LVL18: '2024-08-10',
+  ReUWeJmRwe0: '2024-09-06',
+  '1YGYdvLknzE': '2024-09-06',
+  faWtfn9hIMY: '2024-09-08',
+  q7yldQF_QAU: '2024-09-14',
+  '83R5Dj28l6c': '2024-09-15',
+  PqIO5NzaNn8: '2024-09-15',
+  'rt-qFNFjxj4': '2024-09-18',
+  RjNJbjIPmxo: '2024-09-18',
+  EhCmOEDUSrI: '2024-09-21',
+  MnZb2EQkGTY: '2024-09-21',
+  n8qUNUEqpVY: '2024-10-07',
+  '001F_HcLxI8': '2024-10-07',
+  M5Y5M4gCMFc: '2024-10-07',
+  emH24yVZVbc: '2024-10-07',
+  kgwYhO_hJMU: '2024-10-09',
+  LfmViq96l1Y: '2024-10-13',
+  zcHiS_suDuI: '2024-10-13',
+  CRPitFxeQWY: '2024-10-18',
+  kj3PgkEjzFA: '2024-10-29',
+  '9A9ud9mKb1A': '2024-10-31',
+  P1SWcUlXrMA: '2024-11-04',
+  rdGlAmZEr0Q: '2024-11-04',
+  fHXbIplkE0A: '2024-11-04',
+  YYku6CyTHU: '2024-11-05',
+  '1ID2lymFspA': '2024-11-06',
+  rZy0Pp8J8iY: '2024-11-07',
+  YVcjQ53EkO0: '2024-11-07',
+  IGJow6ef1gI: '2024-11-07',
+  Q9HmGepNklM: '2024-11-09',
+  f3qJz2dhsbQ: '2024-11-10',
+  YVPNyMEJ4Uk: '2024-11-10',
+  yKl4Wvk8Hxo: '2024-11-11',
+  yTUMlxy3KsM: '2024-11-15',
+  xzUDqKO7BYM: '2024-12-06',
+  pafbNerwoUA: '2024-12-14',
+  Ru0e9Bow5Bc: '2024-12-16',
+  opbbuEP9zxg: '2024-12-28',
+};
+
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.link ?? ''}`;
+}
+
+function youtubeIdsFromText(value?: string) {
+  if (!value) return [];
+  const ids = new Set<string>();
+  const patterns = [
+    /youtu\.be\/([A-Za-z0-9_-]{6,})/g,
+    /youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/g,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/g,
+  ];
+  patterns.forEach((pattern) => {
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(value))) ids.add(match[1]);
+  });
+  return Array.from(ids);
+}
+
+function verifiedDateForStory(story: MiCometStory) {
+  const text = `${story.link ?? ''} ${story.ctx ?? ''} ${story.ctxZh ?? ''} ${story.ctxEn ?? ''}`;
+  for (const id of youtubeIdsFromText(text)) {
+    const date = verified2024DateByYoutubeId[id];
+    if (date) return date;
+  }
+  return story.date;
 }
 
 function normalizeMemberNames(value: string) {
@@ -184,8 +296,9 @@ function emojiForSide(side: Side) {
 }
 
 function normalizeStory(story: MiCometStory): MiCometStory {
+  const correctedDate = verifiedDateForStory(story);
   const side = splitNonCollabShared(story);
-  const storyWithSide = { ...story, side };
+  const storyWithSide = { ...story, date: correctedDate, side };
   const enStory = enStoryMap.get(story.id);
   let titleZh = cleanText(story.titleZh || story.title);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
@@ -196,7 +309,8 @@ function normalizeStory(story: MiCometStory): MiCometStory {
   const ctxEn = ensureEnglishSentence(story.ctxEn || enStory?.context || englishFallbackContext(storyWithSide, titleEn) || titleEn);
   return {
     ...story,
-    source: story.source || (isChronologyStory(story) ? '編年史' : undefined),
+    date: correctedDate,
+    source: story.source || (isChronologyStory(storyWithSide) ? '編年史' : undefined),
     side,
     emoji: emojiForSide(side),
     title: titleEn || titleZh,
@@ -231,6 +345,7 @@ function mergeStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
     ...base,
     id: base.id,
     displayId: base.displayId || extra.displayId,
+    date: base.date <= extra.date ? base.date : extra.date,
     phase: Math.min(base.phase, extra.phase),
     type: base.type === extra.type ? base.type : 'News',
     link: links,
