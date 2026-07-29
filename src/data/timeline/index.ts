@@ -6,6 +6,7 @@ import timeline2023CleanData from './timeline-2023-clean.json';
 import timeline2024CleanData from './timeline-2024-clean.json';
 import timeline2025CleanData from './timeline-2025-compendium';
 import timeline2026CleanData from './timeline-2026-compendium';
+import enStoriesData from './en-stories.json';
 
 export interface MiCometStory {
   id: string;
@@ -16,9 +17,11 @@ export interface MiCometStory {
   emoji: string;
   title: string;
   titleZh?: string;
+  titleEn?: string;
   titleJa?: string;
   ctx: string;
   ctxZh?: string;
+  ctxEn?: string;
   ctxJa?: string;
   type: string;
   link?: string;
@@ -27,6 +30,9 @@ export interface MiCometStory {
 }
 
 type Side = MiCometStory['side'];
+type EnglishStory = { id: string; title?: string; context?: string };
+
+const enStoryMap = new Map((enStoriesData as EnglishStory[]).map((story) => [story.id, story]));
 
 function rawText(story: MiCometStory) {
   return `${story.title} ${story.titleZh ?? ''} ${story.ctx} ${story.ctxZh ?? ''} ${story.link ?? ''}`;
@@ -93,10 +99,24 @@ function cleanText(value?: string) {
     .trim();
 }
 
+function cleanEnglishText(value?: string) {
+  if (!value) return '';
+  return value
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([.,!?;:])/g, '$1')
+    .trim();
+}
+
 function ensureSentence(value: string) {
   const text = value.replace(/。{2,}/g, '。').trim();
   if (!text) return '';
   return text.endsWith('。') ? text : `${text}。`;
+}
+
+function ensureEnglishSentence(value: string) {
+  const text = cleanEnglishText(value).replace(/\.{2,}/g, '.').trim();
+  if (!text) return '';
+  return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
 function titleHasSubject(value: string) {
@@ -139,20 +159,25 @@ function emojiForSide(side: Side) {
 
 function normalizeStory(story: MiCometStory): MiCometStory {
   const side = splitNonCollabShared(story);
+  const enStory = enStoryMap.get(story.id);
   let titleZh = cleanText(story.titleZh || story.title);
   if (!titleHasSubject(titleZh)) titleZh = `${subjectForSide(side)}${titleZh}`;
   let ctxZh = cleanText(story.ctxZh || story.ctx || titleZh);
   if (!ctxZh || ctxZh.length < 8) ctxZh = titleZh;
   ctxZh = ensureSentence(ctxZh);
+  const titleEn = cleanEnglishText(story.titleEn || enStory?.title || '');
+  const ctxEn = ensureEnglishSentence(story.ctxEn || enStory?.context || titleEn);
   return {
     ...story,
     source: story.source || (isChronologyStory(story) ? '編年史' : undefined),
     side,
     emoji: emojiForSide(side),
-    title: titleZh,
+    title: titleEn || titleZh,
     titleZh,
-    ctx: ctxZh,
+    titleEn: titleEn || undefined,
+    ctx: ctxEn || ctxZh,
     ctxZh,
+    ctxEn: ctxEn || undefined,
   };
 }
 
@@ -163,8 +188,16 @@ function mergeText(a = '', b = '') {
   return Array.from(new Set(parts)).join('。');
 }
 
+function mergeEnglishText(a = '', b = '') {
+  const parts = [a, b]
+    .map((part) => cleanEnglishText(part).replace(/[.!?]+$/g, '').trim())
+    .filter(Boolean);
+  return Array.from(new Set(parts)).join('. ');
+}
+
 function mergeStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
   const mergedCtx = ensureSentence(mergeText(base.ctxZh || base.ctx, extra.ctxZh || extra.ctx));
+  const mergedCtxEn = ensureEnglishSentence(mergeEnglishText(base.ctxEn || '', extra.ctxEn || ''));
   const links = Array.from(new Set([base.link, extra.link].filter(Boolean))).join(' ');
   const sources = Array.from(new Set([base.source, extra.source].filter(Boolean))).join('、');
   return {
@@ -176,8 +209,10 @@ function mergeStory(base: MiCometStory, extra: MiCometStory): MiCometStory {
     link: links,
     source: sources || undefined,
     image: base.image || extra.image,
-    ctx: mergedCtx,
+    titleEn: base.titleEn || extra.titleEn,
+    ctx: mergedCtxEn || mergedCtx,
     ctxZh: mergedCtx,
+    ctxEn: mergedCtxEn || undefined,
   };
 }
 
