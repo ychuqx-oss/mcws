@@ -14,10 +14,24 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="MiComet Compendium wiki">
     <meta name="twitter:description" content="MiComet Compendium wiki — MiComet Story Timeline">
-</head>
+  </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const renameSiteHeading = () => {
+        const heading = document.querySelector('#root h1');
+        if (!heading) return false;
+        heading.textContent = 'MiComet Compendium wiki';
+        return true;
+      };
+      if (!renameSiteHeading()) {
+        const observer = new MutationObserver(() => {
+          if (renameSiteHeading()) observer.disconnect();
+        });
+        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+      }
+    </script>
   </body>
 </html>
