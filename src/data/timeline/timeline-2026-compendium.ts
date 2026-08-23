@@ -114,8 +114,8 @@ const additions = [
     ctx: 'Fubuki posted about and showed off miComet in Hololive Dreams.',
     ctxZh: '白上吹雪發文展示《Hololive Dreams》中的miComet。',
     ctxEn: 'Fubuki posted about and showed off miComet in Hololive Dreams.',
-    link: '',
-    source: 'User-provided 2026 timeline note: Tweet 1, Tweet 2',
+    link: 'https://www.youtube.com/watch?v=1hqjjY5L9ZE https://game.watch.impress.co.jp/docs/news/2131268.html',
+    source: 'User-provided timeline note; web corroboration: Fubuki Holodori clip and official miComet event coverage',
   },
   {
     id: 'c2-2026-113',
@@ -131,8 +131,8 @@ const additions = [
     ctx: 'Suisei posted that she had swimsuit Miko in Hololive Dreams.',
     ctxZh: '星街發文表示，她在《Hololive Dreams》中擁有泳裝Miko。',
     ctxEn: 'Suisei posted that she had swimsuit Miko in Hololive Dreams.',
-    link: '',
-    source: 'User-provided 2026 timeline note: Tweet',
+    link: 'https://www.gamer.ne.jp/news/202608070017/ https://game.watch.impress.co.jp/docs/news/2131268.html',
+    source: 'User-provided timeline note; web corroboration: Hololive Dreams miComet swimsuit event coverage',
   },
   {
     id: 'c2-2026-114',
@@ -145,11 +145,11 @@ const additions = [
     title: 'Surprise MiComet Off-Collab in Suisei’s Stream',
     titleZh: '星街直播中驚喜出現miComet線下連動',
     titleEn: 'Surprise MiComet Off-Collab in Suisei’s Stream',
-    ctx: 'A surprise miComet off-collab took place during Suisei’s stream.',
-    ctxZh: '星街的直播中驚喜出現miComet線下連動。',
-    ctxEn: 'A surprise miComet off-collab took place during Suisei’s stream.',
-    link: '',
-    source: 'User-provided 2026 timeline note: Stream, Clip',
+    ctx: 'A surprise miComet off-collab took place during Suisei’s horror-game stream, with Miko joining Suisei in person.',
+    ctxZh: '星街進行恐怖遊戲直播時，Miko突然到場，形成驚喜miComet線下連動。',
+    ctxEn: 'A surprise miComet off-collab took place during Suisei’s horror-game stream, with Miko joining Suisei in person.',
+    link: 'https://www.youtube.com/watch?v=xz2aErgeW1c https://www.youtube.com/watch?v=FExv-dxnjEM',
+    source: 'Web-verified: Suisei official JSP3 stream and miComet clip',
   },
 ];
 
